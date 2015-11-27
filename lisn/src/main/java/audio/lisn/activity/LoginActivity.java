@@ -188,6 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         String mname="NULL";
         String lname="NULL";
         String fburl="NULL";
+        String userName="";
 
 
         if(object.optString("email") !=null){
@@ -199,12 +200,14 @@ public class LoginActivity extends AppCompatActivity {
         }
         if(object.optString("first_name") !=null){
             fname=object.optString("first_name");
+            userName =fname;
         }
         if(object.optString("middle_name") !=null){
             mname=object.optString("middle_name");
         }
         if(object.optString("last_name") !=null){
             lname=object.optString("last_name");
+            userName =userName+ " " +lname;
         }
         if(object.optString("link") !=null){
             fburl=object.optString("link");
@@ -232,6 +235,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         // Map<String,String> postParam = new HashMap<String, String>();
 
+        final String finalUserName = userName;
         JsonUTF8StringRequest bookListReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
                 new Response.Listener<String>() {
                     @Override
@@ -250,7 +254,7 @@ public class LoginActivity extends AppCompatActivity {
                                 if(separated2[1] !=null) {
                                     uid = separated2[1].trim();
                                 }
-                                loginSuccess(uid);
+                                loginSuccess(uid, finalUserName);
                                 downloadUserBook(uid);
 
                                 Log.v("response", "uid :" + uid);
@@ -425,14 +429,16 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void loginSuccess(String user_id) {
+    private void loginSuccess(String user_id,String userName) {
         SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.user_login_id),user_id);
-        editor.putBoolean(getString(R.string.user_login_status),true);
+        editor.putString(getString(R.string.user_login_name),userName);
+        editor.putBoolean(getString(R.string.user_login_status), true);
         editor.commit();
         AppController.getInstance().setUserId(user_id);
+        AppController.getInstance().setUserName(userName);
         sendLoginSuccessMessage();
 
     }

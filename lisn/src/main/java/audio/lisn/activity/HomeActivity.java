@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
@@ -70,6 +71,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
         updateNavigationView();
+
+
 
         mNavItemId=R.id.drawer_home;
 
@@ -117,11 +120,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void updateNavigationView() {
         isUserLogin= AppController.getInstance().isUserLogin();
         navigationView.getMenu().clear();
+        View headerLayout = navigationView.getHeaderView(0); // 0-index header
+        TextView userName = (TextView) headerLayout.findViewById(R.id.user_name);
         if (isUserLogin){
             navigationView.inflateMenu(R.menu.navigation_menu_member);
 
+            userName.setText(AppController.getInstance().getUserName());
         }else{
             navigationView.inflateMenu(R.menu.navigation_menu_none_member);
+            userName.setText("");
 
         }
     }

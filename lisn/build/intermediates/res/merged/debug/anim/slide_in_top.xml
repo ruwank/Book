@@ -4,4 +4,4 @@
         android:duration="@android:integer/config_mediumAnimTime"/>
     <alpha android:fromAlpha="0.0" android:toAlpha="1.0"
         android:duration="@android:integer/config_mediumAnimTime" />
-</set><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/src/main/res/anim/slide_in_top.xml -->
+</set><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.1/Book/lisn/src/main/res/anim/slide_in_top.xml -->

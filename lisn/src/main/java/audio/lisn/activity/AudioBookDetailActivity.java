@@ -323,8 +323,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         });
 
-        Button btnAddMobitel=(Button)findViewById(R.id.addMobitelBillButton);
-        btnAddMobitel.setOnClickListener(new View.OnClickListener() {
+        Button addToBillButton=(Button)findViewById(R.id.addToBillButton);
+        addToBillButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addToMyBillButtonPressed();
@@ -435,7 +435,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             btnDownload.setText("Play");
 
-            btnAddMobitel.setVisibility(View.GONE);
+            addToBillButton.setVisibility(View.GONE);
             btnPayFromCard.setVisibility(View.GONE);
             mobitelOption.setVisibility(View.GONE);
 
@@ -444,15 +444,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             rateLayout.setVisibility(View.GONE);
             if(Float.parseFloat(audioBook.getPrice())>0) {
                 btnDownload.setVisibility(View.GONE);
-                btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
+               // btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
 
                 if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
-                    btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
-                    btnAddMobitel.setVisibility(View.VISIBLE);
+                   // btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
+                    addToBillButton.setVisibility(View.VISIBLE);
                     mobitelOption.setVisibility(View.VISIBLE);
 
                 }else{
-                    btnAddMobitel.setVisibility(View.GONE);
+                    addToBillButton.setVisibility(View.GONE);
                     mobitelOption.setVisibility(View.GONE);
                 }
                 btnPayFromCard.setVisibility(View.VISIBLE);
@@ -460,7 +460,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             }else{
                 btnDownload.setText("Get");
-                btnAddMobitel.setVisibility(View.GONE);
+                addToBillButton.setVisibility(View.GONE);
                 mobitelOption.setVisibility(View.GONE);
                 btnPayFromCard.setVisibility(View.GONE);
 

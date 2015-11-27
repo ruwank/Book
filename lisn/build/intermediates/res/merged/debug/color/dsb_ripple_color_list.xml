@@ -20,4 +20,4 @@
     <item android:color="@color/dsb_ripple_color_focused" android:state_focused="true"/>
     <item android:color="@color/dsb_ripple_color_pressed" android:state_pressed="true"/>
     <item android:color="@android:color/transparent"/>
-</selector><!-- From: file:/home/adw/android/new_adw/discreteSeekbar/library/src/main/res/color/dsb_ripple_color_list.xml --><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/build/intermediates/exploded-aar/org.adw.library/discrete-seekbar/1.0.0/res/color/dsb_ripple_color_list.xml -->
+</selector><!-- From: file:/home/adw/android/new_adw/discreteSeekbar/library/src/main/res/color/dsb_ripple_color_list.xml --><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.1/Book/lisn/build/intermediates/exploded-aar/org.adw.library/discrete-seekbar/1.0.0/res/color/dsb_ripple_color_list.xml -->
