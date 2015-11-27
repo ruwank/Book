@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/card_view_margin"
+        app:cardElevation="@dimen/spacing_medium"
+        app:cardUseCompatPadding="true">
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/layout_margin"
+            >
+
+            <ImageView
+                android:id="@+id/book_cover_thumbnail"
+                android:layout_margin="@dimen/book_item_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_centerHorizontal="true"/>
+
+
+            <audio.lisn.view.EllipsizingTextView
+                android:id="@+id/book_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_marginLeft="@dimen/book_item_margin"
+                android:layout_below="@+id/book_cover_thumbnail"
+                android:layout_toLeftOf="@+id/btn_action"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/grid_view_textSize" />
+
+            <audio.lisn.view.EllipsizingTextView
+                android:id="@+id/book_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_below="@+id/book_title"
+                android:layout_toLeftOf="@+id/btn_action"
+                android:layout_marginLeft="@dimen/book_item_margin"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/grid_view_textSize" />
+            <ImageButton
+                android:id="@+id/btn_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/book_cover_thumbnail"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_menu_more_option"/>
+
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

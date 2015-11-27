@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CoverFlowLib/CoverFlowLib.iml" filepath="$PROJECT_DIR$/CoverFlowLib/CoverFlowLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Lisn.iml" filepath="$PROJECT_DIR$/Lisn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lisn/lisn.iml" filepath="$PROJECT_DIR$/lisn/lisn.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/audio_player_layout"
+        android:layout_below="@+id/closePlayButton"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+            android:id="@+id/musicCurrentLoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.00"
+            android:layout_gravity="center"
+
+            android:textColor="@color/colorPrimary"
+            android:textSize="10sp"
+
+            >
+        </TextView>
+
+        <SeekBar
+            android:id="@+id/musicSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+        </SeekBar>
+
+        <TextView
+            android:id="@+id/musicDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:layout_gravity="center"
+            android:textSize="10sp"
+            android:text="0.00"
+            >
+        </TextView>
+        <ImageButton
+            android:id="@+id/closePlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="-10dp"
+            android:background="@android:color/transparent" >
+        </ImageButton>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/audio_player_controller_layout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-5dp"
+        android:layout_below="@+id/audio_player_layout">
+        <ImageButton
+            android:id="@+id/previousItemPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/btn_play_pervious"
+            android:background="@android:color/transparent" >
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/playPauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/btn_play_start"
+            android:background="@android:color/transparent" >
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/playstopButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:src="@drawable/btn_play_stop"
+            android:background="@android:color/transparent" >
+        </ImageButton>
+        <ImageButton
+            android:id="@+id/nextItemPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/btn_play_next"
+            android:background="@android:color/transparent" >
+        </ImageButton>
+        <!--<ImageButton-->
+            <!--android:id="@+id/playBookmarkButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_marginLeft="5dp"-->
+            <!--android:src="@drawable/btn_play_bookmark"-->
+            <!--android:background="@android:color/transparent" >-->
+        <!--</ImageButton>-->
+    </LinearLayout>
+    <TextView
+        android:id="@+id/audioTitle"
+        android:layout_below="@+id/audio_player_controller_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/colorPrimary"
+
+        >
+    </TextView>
+</RelativeLayout><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/src/main/res/layout/view_player_controller_b.xml -->

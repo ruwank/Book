@@ -1,0 +1,1704 @@
+package audio.lisn.activity;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.transition.Slide;
+import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import audio.lisn.R;
+import audio.lisn.adapter.BookReviewViewAdapter;
+import audio.lisn.app.AppController;
+import audio.lisn.model.AudioBook;
+import audio.lisn.model.BookReview;
+import audio.lisn.model.DownloadedAudioBook;
+import audio.lisn.util.AppUtils;
+import audio.lisn.util.AudioPlayerService;
+import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Constants;
+import audio.lisn.util.CustomTypeFace;
+import audio.lisn.util.OnSwipeTouchListener;
+import audio.lisn.util.WCLinearLayoutManager;
+import audio.lisn.view.PlayerControllerView;
+import audio.lisn.webservice.FileDownloadTask;
+import audio.lisn.webservice.FileDownloadTaskListener;
+import audio.lisn.webservice.JsonUTF8StringRequest;
+
+public class AudioBookDetailActivity extends  AppCompatActivity implements Runnable,FileDownloadTaskListener{
+
+    private static final String TRANSITION_NAME = "audio.lisn.AudioBookDetailActivity";
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    AudioBook audioBook;
+    ImageButton previewPlayButton;
+    ImageButton btnShare;
+    Button btnReview;
+    //private boolean isPlayingPreview,isLoadingPreview;
+    MediaPlayer mediaPlayer = null;
+    ConnectionDetector connectionDetector;
+
+    public RelativeLayout previewLayout;
+    public TextView previewLabel,timeLabel;
+    public ProgressBar spinner;
+    private boolean isPlayingPreview,isLoadingPreview;
+    String leftTime;
+    ProgressDialog mProgressDialog;
+    ProgressDialog progressDialog;
+    int totalAudioFileCount, downloadedFileCount;
+    List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
+    ImageView bookCoverImage;
+    private PopupWindow pwindo;
+    int previousDownloadedFileCount;
+    PlayerControllerView playerControllerView;
+    //TextView downloaded;
+
+    BookReviewViewAdapter bookReviewViewAdapter;
+    RecyclerView reviewContainer;
+
+    public enum ServiceProvider {
+        PROVIDER_NONE, PROVIDER_MOBITEL,PROVIDER_DIALOG,PROVIDER_ETISALAT
+    }
+
+    public enum PaymentOption {
+        OPTION_NONE, OPTION_MOBITEL,OPTION_CARD
+    }
+
+    ServiceProvider  serviceProvider;
+    PaymentOption  paymentOption;
+
+    //  ListView reviewListView;
+  //  BookReviewListAdapter bookReviewListAdapter;
+
+
+    public static void navigate(AppCompatActivity activity, View transitionImage, AudioBook audioBook) {
+        Intent intent = new Intent(activity, AudioBookDetailActivity.class);
+        intent.putExtra("audioBook", audioBook);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, TRANSITION_NAME);
+        ActivityCompat.startActivity(activity, intent, options.toBundle());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initActivityTransitions();
+        setContentView(R.layout.activity_audio_book_detail);
+        findServiceProvider();
+
+        ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
+        downloadedFileCount=0;
+        audioBook = (AudioBook) getIntent().getSerializableExtra("audioBook");
+
+
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        supportStartPostponedEnterTransition();
+
+        String itemTitle = audioBook.getEnglish_title();
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(itemTitle);
+        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+
+        connectionDetector = new ConnectionDetector(getApplicationContext());
+
+        playerControllerView = (PlayerControllerView) findViewById(R.id.audio_player_layout);
+
+        playerControllerView.setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeRight() {
+                playerControllerView.animate()
+                        .translationX(playerControllerView.getWidth())
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                playerControllerView.setX(0);
+                                playerControllerView.setVisibility(View.GONE);
+
+                            }
+
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                playerControllerView.stopAudioPlayer();
+                            }
+                        });
+
+            }
+            @Override
+            public void onSingleTap() {
+                showAudioPlayer();
+            }
+
+        });
+        updateData();
+
+
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer){
+            playerControllerView.setVisibility(View.VISIBLE);
+        }else{
+            playerControllerView.setVisibility(View.GONE);
+
+        }
+        playerControllerView.updateView();
+        registerPlayerUpdateBroadcastReceiver();
+        bookReviewViewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mPlayerUpdateReceiver);
+
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( mProgressDialog!=null && mProgressDialog.isShowing() ){
+            mProgressDialog.dismiss();
+        }
+    }
+    private void findServiceProvider() {
+        Log.v("deviceID","findDeviceID");
+        serviceProvider=ServiceProvider.PROVIDER_NONE;
+
+        String serviceName = Context.TELEPHONY_SERVICE;
+        TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(serviceName);
+//        int deviceType = m_telephonyManager.getPhoneType();
+//        switch (deviceType) {
+//            case (TelephonyManager.PHONE_TYPE_GSM):
+//                break;
+//            case (TelephonyManager.PHONE_TYPE_CDMA):
+//                break;
+//            case (TelephonyManager.PHONE_TYPE_NONE):
+//                break;
+//            default:
+//                break;
+//        }
+        //deviceID = m_telephonyManager.getDeviceId();
+        String subscriberId = m_telephonyManager.getSubscriberId();
+        if(subscriberId != null){
+            if(subscriberId.startsWith("41301")){
+            serviceProvider=ServiceProvider.PROVIDER_MOBITEL;
+        }else if(subscriberId.startsWith("41302")){
+            serviceProvider=ServiceProvider.PROVIDER_DIALOG;
+        }
+    }
+
+
+
+
+    }
+    private void showAudioPlayer(){
+        PlayerControllerActivity.navigate(this, playerControllerView, null);
+
+    }
+    private void showBookReview(){
+        BookReviewActivity.navigate(this, playerControllerView, audioBook.getReviews());
+
+    }
+    private void updateData() {
+
+        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        ImageView bookBannerImage = (ImageView) findViewById(R.id.bookBannerImage);
+        ViewGroup.LayoutParams params = bookBannerImage.getLayoutParams();
+        params.height=(int)(size.x/2);
+        bookBannerImage.setLayoutParams(params);
+
+
+        // String bannerImageUrl="http://lorempixel.com/500/500/animals/8/";
+        String bannerImageUrl=audioBook.getBanner_image();
+
+       // Picasso.with(this).load(bannerImageUrl).into(bookBannerImage);
+
+        Picasso.with(this)
+                .load(bannerImageUrl)
+                .placeholder(R.drawable.default_banner)
+                .into(bookBannerImage);
+
+        bookCoverImage = (ImageView) findViewById(R.id.bookCoverImage);
+        Picasso.with(this)
+                .load(audioBook.getCover_image())
+                .placeholder(R.drawable.audiobook_placeholder)
+                .into(bookCoverImage);
+
+       // ViewGroup.LayoutParams params = bookCoverImage.getLayoutParams();
+        RelativeLayout.LayoutParams bookCoverImageLayoutParams =
+                (RelativeLayout.LayoutParams)bookCoverImage.getLayoutParams();
+        bookCoverImageLayoutParams.width= (int) ((size.x-60)/3);
+
+        bookCoverImage.setLayoutParams(bookCoverImageLayoutParams);
+
+        String narratorText="";
+        String durationText="";
+        //ExpandableTextView descriptionTextView = (ExpandableTextView)findViewById(R.id.description);
+        TextView title = (TextView) findViewById(R.id.title);
+
+        ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
+        TextView descriptionTextView = (TextView) findViewById(R.id.expandable_text);
+        TextView fileSize = (TextView) findViewById(R.id.fileSize);
+        TextView duration = (TextView) findViewById(R.id.duration);
+
+        TextView category = (TextView) findViewById(R.id.category);
+        TextView price = (TextView) findViewById(R.id.price);
+        TextView author = (TextView) findViewById(R.id.author);
+        TextView narrator = (TextView) findViewById(R.id.narrator);
+        TextView ratingValue = (TextView) findViewById(R.id.rating_value);
+        LinearLayout rateLayout=(LinearLayout)findViewById(R.id.app_rate_layout);
+
+
+        Button btnDownload=(Button)findViewById(R.id.btnDownload);
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paymentOption=PaymentOption.OPTION_NONE;
+
+                playGetButtonPressed();
+            }
+        });
+
+        Button btnAddMobitel=(Button)findViewById(R.id.addMobitelBillButton);
+        btnAddMobitel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addToMyBillButtonPressed();
+            }
+        });
+
+        Button btnPayFromCard=(Button)findViewById(R.id.buyFromCardButton);
+        btnPayFromCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paymentOption=PaymentOption.OPTION_CARD;
+                buyFromCardButtonPressed();
+            }
+        });
+
+        TextView mobitelOption = (TextView) findViewById(R.id.mobitelOption);
+
+        RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
+        LayerDrawable stars1 = (LayerDrawable) ratingBar.getProgressDrawable();
+        stars1.getDrawable(2).setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+
+
+        RatingBar userRatingBar = (RatingBar) findViewById(R.id.user_rate_bar);
+        LayerDrawable stars = (LayerDrawable) userRatingBar.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+
+        userRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if(fromUser){
+                    initiatePopupWindow(rating);
+                }
+
+            }
+
+        });
+        previewPlayButton = (ImageButton) findViewById(R.id.previewPlayButton);
+        previewPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPreviewButtonPressed();
+
+            }
+        });
+
+        previewLayout=(RelativeLayout)findViewById(R.id.preview_layout);
+        RelativeLayout.LayoutParams previewLayoutLayoutParams =
+                (RelativeLayout.LayoutParams)previewLayout.getLayoutParams();
+        previewLayoutLayoutParams.width= (int) ((size.x-60)/3);
+
+        previewLayout.setLayoutParams(previewLayoutLayoutParams);
+        previewLabel=(TextView)findViewById(R.id.preview_label);
+        timeLabel=(TextView)findViewById(R.id.time_label);
+        RelativeLayout.LayoutParams timeLabelLayoutParams =
+                (RelativeLayout.LayoutParams)timeLabel.getLayoutParams();
+        timeLabelLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+       // timeLabel.setLayoutParams(timeLabelLayoutParams);
+
+       // params = timeLabel.getLayoutParams();
+
+        spinner = (ProgressBar)findViewById(R.id.progressBar);
+
+        if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
+            descriptionTextView.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            title.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            author.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            category.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            narrator.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            duration.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            narratorText=getString(R.string.narrator_si);
+            durationText=getString(R.string.duration_si);
+        }else{
+            descriptionTextView.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            title.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            author.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            category.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            narrator.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            duration.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+
+            narratorText=getString(R.string.narrator_en);
+            durationText=getString(R.string.duration_en);
+        }
+        title.setText(audioBook.getTitle());
+        String priceText="Free";
+        if( Float.parseFloat(audioBook.getPrice())>0 ){
+            priceText="Rs: "+audioBook.getPrice();
+        }
+
+        if(Float.parseFloat(audioBook.getRate())>-1){
+            ratingBar.setRating(Float.parseFloat(audioBook.getRate()));
+            ratingValue.setText(String.format("%.1f", Float.parseFloat(audioBook.getRate())));
+
+
+        }
+
+        narratorText=narratorText+" - "+audioBook.getNarrator();
+        durationText=durationText+" - "+audioBook.getDuration();
+        author.setText(audioBook.getAuthor());
+        category.setText(audioBook.getCategory());
+        narrator.setText(narratorText);
+        fileSize.setText(audioBook.getFileSize()+" Mb");
+        price.setText(priceText);
+        title.setText(audioBook.getTitle());
+        duration.setText(durationText);
+        description.setText(audioBook.getDescription());
+        if(audioBook.isPurchase()){
+            rateLayout.setVisibility(View.VISIBLE);
+
+            btnDownload.setText("Play");
+
+            btnAddMobitel.setVisibility(View.GONE);
+            btnPayFromCard.setVisibility(View.GONE);
+            mobitelOption.setVisibility(View.GONE);
+
+            // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
+        }else{
+            rateLayout.setVisibility(View.GONE);
+            if(Float.parseFloat(audioBook.getPrice())>0) {
+                btnDownload.setVisibility(View.GONE);
+                btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
+
+                if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
+                    btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
+                    btnAddMobitel.setVisibility(View.VISIBLE);
+                    mobitelOption.setVisibility(View.VISIBLE);
+
+                }else{
+                    btnAddMobitel.setVisibility(View.GONE);
+                    mobitelOption.setVisibility(View.GONE);
+                }
+                btnPayFromCard.setVisibility(View.VISIBLE);
+
+
+            }else{
+                btnDownload.setText("Get");
+                btnAddMobitel.setVisibility(View.GONE);
+                mobitelOption.setVisibility(View.GONE);
+                btnPayFromCard.setVisibility(View.GONE);
+
+
+            }
+
+        }
+        btnShare=(ImageButton)findViewById(R.id.btnShare);
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareBook();
+            }
+        });
+
+        int reviewsCount=0;
+
+        if(audioBook.getReviews() !=null)
+            reviewsCount=audioBook.getReviews().size();
+        final int finalReviewsCount = reviewsCount;
+
+        btnReview=(Button)findViewById(R.id.btnReview);
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(finalReviewsCount >0){
+                    showBookReview();
+
+                }
+
+
+            }
+        });
+
+
+        btnReview.setText(""+reviewsCount);
+
+        //downloaded=(TextView)findViewById(R.id.downloaded);
+        //downloaded.setText("" + audioBook.getDownloads());
+
+        TextView allReviews=(TextView)findViewById(R.id.all_reviews);
+        allReviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    showBookReview();
+
+
+            }
+        });
+
+
+        reviewContainer=(RecyclerView)findViewById(R.id.reviewContainer);
+
+        ArrayList<BookReview> reviews;
+
+        if(reviewsCount>3){
+            reviews= (ArrayList<BookReview>) audioBook.getReviews().subList(0,3);
+        }else{
+            allReviews.setVisibility(View.GONE);
+            reviews=audioBook.getReviews();
+        }
+        WCLinearLayoutManager linearLayoutManagerVertical =
+                new WCLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        reviewContainer.setLayoutManager(linearLayoutManagerVertical);
+       // reviewContainer.setLayoutManager(new GridLayoutManager(this, 3));
+
+        bookReviewViewAdapter=new BookReviewViewAdapter(getApplicationContext(),reviews);
+        reviewContainer.setAdapter(bookReviewViewAdapter);
+/*
+        reviewListView=(ListView)findViewById(R.id.review_list);
+        bookReviewListAdapter = new BookReviewListAdapter(this, reviews);
+        reviewListView.setAdapter(bookReviewListAdapter);
+*/
+        mProgressDialog = new ProgressDialog(AudioBookDetailActivity.this);
+        mProgressDialog.setMessage("Downloading file..");
+        mProgressDialog.setTitle("Download in progress ...");
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                stopDownload();
+            }
+        });
+
+        progressDialog = new ProgressDialog(AudioBookDetailActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Publishing...");
+
+
+
+
+    }
+
+        private void stopDownload(){
+            for (int i = 0; i < downloadingList.size(); i++) {
+                FileDownloadTask downloadTask = downloadingList.get(i);
+                downloadTask.cancel(true);
+            }
+        }
+
+
+    private void updatePreviewLayout(){
+        if(isLoadingPreview || isPlayingPreview){
+            previewLayout.setVisibility(View.VISIBLE);
+            previewPlayButton.setImageResource(R.drawable.btn_play_preview_pause);
+
+            if(isPlayingPreview){
+                spinner.setVisibility(View.INVISIBLE);
+                previewLabel.setText("Preview");
+                timeLabel.setText(leftTime);
+
+            }else{
+                spinner.setVisibility(View.VISIBLE);
+                previewLabel.setText("Loading...");
+                timeLabel.setText("");
+            }
+        }else{
+            previewLayout.setVisibility(View.GONE);
+            previewPlayButton.setImageResource(R.drawable.btn_play_preview_start);
+        }
+    }
+
+    private void playPreviewButtonPressed(){
+        if (audioBook.getPreview_audio() !=null && (audioBook.getPreview_audio().length()>0)) {
+            boolean stopPlayer = false;
+            if(isLoadingPreview || isPlayingPreview ){
+                stopPlayer=true;
+            }
+
+            if(stopPlayer){
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.stop();
+                    new Thread(this).interrupt();
+                }
+
+                mediaPlayer.reset();
+                isPlayingPreview=false;
+                isLoadingPreview=false;
+
+            }else{
+                playPreview();
+            }
+
+        }
+        updatePreviewLayout();
+    }
+    private void playPreview( ) {
+        isLoadingPreview=true;
+        isPlayingPreview=false;
+        if (connectionDetector.isConnectingToInternet()) {
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+            }
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                new Thread(this).interrupt();
+            }
+
+            mediaPlayer.reset();
+
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mediaPlayer.setDataSource(audioBook.getPreview_audio());
+            } catch (IOException e) {
+                Log.v("playPreview", "IOException" + e.getMessage());
+
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                public void onPrepared(MediaPlayer mp) {
+                    isPlayingPreview=true;
+                    isLoadingPreview=false;
+                    startTimer();
+                    mp.start();
+                    updatePreviewLayout();
+                }
+            });
+            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+
+                    return false;
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    isPlayingPreview=false;
+                    isLoadingPreview=false;
+                    stopTimer();
+                    updatePreviewLayout();
+
+                }
+            });
+            mediaPlayer.prepareAsync(); // prepare async to not block main
+
+
+        } else {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("No Internet Connection").setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+
+    }
+    private void updateAudioBook(int chapter){
+        if(chapter>0) {
+            audioBook.addChapterToDownloadedChapter(chapter);
+        }
+        DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
+                getApplicationContext());
+        downloadedAudioBook.readFileFromDisk(getApplicationContext());
+        downloadedAudioBook.addBookToList(getApplicationContext(),
+                audioBook.getBook_id(), audioBook);
+
+    }
+    private void logUserDownload(){
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        saveCoverImage();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("userid", AppController.getInstance().getUserId());
+        params.put("bookid", audioBook.getBook_id());
+        params.put("actid", ""+1);
+        params.put("content", ""+1);
+
+        String url = getResources().getString(R.string.user_action_url);
+
+        JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url,params,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.v("response","response:"+response);
+                        downloadAudioFile();
+                        audioBook.setPurchase(true);
+                        updateAudioBook(0);
+                        progressDialog.dismiss();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+
+            }
+        });
+
+
+        AppController.getInstance().addToRequestQueue(stringRequest, "tag_download_book");
+
+    }
+
+    private void downloadAudioFileFromUrl(int filePart){
+
+        if (connectionDetector.isConnectingToInternet()) {
+            String dirPath = AppUtils.getDataDirectory(getApplicationContext())
+                    + audioBook.getBook_id()+File.separator;
+            File file = new File(dirPath + filePart + ".lisn");
+
+            if (file.exists()) {
+                file.delete();
+            }
+            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
+            downloadTask.execute(dirPath, "" + filePart);
+            downloadingList.add(downloadTask);
+
+        }else{
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
+                    this);
+            builder.setMessage("No Internet Connection").setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            android.app.AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+    private void downloadAudioFile() {
+        previousDownloadedFileCount=downloadedFileCount;
+        String dirPath = AppUtils.getDataDirectory(getApplicationContext())
+                + audioBook.getBook_id()+File.separator;
+        File fileDir = new File(dirPath);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+
+        }
+
+        if (connectionDetector.isConnectingToInternet()) {
+            //  updateAudioBook(null,null);
+
+
+                mProgressDialog.show();
+
+
+            downloadedFileCount = 0;
+            // String [] file_urls=audioBook.getAudio_file_urls();
+            //totalAudioFileCount=file_urls.length;
+            totalAudioFileCount=0;
+            downloadingList.clear();
+
+            //  HashMap fileList= audioBook.getDownloadedFileList();
+
+            for (int filePart=1; filePart<=(audioBook.getAudioFileCount()); filePart++){
+                File file = new File(dirPath +filePart+".lisn");
+
+                if (!file.exists() ||  !(audioBook.getDownloadedChapter().contains(filePart)) ) {
+                    downloadAudioFileFromUrl(filePart);
+                    totalAudioFileCount++;
+                }
+
+
+            }
+            if(downloadedFileCount == totalAudioFileCount){
+                mProgressDialog.dismiss();
+                starAudioPlayer();
+
+
+            }else{
+                if(AppUtils.getAvailableMemory() < audioBook.getFileSize()){
+                    stopDownload();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(
+                            this);
+                    builder.setMessage(R.string.no_enough_space).setPositiveButton(
+                            "OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // FIRE ZE MISSILES!
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }else {
+                    mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
+                }
+            }
+
+        } else {
+
+            downloadedFileCount=0;
+            totalAudioFileCount=0;
+
+            for (int filePart=1; filePart<=(audioBook.getAudioFileCount()); filePart++){
+                File file = new File(dirPath +filePart+".lisn");
+                if (!file.exists()) {
+                    totalAudioFileCount++;
+                }
+
+
+            }
+            if(downloadedFileCount ==totalAudioFileCount){
+                mProgressDialog.dismiss();
+                  starAudioPlayer();
+            }else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(
+                        this);
+                builder.setMessage("No Internet Connection").setPositiveButton(
+                        "OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+    }
+
+    private void starAudioPlayer() {
+        if(previousDownloadedFileCount==0){
+            PlayerControllerActivity.navigate(this,bookCoverImage, audioBook);
+
+        }else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.DOWNLOAD_COMPLETE)).setPositiveButton(
+                    "YES", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            PlayerControllerActivity.navigate(AudioBookDetailActivity.this,bookCoverImage, audioBook);
+
+                        }
+                    })
+                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+
+    }
+    private void shareBook() {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        share.putExtra(Intent.EXTRA_SUBJECT, audioBook.getEnglish_title());
+        share.putExtra(Intent.EXTRA_TEXT, getString(R.string.play_store_url));
+
+        startActivity(Intent.createChooser(share, "Share Book to..."));
+    }
+//    private void playGetButtonPressed(){
+//
+//        if(AppController.getInstance().isUserLogin()){
+//
+//        if (audioBook.isPurchase()) {
+//            downloadAudioFile();
+//
+//        } else {
+//            if (Float.parseFloat(audioBook.getPrice()) > 0) {
+//                Intent intent = new Intent(this,
+//                        PurchaseActivity.class);
+//                intent.putExtra("audioBook", audioBook);
+//                startActivityForResult(intent, 2);
+//
+//            }else{
+//                logUserDownload();
+//            }
+//        }
+//        }else{
+//            Intent intent = new Intent(getApplicationContext(),
+//                    LoginActivity.class);
+//            startActivityForResult(intent, 1);
+//        }
+//    }
+    private void playGetButtonPressed(){
+
+        if(AppController.getInstance().isUserLogin()){
+
+            if (audioBook.isPurchase()) {
+                downloadAudioFile();
+
+            } else {
+                if (Float.parseFloat(audioBook.getPrice()) > 0) {
+                    Intent intent = new Intent(this,
+                            PurchaseActivity.class);
+                    intent.putExtra("audioBook", audioBook);
+                    startActivityForResult(intent, 2);
+
+                }else{
+                    logUserDownload();
+                }
+            }
+        }else{
+            Intent intent = new Intent(getApplicationContext(),
+                    LoginActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
+    private void buyFromCardButtonPressed(){
+
+        if(AppController.getInstance().isUserLogin()){
+
+                    Intent intent = new Intent(this,
+                            PurchaseActivity.class);
+                    intent.putExtra("audioBook", audioBook);
+                    startActivityForResult(intent, 2);
+
+        }else{
+            Intent intent = new Intent(getApplicationContext(),
+                    LoginActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
+    private void addToMyBillButtonPressed(){
+        paymentOption=PaymentOption.OPTION_MOBITEL;
+
+    }
+    private void addToMobitelBill(){
+
+        if(AppController.getInstance().isUserLogin()){
+
+            if (connectionDetector.isConnectingToInternet()) {
+
+                    progressDialog.setMessage("Payment Processing...");
+                    progressDialog.show();
+
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("userid", AppController.getInstance().getUserId());
+                    params.put("bookid", audioBook.getBook_id());
+                    params.put("amount", audioBook.getPrice());
+
+                    String url = getResources().getString(R.string.mobitel_pay_url);
+
+                    JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    progressDialog.dismiss();
+                                    if (response.trim().equalsIgnoreCase("SUCCESS")){
+
+                                        Log.v("response", "response:" + response);
+                                    audioBook.setPurchase(true);
+                                    updateAudioBook(0);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
+                                            "Now", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    downloadAudioFile();
+                                                }
+                                            })
+                                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    // FIRE ZE MISSILES!
+                                                }
+                                            });
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
+                                    else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                                "OK", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    }else if (response.trim().equalsIgnoreCase("FAILED")) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
+                                                "OK", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    }
+
+
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            progressDialog.dismiss();
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                    "OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // FIRE ZE MISSILES!
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+
+                    AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
+
+            }else{
+                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+
+        }else{
+            Intent intent = new Intent(getApplicationContext(),
+                    LoginActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
+    private void addToDialogBill(){
+
+        if(AppController.getInstance().isUserLogin()){
+
+            if (connectionDetector.isConnectingToInternet()) {
+
+                progressDialog.setMessage("Payment Processing...");
+                progressDialog.show();
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("userid", AppController.getInstance().getUserId());
+                params.put("bookid", audioBook.getBook_id());
+                params.put("amount", audioBook.getPrice());
+
+                String url = getResources().getString(R.string.mobitel_pay_url);
+
+                JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                progressDialog.dismiss();
+                                if (response.trim().equalsIgnoreCase("SUCCESS")){
+
+                                    Log.v("response", "response:" + response);
+                                    audioBook.setPurchase(true);
+                                    updateAudioBook(0);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
+                                            "Now", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    downloadAudioFile();
+                                                }
+                                            })
+                                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    // FIRE ZE MISSILES!
+                                                }
+                                            });
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
+                                else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                    builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                            "OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    // FIRE ZE MISSILES!
+                                                }
+                                            });
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }else if (response.trim().equalsIgnoreCase("FAILED")) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                    builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
+                                            "OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    // FIRE ZE MISSILES!
+                                                }
+                                            });
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+                                }
+
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                        builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                "OK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // FIRE ZE MISSILES!
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
+
+                AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
+
+            }else{
+                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+
+        }else{
+            Intent intent = new Intent(getApplicationContext(),
+                    LoginActivity.class);
+            startActivityForResult(intent, 1);
+        }
+    }
+    private void startTimer(){
+        new Thread(this).start();
+    }
+    private void stopTimer(){
+        new Thread(this).interrupt();
+    }
+
+    private void releaseMediaPlayer(){
+        if (mediaPlayer != null){
+            if(mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer=null;
+
+        }
+        stopTimer();
+    }
+
+
+    private void initActivityTransitions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Slide transition = new Slide();
+            transition.excludeTarget(android.R.id.statusBarBackground, true);
+            getWindow().setEnterTransition(transition);
+            getWindow().setReturnTransition(transition);
+        }
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    private void saveCoverImage() {
+        String dirPath = AppUtils.getDataDirectory(getApplicationContext())
+                + audioBook.getBook_id()+File.separator;
+        bookCoverImage.buildDrawingCache();
+        Bitmap bitmapImage=bookCoverImage.getDrawingCache();
+        //Bitmap resized = Bitmap.createScaledBitmap(bitmapImage, (int)(160*2), (int)(240*2), true);
+
+        OutputStream fOut = null;
+        Uri outputFileUri;
+        try {
+            File fileDir = new File(dirPath);
+            if (!fileDir.exists()) {
+                fileDir.mkdirs();
+
+            }
+            File filepath = new File(fileDir, "book_cover.jpg");
+
+            FileOutputStream fos = null;
+            try {
+
+                fos = new FileOutputStream(filepath);
+
+                // Use the compress method on the BitMap object to write image to the OutputStream
+                bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*
+        if(bm !=null) {
+            File fileDir = new File(dirPath);
+            if (!fileDir.exists()) {
+                fileDir.mkdirs();
+
+            }
+            Random generator = new Random();
+            int n = 10000;
+            n = generator.nextInt(n);
+            String fname = "book_cover.jpg";
+            File file = new File(fileDir, fname);
+            if (file.exists()) file.delete();
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                bm.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        */
+    }
+
+    @Override
+    public void run() {
+        int currentPosition = 0;//
+        while (mediaPlayer != null && mediaPlayer.isPlaying() && currentPosition < mediaPlayer.getDuration()) {
+            try {
+                Thread.sleep(1000);
+                currentPosition = mediaPlayer.getCurrentPosition();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            updateTimer();
+        }
+    }
+    private void updateTimer() {
+        int currentPosition = mediaPlayer.getCurrentPosition();
+        int totalDuration =mediaPlayer.getDuration();
+        leftTime= AppUtils.milliSecondsToTimer(totalDuration - currentPosition);
+        // Get a handler that can be used to post to the main thread
+        Handler mainHandler = new Handler(this.getMainLooper());
+
+        Runnable timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                updatePreviewLayout();
+
+            } // This is your code
+        };
+        mainHandler.post(timerRunnable);
+    }
+
+    @Override
+    public void onPostExecute(String result,String file_name) {
+        if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
+            showMessage("UNAUTHORISED");
+
+        }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
+            showMessage("NOTFOUND");
+
+        }else {
+            mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
+
+            downloadedFileCount++;
+            if (result == null) {
+                updateAudioBook(Integer.parseInt(file_name));
+
+                if (totalAudioFileCount == downloadedFileCount) {
+                    downloadAudioFile();
+                }
+            }
+        }
+    }
+
+    /* Download AsyncTask*/
+    /*
+    public class DownloadTask extends AsyncTask<String, Integer, String> {
+
+        private Context context;
+        private String file_name;
+
+        public DownloadTask(Context context, Dialog dialog,
+                            ProgressBar progressBar, TextView progressTextView,
+                            String destinationPath, String fileName, JSONObject jObject) {
+            this.context = context;
+        }
+
+        public DownloadTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(String... sUrl) {
+            String directory = sUrl[0];
+            String fileName = sUrl[1];
+            file_name=fileName;
+            String urlString = getResources().getString(R.string.book_download_url);
+            // http://app.lisn.audio/api/download.php?userid=1&bookid=1&part=1
+            String urlParameters  = "userid="+AppController.getInstance().getUserId()+"&bookid="+audioBook.getBook_id()+"&part="+fileName;
+            // String urlParameters =  "{\"userid\": \"1\",\"bookid\":audioBook.getBook_id()}";
+            Log.v("urlParameters",""+urlParameters);
+            byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
+            int    postDataLength = postData.length;
+//Create JSONObject here
+
+
+            //  file_url=sUrl[2];
+
+            // prevent CPU from going off if the user presses the power button
+            // during download
+            PowerManager pm = (PowerManager) context
+                    .getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wl = pm.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+            wl.acquire();
+
+            // download
+            try {
+                File rootPath = new File(directory);
+                if (!rootPath.exists()) {
+                    rootPath.mkdirs();
+                }
+                // new File(directory).mkdirs();
+                InputStream input = null;
+                OutputStream output = null;
+                // CipherOutputStream cos = null;
+                HttpURLConnection connection = null;
+                try {
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("userid", AppController.getInstance().getUserId());
+                    jsonParam.put("bookid", audioBook.getBook_id());
+                    jsonParam.put("part", fileName);
+
+                    // connect to url
+                    URL url = new URL(urlString);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    //connection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
+                    //connection.setRequestProperty("Content-Type","application/json");
+                    connection.setRequestProperty( "charset", "utf-8");
+                    connection.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
+                    connection.setUseCaches (false);
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+                    DataOutputStream printout = new DataOutputStream(connection.getOutputStream ());
+                    // printout.write(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                    printout.writeBytes(urlParameters.toString());
+
+                    printout.flush ();
+                    printout.close ();
+//                    try( DataOutputStream wr = new DataOutputStream( connection.getOutputStream())) {
+//                        wr.write( postData );
+//                    }
+
+                    connection.connect();
+
+                    // check for http_ok (200)
+                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                        return "Server returned HTTP "
+                                + connection.getResponseCode() + " "
+                                + connection.getResponseMessage();
+                    Log.v("connection","connection"+connection.getResponseCode());
+                   // Log.v("connection","connection"+connection.get);
+
+                    int fileLength = connection.getContentLength();
+                    Log.v("fileLength",""+fileLength);
+
+                    if(fileLength<20){
+                        InputStream is = null;
+                        try {
+                            is = connection.getInputStream();
+                            int ch;
+                            StringBuffer sb = new StringBuffer();
+                            while ((ch = is.read()) != -1) {
+                                sb.append((char) ch);
+                            }
+                            return sb.toString();
+                        } catch (IOException e) {
+                            throw e;
+                        }
+                    }
+                    // download the file
+                    input = connection.getInputStream();
+                    output = new FileOutputStream(directory + "/" + fileName
+                            + ".lisn");// change extension
+
+                    // copying
+                    byte data[] = new byte[4096];
+                    int count;
+                    long total = 0;
+
+//                    SecretKeySpec sks = new SecretKeySpec(
+//                            "Mary has one cat".getBytes(), "AES");
+                    // Create cipher
+                    //   Cipher cipher = Cipher.getInstance("AES");
+                    //  cipher.init(Cipher.ENCRYPT_MODE, sks);
+                    // Wrap the output stream
+                    //  cos = new CipherOutputStream(output, cipher);
+
+                    while ((count = input.read(data)) != -1) {
+
+                        // allow canceling with back button
+                        if (isCancelled()) {
+                            input.close();
+                            return null;
+                        }
+                        total += count;
+                        // publishing the progress....
+                        //if (fileLength > 0) // only if total length is known
+                        //	publishProgress((int) (total * 100 / fileLength));
+                        output.write(data, 0, count);
+                    }
+
+                } catch (Exception e) {
+                    return e.toString();
+                } finally // closing streams and connection
+                {
+                    try {
+
+
+                        if (input != null)
+                            input.close();
+                    } catch (IOException ignored) {
+                    }
+
+                    if (connection != null)
+                        connection.disconnect();
+                }
+                if(isCancelled() && (connection != null)){
+                    Log.v("isCancelled","disconnect");
+                    connection.disconnect();
+                }
+            } finally {
+                wl.release(); // release the lock screen
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // take CPU lock to prevent CPU from going off if the user
+            // presses the power button during download
+            // PowerManager pm = (PowerManager)
+            // context.getSystemService(Context.POWER_SERVICE);
+            // mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+            // getClass().getName());
+            // mWakeLock.acquire();
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            // if we get here, length is known, now set indeterminate to false
+            //mProgressDialog.setIndeterminate(false);
+            //mProgressDialog.setMax(100);
+            //mProgressDialog.setProgress(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
+                showMessage("UNAUTHORISED");
+
+            }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
+                showMessage("NOTFOUND");
+
+            }else {
+                mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
+
+                downloadedFileCount++;
+                if (result == null) {
+                    updateAudioBook(Integer.parseInt(file_name));
+
+
+                    // audioBook.addFileToDownloadedList(file_name, file_url);
+                    //updateAudioBook(null,null);
+                    if (totalAudioFileCount == downloadedFileCount) {
+                        //mProgressDialog.dismiss();
+                        downloadAudioFile();
+                    }
+                }
+            }
+            // mWakeLock.release();
+            //mProgressDialog.dismiss();
+            // if (result != null)
+            // Toast.makeText(context,"Download error: "+result,
+            // Toast.LENGTH_LONG).show();
+            // else
+            // Toast.makeText(context,"File downloaded",
+            // Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    */
+    private void showMessage(String result){
+        stopDownload();
+        mProgressDialog.dismiss();
+
+        if (result.equalsIgnoreCase("UNAUTHORISED")){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.USER_UNAUTHORISED)).setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+        }else if(result.equalsIgnoreCase("NOTFOUND")){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                    "OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+    private void initiatePopupWindow(float rating) {
+        try {
+// We need to get the instance of the LayoutInflater
+            LayoutInflater inflater = (LayoutInflater) AudioBookDetailActivity.this
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View layout = inflater.inflate(R.layout.rate_book_popup,
+                    (ViewGroup) findViewById(R.id.popup_element));
+           // pwindo = new PopupWindow(layout, 300, 400, true);
+          //  pwindo = new PopupWindow(layout);
+            pwindo = new PopupWindow(layout, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT,true);
+
+            pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+            final RatingBar ratingBar = (RatingBar) layout.findViewById(R.id.rating_bar);
+            LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
+            stars.getDrawable(2).setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+
+            final TextView reviewTitle = (TextView) layout.findViewById(R.id.review_title);
+            final TextView reviewDescription = (TextView) layout.findViewById(R.id.review_description);
+            ratingBar.setRating(rating);
+
+            Button btnClosePopup = (Button) layout.findViewById(R.id.btn_submit);
+            btnClosePopup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    publishUserReview(ratingBar.getRating(),reviewTitle.getText().toString(),reviewDescription.getText().toString());
+
+                }
+            });
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    pwindo.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void publishUserReview( float rate,String title,String comment){
+
+
+        if (connectionDetector.isConnectingToInternet()) {
+            if(rate>0 && title.length()>0 && comment.length()>0) {
+
+                progressDialog.setMessage("Publishing...");
+                progressDialog.show();
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("userid", AppController.getInstance().getUserId());
+                params.put("bookid", audioBook.getBook_id());
+                params.put("rate", "" + rate);
+                params.put("title", title);
+                params.put("comment", comment);
+
+                String url = getResources().getString(R.string.add_review_url);
+
+                JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                pwindo.dismiss();
+                                progressDialog.dismiss();
+
+                                Log.v("response", "response:" + response);
+                                Toast toast = Toast.makeText(getApplicationContext(), "Review Publish Success", Toast.LENGTH_SHORT);
+                                toast.show();
+
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        pwindo.dismiss();
+                        progressDialog.dismiss();
+
+                        Toast toast = Toast.makeText(getApplicationContext(), "Review publish failed try again later", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                });
+
+                AppController.getInstance().addToRequestQueue(stringRequest, "tag_review_book");
+            }else{
+                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_valid_data), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }else{
+            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Constants.RESULT_SUCCESS){
+                if(paymentOption == PaymentOption.OPTION_NONE){
+                    playGetButtonPressed();
+                }else if(paymentOption == PaymentOption.OPTION_MOBITEL){
+                    addToMobitelBill();
+
+                }else if(paymentOption == PaymentOption.OPTION_MOBITEL){
+                    addToDialogBill();
+
+                }else if(paymentOption == PaymentOption.OPTION_CARD){
+                    buyFromCardButtonPressed();
+
+                }
+            }
+            if (resultCode == Constants.RESULT_ERROR) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                        "OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+        else if (requestCode == 2) {
+            if(resultCode == Constants.RESULT_SUCCESS){
+                audioBook.setPurchase(true);
+                updateAudioBook(0);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
+                        "Now", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                downloadAudioFile();
+                            }
+                        })
+                        .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+
+            }
+            if (resultCode == Constants.RESULT_ERROR) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                        "OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
+    }
+
+    private void registerPlayerUpdateBroadcastReceiver(){
+        // Register mMessageReceiver to receive messages.
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mPlayerUpdateReceiver,
+                new IntentFilter("audio-event"));
+    }
+    // handler for received Intents for the "my-event" event
+    private BroadcastReceiver mPlayerUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract data included in the Intent
+            playerControllerView.updateView();
+        }
+    };
+}

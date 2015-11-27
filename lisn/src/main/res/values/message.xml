@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_internet">No Internet</string>
+    <string name="no_valid_data">Enter Valid Data</string>
+    <string name="USER_UNAUTHORISED">You are not authorized.Please log into system</string>
+    <string name="FILE_NOTFOUND">Internal server error try again later.</string>
+    <string name="SERVER_ERROR">Internal server error try again later.</string>
+    <string name="DOWNLOAD_COMPLETE">Download completed. Do you want to start player?</string>
+    <string name="PAYMENT_COMPLETE">Payment successfully completed. Do you want to start download?</string>
+    <string name="no_enough_space">No enough space to download this file</string>
+    <string name="EMPTY_NUMBER">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy
+        settings. Please contact Mobitel.</string>
+    <string name="MOBILE_PAYMENT_FAILED">Sorry! Charging failed. Please check your Mobitel account.</string>
+
+</resources>
