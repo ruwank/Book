@@ -7,4 +7,4 @@
     <item android:id="@+android:id/progress"
           android:drawable="@drawable/ic_small_star_normal" />
 </layer-list>
-<!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/src/main/res/drawable/small_rating_stars.xml -->
+<!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.1/Book/lisn/src/main/res/drawable/small_rating_stars.xml -->

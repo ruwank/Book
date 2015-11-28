@@ -2,12 +2,14 @@ package audio.lisn.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -18,6 +20,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -30,6 +33,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.text.Html;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Display;
@@ -112,20 +116,24 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     BookReviewViewAdapter bookReviewViewAdapter;
     RecyclerView reviewContainer;
+    private static final String KEY_TERMS_ACCEPTED_FOR_CARD="KEY_TERMS_ACCEPTED_FOR_CARD";
+    private static final String KEY_TERMS_ACCEPTED_FOR_DIALOG="KEY_TERMS_ACCEPTED_FOR_DIALOG";
+    private static final String KEY_TERMS_ACCEPTED_FOR_MOBITEL="KEY_TERMS_ACCEPTED_FOR_MOBITEL";
+    private static final String KEY_TERMS_ACCEPTED_FOR_ETISALAT="KEY_TERMS_ACCEPTED_FOR_ETISALAT";
 
     public enum ServiceProvider {
         PROVIDER_NONE, PROVIDER_MOBITEL,PROVIDER_DIALOG,PROVIDER_ETISALAT
     }
 
     public enum PaymentOption {
-        OPTION_NONE, OPTION_MOBITEL,OPTION_CARD
+        OPTION_NONE, OPTION_MOBITEL,OPTION_CARD,OPTION_ETISALAT
     }
 
     ServiceProvider  serviceProvider;
     PaymentOption  paymentOption;
 
     //  ListView reviewListView;
-  //  BookReviewListAdapter bookReviewListAdapter;
+    //  BookReviewListAdapter bookReviewListAdapter;
 
 
     public static void navigate(AppCompatActivity activity, View transitionImage, AudioBook audioBook) {
@@ -146,7 +154,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         downloadedFileCount=0;
         audioBook = (AudioBook) getIntent().getSerializableExtra("audioBook");
 
-
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         supportStartPostponedEnterTransition();
@@ -159,7 +166,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         connectionDetector = new ConnectionDetector(getApplicationContext());
 
         playerControllerView = (PlayerControllerView) findViewById(R.id.audio_player_layout);
-
         playerControllerView.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeRight() {
@@ -221,8 +227,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
     }
     private void findServiceProvider() {
-        Log.v("deviceID","findDeviceID");
-        serviceProvider=ServiceProvider.PROVIDER_NONE;
+        Log.v("deviceID", "findDeviceID");
+        serviceProvider = ServiceProvider.PROVIDER_NONE;
 
         String serviceName = Context.TELEPHONY_SERVICE;
         TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(serviceName);
@@ -239,18 +245,73 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 //        }
         //deviceID = m_telephonyManager.getDeviceId();
         String subscriberId = m_telephonyManager.getSubscriberId();
-        if(subscriberId != null){
-            if(subscriberId.startsWith("41301")){
-            serviceProvider=ServiceProvider.PROVIDER_MOBITEL;
-        }else if(subscriberId.startsWith("41302")){
-            serviceProvider=ServiceProvider.PROVIDER_DIALOG;
+        if (subscriberId != null) {
+            if (subscriberId.startsWith("41301")) {
+                serviceProvider = ServiceProvider.PROVIDER_MOBITEL;
+//            } else if (subscriberId.startsWith("41302")) {
+//                serviceProvider = ServiceProvider.PROVIDER_DIALOG;
+            } else if (subscriberId.startsWith("41303")) {
+                serviceProvider = ServiceProvider.PROVIDER_ETISALAT;
+            }
+
         }
     }
+    private void termsAndConditionAccepted(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        if(paymentOption == PaymentOption.OPTION_MOBITEL){
+            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_MOBITEL, true).commit();
 
+            addToMobitelBill();
 
+        }else if(paymentOption == PaymentOption.OPTION_ETISALAT){
+            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_ETISALAT, true).commit();
+
+            addToEtisalatBill();
+
+        }else if(paymentOption == PaymentOption.OPTION_CARD){
+            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_CARD, true).commit();
+
+            buyFromCardButtonPressed();
+
+        }
 
     }
+    private void showTermsAndCondition(){
+
+        String title = getString(R.string.app_name) ;
+        String message = getString(R.string.terms_condition);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(Html.fromHtml(message))
+                .setCancelable(false)
+                .setPositiveButton(R.string.terms_accept,
+                        new Dialog.OnClickListener() {
+
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialogInterface, int i) {
+                                // Mark this version as read.
+                                termsAndConditionAccepted();
+                            }
+                        })
+                .setNegativeButton(android.R.string.cancel,
+                        new Dialog.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                            }
+
+                        });
+        builder.create().show();
+
+    }
+
+
+
     private void showAudioPlayer(){
         PlayerControllerActivity.navigate(this, playerControllerView, null);
 
@@ -271,11 +332,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         params.height=(int)(size.x/2);
         bookBannerImage.setLayoutParams(params);
 
-
         // String bannerImageUrl="http://lorempixel.com/500/500/animals/8/";
         String bannerImageUrl=audioBook.getBanner_image();
-
-       // Picasso.with(this).load(bannerImageUrl).into(bookBannerImage);
 
         Picasso.with(this)
                 .load(bannerImageUrl)
@@ -288,7 +346,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 .placeholder(R.drawable.audiobook_placeholder)
                 .into(bookCoverImage);
 
-       // ViewGroup.LayoutParams params = bookCoverImage.getLayoutParams();
+        // ViewGroup.LayoutParams params = bookCoverImage.getLayoutParams();
         RelativeLayout.LayoutParams bookCoverImageLayoutParams =
                 (RelativeLayout.LayoutParams)bookCoverImage.getLayoutParams();
         bookCoverImageLayoutParams.width= (int) ((size.x-60)/3);
@@ -297,7 +355,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         String narratorText="";
         String durationText="";
-        //ExpandableTextView descriptionTextView = (ExpandableTextView)findViewById(R.id.description);
         TextView title = (TextView) findViewById(R.id.title);
 
         ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
@@ -318,8 +375,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             @Override
             public void onClick(View v) {
                 paymentOption=PaymentOption.OPTION_NONE;
-
                 playGetButtonPressed();
+
             }
         });
 
@@ -340,7 +397,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         });
 
-        TextView mobitelOption = (TextView) findViewById(R.id.mobitelOption);
+        TextView paymentOptionOr = (TextView) findViewById(R.id.mobitelOption);
+        TextView buyFromCardDescription = (TextView) findViewById(R.id.buyFromCardButtonText);
 
         RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
         LayerDrawable stars1 = (LayerDrawable) ratingBar.getProgressDrawable();
@@ -381,9 +439,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         RelativeLayout.LayoutParams timeLabelLayoutParams =
                 (RelativeLayout.LayoutParams)timeLabel.getLayoutParams();
         timeLabelLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-       // timeLabel.setLayoutParams(timeLabelLayoutParams);
+        // timeLabel.setLayoutParams(timeLabelLayoutParams);
 
-       // params = timeLabel.getLayoutParams();
+        // params = timeLabel.getLayoutParams();
 
         spinner = (ProgressBar)findViewById(R.id.progressBar);
 
@@ -437,23 +495,24 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             addToBillButton.setVisibility(View.GONE);
             btnPayFromCard.setVisibility(View.GONE);
-            mobitelOption.setVisibility(View.GONE);
-
+            paymentOptionOr.setVisibility(View.GONE);
+            buyFromCardDescription.setVisibility(View.GONE);
             // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
         }else{
             rateLayout.setVisibility(View.GONE);
             if(Float.parseFloat(audioBook.getPrice())>0) {
                 btnDownload.setVisibility(View.GONE);
-               // btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
+                // btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
 
                 if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
-                   // btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
+                    // btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
                     addToBillButton.setVisibility(View.VISIBLE);
-                    mobitelOption.setVisibility(View.VISIBLE);
+                    paymentOptionOr.setVisibility(View.VISIBLE);
+                    buyFromCardDescription.setVisibility(View.VISIBLE);
 
                 }else{
                     addToBillButton.setVisibility(View.GONE);
-                    mobitelOption.setVisibility(View.GONE);
+                    paymentOptionOr.setVisibility(View.GONE);
                 }
                 btnPayFromCard.setVisibility(View.VISIBLE);
 
@@ -461,9 +520,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }else{
                 btnDownload.setText("Get");
                 addToBillButton.setVisibility(View.GONE);
-                mobitelOption.setVisibility(View.GONE);
+                paymentOptionOr.setVisibility(View.GONE);
                 btnPayFromCard.setVisibility(View.GONE);
-
+                buyFromCardDescription.setVisibility(View.GONE);
 
             }
 
@@ -507,7 +566,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             @Override
             public void onClick(View v) {
 
-                    showBookReview();
+                showBookReview();
 
 
             }
@@ -527,7 +586,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         WCLinearLayoutManager linearLayoutManagerVertical =
                 new WCLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         reviewContainer.setLayoutManager(linearLayoutManagerVertical);
-       // reviewContainer.setLayoutManager(new GridLayoutManager(this, 3));
+        // reviewContainer.setLayoutManager(new GridLayoutManager(this, 3));
 
         bookReviewViewAdapter=new BookReviewViewAdapter(getApplicationContext(),reviews);
         reviewContainer.setAdapter(bookReviewViewAdapter);
@@ -558,12 +617,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     }
 
-        private void stopDownload(){
-            for (int i = 0; i < downloadingList.size(); i++) {
-                FileDownloadTask downloadTask = downloadingList.get(i);
-                downloadTask.cancel(true);
-            }
+    private void stopDownload(){
+        for (int i = 0; i < downloadingList.size(); i++) {
+            FileDownloadTask downloadTask = downloadingList.get(i);
+            downloadTask.cancel(true);
         }
+    }
 
 
     private void updatePreviewLayout(){
@@ -763,7 +822,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             //  updateAudioBook(null,null);
 
 
-                mProgressDialog.show();
+            mProgressDialog.show();
 
 
             downloadedFileCount = 0;
@@ -824,7 +883,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             if(downloadedFileCount ==totalAudioFileCount){
                 mProgressDialog.dismiss();
-                  starAudioPlayer();
+                starAudioPlayer();
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(
                         this);
@@ -873,7 +932,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         startActivity(Intent.createChooser(share, "Share Book to..."));
     }
-//    private void playGetButtonPressed(){
+    //    private void playGetButtonPressed(){
 //
 //        if(AppController.getInstance().isUserLogin()){
 //
@@ -924,11 +983,17 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private void buyFromCardButtonPressed(){
 
         if(AppController.getInstance().isUserLogin()){
-
-                    Intent intent = new Intent(this,
-                            PurchaseActivity.class);
-                    intent.putExtra("audioBook", audioBook);
-                    startActivityForResult(intent, 2);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            if(!prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_CARD, false)) {
+                showTermsAndCondition();
+                // Determine if EULA was accepted this time
+                // prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_CARD, true).commit();
+            }else {
+                Intent intent = new Intent(this,
+                        PurchaseActivity.class);
+                intent.putExtra("audioBook", audioBook);
+                startActivityForResult(intent, 2);
+            }
 
         }else{
             Intent intent = new Intent(getApplicationContext(),
@@ -937,7 +1002,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
     }
     private void addToMyBillButtonPressed(){
-        paymentOption=PaymentOption.OPTION_MOBITEL;
+        if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
+            paymentOption=PaymentOption.OPTION_MOBITEL;
+            addToMobitelBill();
+        }else if(serviceProvider ==ServiceProvider.PROVIDER_ETISALAT){
+            paymentOption=PaymentOption.OPTION_ETISALAT;
+            addToEtisalatBill();
+
+        }
 
     }
     private void addToMobitelBill(){
@@ -945,7 +1017,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if(AppController.getInstance().isUserLogin()){
 
             if (connectionDetector.isConnectingToInternet()) {
-
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                if(!prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_MOBITEL, false)) {
                     progressDialog.setMessage("Payment Processing...");
                     progressDialog.show();
 
@@ -961,27 +1034,26 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                 @Override
                                 public void onResponse(String response) {
                                     progressDialog.dismiss();
-                                    if (response.trim().equalsIgnoreCase("SUCCESS")){
+                                    if (response.trim().equalsIgnoreCase("SUCCESS")) {
 
                                         Log.v("response", "response:" + response);
-                                    audioBook.setPurchase(true);
-                                    updateAudioBook(0);
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                                            "Now", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    downloadAudioFile();
-                                                }
-                                            })
-                                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    // FIRE ZE MISSILES!
-                                                }
-                                            });
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }
-                                    else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
+                                        audioBook.setPurchase(true);
+                                        updateAudioBook(0);
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
+                                                "Now", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        downloadAudioFile();
+                                                    }
+                                                })
+                                                .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    } else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                                         builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
                                                 "OK", new DialogInterface.OnClickListener() {
@@ -991,7 +1063,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                                 });
                                         AlertDialog dialog = builder.create();
                                         dialog.show();
-                                    }else if (response.trim().equalsIgnoreCase("FAILED")) {
+                                    } else if (response.trim().equalsIgnoreCase("FAILED")) {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                                         builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
                                                 "OK", new DialogInterface.OnClickListener() {
@@ -1023,6 +1095,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     });
 
                     AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
+                }else{
+                    showTermsAndCondition();
+                }
 
             }else{
                 Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
@@ -1036,89 +1111,92 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             startActivityForResult(intent, 1);
         }
     }
-    private void addToDialogBill(){
+    private void addToEtisalatBill(){
 
         if(AppController.getInstance().isUserLogin()){
 
             if (connectionDetector.isConnectingToInternet()) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                if(!prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_ETISALAT, false)) {
+                    progressDialog.setMessage("Payment Processing...");
+                    progressDialog.show();
 
-                progressDialog.setMessage("Payment Processing...");
-                progressDialog.show();
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("userid", AppController.getInstance().getUserId());
+                    params.put("bookid", audioBook.getBook_id());
+                    params.put("amount", audioBook.getPrice());
 
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("userid", AppController.getInstance().getUserId());
-                params.put("bookid", audioBook.getBook_id());
-                params.put("amount", audioBook.getPrice());
+                    String url = getResources().getString(R.string.etisalat_pay_url);
 
-                String url = getResources().getString(R.string.mobitel_pay_url);
+                    JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    progressDialog.dismiss();
+                                    if (response.trim().equalsIgnoreCase("SUCCESS")) {
 
-                JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                progressDialog.dismiss();
-                                if (response.trim().equalsIgnoreCase("SUCCESS")){
-
-                                    Log.v("response", "response:" + response);
-                                    audioBook.setPurchase(true);
-                                    updateAudioBook(0);
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                                            "Now", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    downloadAudioFile();
-                                                }
-                                            })
-                                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    // FIRE ZE MISSILES!
-                                                }
-                                            });
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }
-                                else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                                    builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                                            "OK", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    // FIRE ZE MISSILES!
-                                                }
-                                            });
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }else if (response.trim().equalsIgnoreCase("FAILED")) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                                    builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
-                                            "OK", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    // FIRE ZE MISSILES!
-                                                }
-                                            });
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }
-
-
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                        builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                                "OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        // FIRE ZE MISSILES!
+                                        Log.v("response", "response:" + response);
+                                        audioBook.setPurchase(true);
+                                        updateAudioBook(0);
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
+                                                "Now", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        downloadAudioFile();
+                                                    }
+                                                })
+                                                .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    } else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                                "OK", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
+                                    } else if (response.trim().equalsIgnoreCase("FAILED")) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                                        builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
+                                                "OK", new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        // FIRE ZE MISSILES!
+                                                    }
+                                                });
+                                        AlertDialog dialog = builder.create();
+                                        dialog.show();
                                     }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-                });
 
-                AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
+
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            progressDialog.dismiss();
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
+                                    "OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // FIRE ZE MISSILES!
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+
+                    AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
+                }else{
+                    showTermsAndCondition();
+                }
 
             }else{
                 Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
@@ -1132,6 +1210,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             startActivityForResult(intent, 1);
         }
     }
+
+//    private void addToDialogBill(){
+//
+//
+//    }
     private void startTimer(){
         new Thread(this).start();
     }
@@ -1539,8 +1622,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View layout = inflater.inflate(R.layout.rate_book_popup,
                     (ViewGroup) findViewById(R.id.popup_element));
-           // pwindo = new PopupWindow(layout, 300, 400, true);
-          //  pwindo = new PopupWindow(layout);
+            // pwindo = new PopupWindow(layout, 300, 400, true);
+            //  pwindo = new PopupWindow(layout);
             pwindo = new PopupWindow(layout, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT,true);
 
             pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
@@ -1633,8 +1716,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 }else if(paymentOption == PaymentOption.OPTION_MOBITEL){
                     addToMobitelBill();
 
-                }else if(paymentOption == PaymentOption.OPTION_MOBITEL){
-                    addToDialogBill();
+                }else if(paymentOption == PaymentOption.OPTION_ETISALAT){
+                    addToEtisalatBill();
 
                 }else if(paymentOption == PaymentOption.OPTION_CARD){
                     buyFromCardButtonPressed();

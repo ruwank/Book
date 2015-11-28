@@ -55,6 +55,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     boolean isUserLogin;
     PlayerControllerView playerControllerView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +118,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         PlayerControllerActivity.navigate(this, playerControllerView, null);
 
     }
+
     private void updateNavigationView() {
         isUserLogin= AppController.getInstance().isUserLogin();
         navigationView.getMenu().clear();

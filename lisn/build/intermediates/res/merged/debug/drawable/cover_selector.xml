@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true">
-        <color android:color="#96000000" />
-    </item>
-    <item>
-        <color android:color="@android:color/transparent" />
-    </item>
-</selector><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/src/main/res/drawable/cover_selector.xml -->

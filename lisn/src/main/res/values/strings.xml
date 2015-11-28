@@ -56,7 +56,7 @@
     <string name="duration_si">ld,h</string>
     <string name="title_activity_search_results">SearchResultsActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie. Fusce quis mauris a enim sollicitudin ultrices non eget velit. Aliquam eu pulvinar enim. Praesent libero nisl, ultricies vel maximus eu, maximus et nisi. Phasellus pharetra nec ligula vitae mollis. Quisque porttitor ornare magna, quis dignissim libero aliquam id. Donec sollicitudin ultrices ante, a semper erat tristique in. Vivamus sodales in ligula at sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla tempus bibendum nibh, ac tincidunt quam convallis non. Proin dolor nunc, egestas et tortor consequat, dignissim lacinia odio. Ut ut aliquet erat.  Ut non scelerisque elit. Morbi dolor neque, iaculis eu justo rutrum, aliquet dictum mauris. Phasellus quis massa ut ligula feugiat congue a et dolor. Etiam a dui a sapien ornare accumsan ac ut lorem. Suspendisse vehicula lorem dapibus nibh rhoncus ultricies. Proin sem nulla, elementum quis pharetra quis, commodo vitae nisi. Donec urna orci, posuere et iaculis sit amet, fringilla quis sapien. Pellentesque nec posuere felis. Praesent malesuada tellus nisi, non dictum justo interdum eget. Quisque mollis euismod libero, non aliquam lorem interdum vitae. Aliquam vehicula efficitur purus eget rutrum. Sed pulvinar fermentum risus ac viverra. Cras laoreet ligula quam, ac lacinia nisl elementum in. Aenean velit arcu, euismod a venenatis non, pulvinar pulvinar massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie. Fusce quis mauris a enim sollicitudin ultrices non eget velit. Aliquam eu pulvinar enim. Praesent libero nisl, ultricies vel maximus eu, maximus et nisi. Phasellus pharetra nec ligula vitae mollis. Quisque porttitor ornare magna, quis dignissim libero aliquam id. Donec sollicitudin ultrices ante, a semper erat tristique in. Vivamus sodales in ligula at sodales. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla tempus bibendum nibh, ac tincidunt quam convallis non. Proin dolor nunc, egestas et tortor consequat, dignissim lacinia odio. Ut ut aliquet erat.  Ut non scelerisque elit. Morbi dolor neque, iaculis eu justo rutrum, aliquet dictum mauris. Phasellus quis massa ut ligula feugiat congue a et dolor. Etiam a dui a sapien ornare accumsan ac ut lorem. Suspendisse vehicula lorem dapibus nibh rhoncus ultricies. Proin sem nulla, elementum quis pharetra quis, commodo vitae nisi. Donec urna orci, posuere et iaculis sit amet, fringilla quis sapien. Pellentesque nec posuere felis. Praesent malesuada tellus nisi, non dictum justo interdum eget. Quisque mollis euismod libero, non aliquam lorem interdum vitae. Aliquam vehicula efficitur purus eget rutrum. Sed pulvinar fermentum risus ac viverra. Cras laoreet ligula quam, ac lacinia nisl elementum in. Aenean velit arcu, euismod a venenatis non, pulvinar pulvinar massa.</string>
@@ -71,6 +71,53 @@
     <string name="title_activity_about_us">AboutUsActivity</string>
     <string name="title_activity_feed_back">FeedBackActivity</string>
     <string name="title_activity_book_review">BookReviewActivity</string>
+    <string name="terms_accept">Accept</string>
+    <string name="terms_condition">
+        <![CDATA[
+        <p>Any user may purchase Lisn Content on an A "La Carte basis". Lisn members also may purchase content using membership credits in accordance with the terms set forth in the Lisn Plan Terms. By making a purchase through the Lisn Service you agree to be bound by these Lisn Purchase Terms and Conditions.</p>
+        <p><b>Purchases of Lisn Content</b></p>
+        <p><b>Lisn Content License.</b>When you purchase Lisn Content, Lisn grants you a limited, revocable, non-exclusive, non-transferable license to download or stream such Lisn Content to your computer and/or other device(s) solely for your personal, non-commercial use. You agree to not otherwise copy, reproduce, distribute or use the Lisn Content other than as expressly set forth herein. You will not sell, transfer, lease, modify, distribute or publicly perform the Lisn Content in any manner and you will not exploit it commercially. You agree to not modify, reverse engineer, decompile or disassemble the Lisn Content, or otherwise tamper with the Lisn Content or create any derivative works therefrom.</p>
+         <p><b>Pricing. </b>With respect to all A La Carte purchases, except where noted otherwise,
+          any list price displayed represents the full retail price listed on the Lisn Content itself,
+           as determined by Lisn, or as suggested by the manufacturer or supplier, or estimated in
+            accordance with standard industry practice; or the estimated retail value for a comparably
+             featured item offered elsewhere. Prices are subject to change at any time in Lisn\'s sole discretion.
+              Lisn cannot confirm the price of an item until you order. Despite our best efforts, a small number
+              of the items in our catalog may be mispriced. If an item\'s correct price is higher
+          than our stated price, we may at our discretion cancel your order.</p>
+         <p><b>Delivery of Lisn Content. </b>All Lisn Content you purchased will be delivered to your Lisn Account.</p>
+         <p><b>Risk of Loss. </b>Once we have made Lisn Content available to you, you will bear the risk of
+         loss for completing any download of Lisn Content after purchase and for any loss of Lisn Content
+         you have downloaded, including any loss due to a file corruption or a device or hard drive crash.
+         Purchased Lisn Content will generally continue to be available in your Lisn Account but may become
+         unavailable due to possible content provider licensing restrictions or other reasons, and Lisn will not
+         be liable to you if Lisn Content becomes unavailable for further download. You will not receive a full or
+         partial refund of any fees already paid in such situations. Accordingly, we encourage you to download
+         Lisn Content promptly after purchase and to make a back-up copy. If you are unable to complete a
+         download after
+         having reviewed our online help resources, please contact Lisn customer service.</p>
+         <p><b>Payments. </b>For Lisn Services, your default payment instrument will be the payment method you prefer
+         (either carrier billing or card payments).</p>
+         <p><b>Subscriptions. </b>Any user may purchase subscriptions to recurring content such as
+         newspapers and magazines on a monthly basis or other recurring basis depending on the recurrence of
+         the content ("Subscriptions"). In some instances only credit cards are eligible for payment of
+         Subscriptions. However you might be allowed to use your Debit card if your proffered Bank permits it.
+         If you purchase a Subscription, you will be charged the full price of the Subscription at the beginning
+         of the Subscription term. If your default payment instrument is declined for any reason. Subscriptions
+         may be purchased on an A La Carte basis or by members with credits. With respect to any Subscriptions
+         purchased on an A La Carte basis, if you cancel your Subscription before the initial term has expired,
+         you may be entitled to a refund depending upon whether there is a shorter Subscription available for the
+         relevant Lisn Content. You will be obligated to pay based upon the Subscription term length closest to
+         the number of months your Subscription was active. For example, if you signed up for a 12 month
+         Subscription and wish to cancel after 5 months, then: (A) if a 6 month Subscription term is available,
+         you would be charged for a 6 month Subscription and refunded the difference between the 12 month and
+         6 month Subscriptions, or (B) if only a 12 month term is available,
+         you would be charged for the 12 month Subscription.</p>
+
+
+        ]]>
+    </string>
+
 
 
 </resources>

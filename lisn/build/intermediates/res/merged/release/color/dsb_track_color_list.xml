@@ -18,4 +18,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/dsb_disabled_color" android:state_enabled="false"/>
     <item android:color="@color/dsb_track_color"/>
-</selector><!-- From: file:/home/adw/android/new_adw/discreteSeekbar/library/src/main/res/color/dsb_track_color_list.xml --><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.0.2/Lisn/lisn/build/intermediates/exploded-aar/org.adw.library/discrete-seekbar/1.0.0/res/color/dsb_track_color_list.xml -->
+</selector><!-- From: file:/home/adw/android/new_adw/discreteSeekbar/library/src/main/res/color/dsb_track_color_list.xml --><!-- From: file:/Users/Rasika/Documents/Project/Feelance/Lisn/src/1.1/Book/lisn/build/intermediates/exploded-aar/org.adw.library/discrete-seekbar/1.0.0/res/color/dsb_track_color_list.xml -->

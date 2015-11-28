@@ -253,12 +253,12 @@
                             android:layout_marginTop="@dimen/spacing_xsmall"
                             android:layout_marginBottom="@dimen/spacing_large"
                             />
-<LinearLayout
-    android:id="@+id/download_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/narrator"
-    android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/download_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/narrator"
+                        android:orientation="vertical">
 
 
                         <Button
@@ -297,14 +297,14 @@
                             android:text="Pay by Card"
                             android:layout_centerVertical="true"
                             />
-    <TextView
-        android:id="@+id/buyFromCardButtonText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="(and get a 10% discount)"/>
+                        <TextView
+                            android:id="@+id/buyFromCardButtonText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="(and get a 10% discount)"/>
 
-</LinearLayout>
+                    </LinearLayout>
                         <View
                             android:id="@+id/separator_1"
                             android:layout_width="match_parent"

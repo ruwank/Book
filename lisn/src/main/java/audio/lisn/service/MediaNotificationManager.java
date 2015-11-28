@@ -31,13 +31,10 @@ import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.io.File;
-
 import audio.lisn.R;
 import audio.lisn.activity.PlayerControllerActivity;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
-import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.Constants;
 
@@ -314,12 +311,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         AudioBook audioBook= AppController.getInstance().getCurrentAudioBook();
 
         Bitmap art=null;
+        /*
         String img_path = AppUtils.getDataDirectory(mService.getApplicationContext())
                 + audioBook.getBook_id()+ File.separator+"book_cover.jpg";
-
-
-//        art = BitmapFactory.decodeResource(mService.getResources(),
-//                R.drawable.ui_bg_logo);
 
                 File imgFile = new  File(img_path);
 
@@ -330,6 +324,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
             art = BitmapFactory.decodeResource(mService.getResources(),
                     R.drawable.ui_bg_logo);
         }
+        */
+        art = BitmapFactory.decodeResource(mService.getResources(),
+                R.drawable.ic_launcher);
 
 
         notificationBuilder
@@ -416,21 +413,5 @@ public class MediaNotificationManager extends BroadcastReceiver {
         builder.setOngoing(AudioPlayerService.mediaPlayer.isPlaying());
 
     }
-/*
-    private void fetchBitmapFromURLAsync(final String bitmapUrl,
-                                         final Notification.Builder builder) {
-        AlbumArtCache.getInstance().fetch(bitmapUrl, new AlbumArtCache.FetchListener() {
-            @Override
-            public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                if (mMetadata != null && mMetadata.getDescription() != null &&
-                    artUrl.equals(mMetadata.getDescription().getIconUri().toString())) {
-                    // If the media is still the same, update the notification:
-                   // LogHelper.d(TAG, "fetchBitmapFromURLAsync: set bitmap to ", artUrl);
-                    builder.setLargeIcon(bitmap);
-                    mNotificationManager.notify(NOTIFICATION_ID, builder.build());
-                }
-            }
-        });
-    }
-    */
+
 }

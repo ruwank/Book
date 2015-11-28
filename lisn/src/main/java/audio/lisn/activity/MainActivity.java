@@ -225,8 +225,11 @@ public class MainActivity extends Activity {
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         boolean loginStatus = sharedPref.getBoolean(getString(R.string.user_login_status), false);
         if(loginStatus){
+
             String loginId = sharedPref.getString(getString(R.string.user_login_id), "");
+            String userName = sharedPref.getString(getString(R.string.user_login_name), "");
             AppController.getInstance().setUserId(loginId);
+            AppController.getInstance().setUserName(userName);
         }
 
 

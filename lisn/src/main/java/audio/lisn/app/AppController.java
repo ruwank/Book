@@ -1,14 +1,19 @@
 package audio.lisn.app;
 
+import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +30,7 @@ import com.facebook.login.LoginManager;
 import org.json.JSONArray;
 
 import java.util.HashMap;
+import java.util.List;
 
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
@@ -35,6 +41,7 @@ import audio.lisn.util.Foreground;
 import audio.lisn.util.LruBitmapCache;
 import audio.lisn.util.NukeSSLCerts;
 import audio.lisn.util.PreviewAudioPlayerService;
+import audio.lisn.util.ReminderReceiver;
 import io.fabric.sdk.android.Fabric;
 public class AppController extends Application {
 
@@ -60,6 +67,7 @@ public class AppController extends Application {
     private HashMap<Integer, JSONArray> storeBook=new HashMap<Integer, JSONArray>();
 
     private static final int NOTIFY_ID=158;
+    AlarmManager alarmManager = null;
 
     @Override
     public void onCreate() {
@@ -421,6 +429,7 @@ mService.changePlayerState("start");
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
           //  showNotification();
+            Log.v("mAppEnterForegroundReceiver","mAppEnterForegroundReceiver");
             appEnterForeground();
 
 
@@ -431,6 +440,8 @@ mService.changePlayerState("start");
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             //  showNotification();
+            Log.v("mAppEnterBackgroundReceiver","mAppEnterBackgroundReceiver");
+
             appEnterBackground();
 
 
@@ -438,22 +449,59 @@ mService.changePlayerState("start");
     };
 
     private void appEnterForeground(){
+if(!isAppIsInBackground()) {
+    if (isUserLogin()) {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null && !accessToken.isExpired()) {
+        } else {
+            Log.v(TAG, "AccessToken isExpired");
+            this.userId = null;
 
-        if(isUserLogin()){
-            AccessToken accessToken = AccessToken.getCurrentAccessToken();
-            if(accessToken !=null && !accessToken.isExpired()){
-            }else{
-                Log.v(TAG,"AccessToken isExpired");
-            this.userId=null;
-
-            }
         }
     }
+    if (alarmManager != null) {
+        Intent intentAlarm = new Intent(getApplicationContext(), ReminderReceiver.class);
+
+        alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+    }
+}
+    }
     private void appEnterBackground(){
-        if (mBound)
-            mService.updatePlaybackState();
+
+        if(isAppIsInBackground()) {
+            if (mBound)
+                mService.updatePlaybackState();
+
+            showReminder();
+        }
 
     }
+    private boolean isAppIsInBackground() {
+        Context context=getApplicationContext();
+        boolean isInBackground = true;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (activeProcess.equals(context.getPackageName())) {
+                            isInBackground = false;
+                        }
+                    }
+                }
+            }
+        } else {
+            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            ComponentName componentInfo = taskInfo.get(0).topActivity;
+            if (componentInfo.getPackageName().equals(context.getPackageName())) {
+                isInBackground = false;
+            }
+        }
+
+        return isInBackground;
+    }
+
     public void logOutUser(){
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if(accessToken != null){
@@ -461,7 +509,19 @@ mService.changePlayerState("start");
         }
         this.userId=null;
     }
+    private void showReminder ()
+    {
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
+        Log.v("showReminder","showReminder: "+SystemClock.elapsedRealtime()+5*1000);
+        Intent intentAlarm = new Intent(getApplicationContext(), ReminderReceiver.class);
+
+        //6 hours
+        long time=System.currentTimeMillis()+(1000*60*60*6);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+
+
+    }
 //    public void showNotification(){
 //        if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer) {
 //            Log.v("notificationManager","notificationManager true");
