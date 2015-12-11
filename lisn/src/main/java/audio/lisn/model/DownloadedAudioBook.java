@@ -3,8 +3,6 @@ package audio.lisn.model;
 import android.content.Context;
 import android.os.Environment;
 
-import audio.lisn.util.AppUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
+
+import audio.lisn.util.AppUtils;
 
 public class DownloadedAudioBook implements Serializable {
 
@@ -36,6 +36,10 @@ public class DownloadedAudioBook implements Serializable {
 	}
 	public void addBookToList(Context context,String key, AudioBook audioBook) {
 		bookList.put(key, audioBook);
+		writeFileToDisk(context);
+	}
+	public void removeBook(Context context){
+		bookList.clear();
 		writeFileToDisk(context);
 	}
 

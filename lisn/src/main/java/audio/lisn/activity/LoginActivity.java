@@ -10,9 +10,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
@@ -31,6 +33,8 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -41,7 +45,10 @@ import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
+import audio.lisn.model.AudioBook;
+import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.Constants;
+import audio.lisn.webservice.JsonUTF8ArrayRequest;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 
 public class LoginActivity extends AppCompatActivity {
@@ -170,7 +177,16 @@ public class LoginActivity extends AppCompatActivity {
             dialog.show();
         }
     }
-
+    private String getUniqueID(){
+        String myAndroidDeviceId = "";
+        TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (mTelephony.getDeviceId() != null){
+            myAndroidDeviceId = mTelephony.getDeviceId();
+        }else{
+            myAndroidDeviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        return myAndroidDeviceId;
+    }
     private void addUser( JSONObject object){
         Log.v("object",object.toString());
         String url=getString(R.string.add_user_url);
@@ -191,33 +207,35 @@ public class LoginActivity extends AppCompatActivity {
         String userName="";
 
 
-        if(object.optString("email") !=null){
+        if(object.optString("email") !=null && object.optString("email").length()>0){
             email=object.optString("email");
         }
 
-        if(object.optString("id") !=null){
+        if(object.optString("id") !=null && object.optString("id").length()>0){
             fbid=object.optString("id");
         }
-        if(object.optString("first_name") !=null){
+        if(object.optString("first_name") !=null && object.optString("first_name").length()>0){
             fname=object.optString("first_name");
             userName =fname;
         }
-        if(object.optString("middle_name") !=null){
+        if(object.optString("middle_name") !=null && object.optString("middle_name").length()>0){
             mname=object.optString("middle_name");
         }
-        if(object.optString("last_name") !=null){
+        if(object.optString("last_name") !=null && object.optString("last_name").length()>0){
             lname=object.optString("last_name");
             userName =userName+ " " +lname;
         }
-        if(object.optString("link") !=null){
+        if(object.optString("link") !=null && object.optString("link").length()>0){
             fburl=object.optString("link");
         }
         Map<String, String> postParam = new HashMap<String, String>();
 
         try {
+            String android_id = getUniqueID();
+
             postParam.put("username",username);
             postParam.put("fbname",fbname);
-            postParam.put("location", loc);
+            postParam.put("loc", loc);
             postParam.put("bday",bday);
             postParam.put("email",email);
             postParam.put("mobile",mobile);
@@ -228,6 +246,9 @@ public class LoginActivity extends AppCompatActivity {
             postParam.put("mname",mname);
             postParam.put("lname",lname);
             postParam.put("fburl", fburl);
+            postParam.put("device", android_id);
+            postParam.put("os", "android");
+
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -496,7 +517,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     private void downloadUserBook(String userId){
+        DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
+        downloadedAudioBook.removeBook(getApplicationContext());
         String url=getString(R.string.user_book_list_url);
+
+        /*
 
         Map<String, String> postParam = new HashMap<String, String>();
 
@@ -536,9 +561,72 @@ public class LoginActivity extends AppCompatActivity {
                 userAddedSuccess(true);
             }
         });
-        bookListReq.setShouldCache(false);
-        AppController.getInstance().addToRequestQueue(bookListReq, "tag_download_book");
+        */
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("userid", userId);
 
+
+
+        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST,url, params,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        Log.v("response", "respondString :" + jsonArray);
+                        addToDownloadList(jsonArray);
+                        userAddedSuccess(true);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+            }
+        });
+        bookListReq.setShouldCache(true);
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_boo_list");
+
+    }
+
+    private void addToDownloadList(JSONArray jsonArray){
+        DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
+
+        for (int i = 0; (i < jsonArray.length() && i< 3) ; i++) {
+            try {
+
+                JSONObject obj = jsonArray.getJSONObject(i);
+                AudioBook book = new AudioBook(obj, i, getApplicationContext());
+                downloadedAudioBook.addBookToList(getApplicationContext(), book.getBook_id(), book);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+//        for (int i = 0; (i < jsonArray.length()); i++) {
+//            try {
+//
+//                JSONObject obj = jsonArray.getJSONObject(i);
+//                // AudioBook book = new AudioBook();
+//                String book_id = "";
+//                try {
+//                    book_id = obj.getString("BookID");
+//                } catch (JSONException e) {
+//                    book_id = obj.getString("" + i);
+//                    e.printStackTrace();
+//                }
+//                AudioBook book = new AudioBook();
+//                book.setBook_id(book_id);
+//                downloadedAudioBook.addBookToList(getApplicationContext(),book_id,book);
+//
+//
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            // }
+//
+//
+//        }
     }
 
 
