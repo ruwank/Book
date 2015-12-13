@@ -16,6 +16,7 @@
     <string name="play_store_url">https://play.google.com/store/apps/details?id=audio.lisn</string>
     <string name="mobitel_pay_url">http://app.lisn.audio/cbgw/1.1/mobitel.php</string>
     <string name="etisalat_pay_url">http://app.lisn.audio/cbgw/1.1/etisalat.php</string>
+    <string name="verify_user_url">https://app.lisn.audio/api/1.1/verifyuser.php</string>
 
 </resources>
 

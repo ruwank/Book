@@ -404,6 +404,23 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             });
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 public boolean onError(MediaPlayer mp, int what, int extra) {
+
+                    String msg = "";
+
+                    if (extra == MediaPlayer.MEDIA_ERROR_IO) {
+                        msg = "MEDIA_ERROR_IO";
+                    } else if (extra == MediaPlayer.MEDIA_ERROR_MALFORMED) {
+                        msg = "MEDIA_ERROR_MALFORMED";
+                    } else if (extra == MediaPlayer.MEDIA_ERROR_UNSUPPORTED) {
+                        msg = "MEDIA_ERROR_UNSUPPORTED";
+                    } else if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
+                        msg = "MEDIA_ERROR_TIMED_OUT";
+                    }  else {
+                        msg = "video_error_unknown_error";
+                    }
+                    showErrorMessage(msg);
+
+
                     return false;
                 }
             });
@@ -419,6 +436,9 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             try {
                 mediaPlayer.prepareAsync(); // prepare async to not block main
             }catch (Exception e){
+                showErrorMessage(e.getMessage());
+
+
                 isPlayingPreview=false;
                 isLoadingPreview=false;
                 stopTimer();
@@ -428,7 +448,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
         } else {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
             builder.setMessage("No Internet Connection").setPositiveButton(
                     "OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -440,7 +460,17 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         }
 
     }
-
+private void showErrorMessage(String msg){
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setMessage(msg).setPositiveButton(
+            "OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // FIRE ZE MISSILES!
+                }
+            });
+    AlertDialog dialog = builder.create();
+    dialog.show();
+}
     private void startTimer(){
         new Thread(this).start();
     }

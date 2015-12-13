@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import audio.lisn.R;
-import audio.lisn.adapter.AudioBookListAdapter;
 import audio.lisn.adapter.StoreBookViewAdapter;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
@@ -37,7 +36,7 @@ import audio.lisn.util.ConnectionDetector;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
 public class SearchResultsActivity extends AppCompatActivity implements
-         AudioBookListAdapter.ItemSelectListener, StoreBookViewAdapter.StoreBookSelectListener {
+         StoreBookViewAdapter.StoreBookSelectListener {
 
     private ProgressDialog pDialog;
     private List<AudioBook> bookList = new ArrayList<AudioBook>();
@@ -272,19 +271,7 @@ Log.v("jsonArray","jsonArray :"+jsonArray);
         }
     }
 
-    @Override
-    public void onSelect(AudioBook audioBook) {
-        Intent intent = new Intent(this,
-                AudioBookDetailActivity.class);
-        intent.putExtra("audioBook", audioBook);
-        startActivity(intent);
 
-    }
-
-    @Override
-    public void OnLongClickListener(AudioBook audioBook) {
-
-    }
 
     @Override
     public void onStoreBookSelect(View view, AudioBook audioBook, AudioBook.SelectedAction btnIndex) {

@@ -1,5 +1,6 @@
 package audio.lisn.app;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -10,16 +11,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.crashlytics.android.Crashlytics;
@@ -31,7 +39,9 @@ import org.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import audio.lisn.R;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AudioPlayerService;
@@ -42,6 +52,7 @@ import audio.lisn.util.LruBitmapCache;
 import audio.lisn.util.NukeSSLCerts;
 import audio.lisn.util.PreviewAudioPlayerService;
 import audio.lisn.util.ReminderReceiver;
+import audio.lisn.webservice.JsonUTF8StringRequest;
 import io.fabric.sdk.android.Fabric;
 public class AppController extends Application {
 
@@ -193,10 +204,10 @@ public class AppController extends Application {
         String title="";
         if(currentAudioBook != null) {
             if (fileIndex >= 0 && fileIndex < (fileList.length)) {
-               // title= currentAudioBook.getEnglish_title() + "[ " + (fileIndex + 1) + " / " + fileList.length + " ]";
+                // title= currentAudioBook.getEnglish_title() + "[ " + (fileIndex + 1) + " / " + fileList.length + " ]";
                 title=  "[ " + (fileIndex + 1) + " / " + fileList.length + " ]";
             } else {
-               // title= currentAudioBook.getEnglish_title();
+                // title= currentAudioBook.getEnglish_title();
             }
         }
         return title;
@@ -306,11 +317,11 @@ public class AppController extends Application {
     }
     public void starPlayer(){
         if (mBound)
-mService.changePlayerState("start");
+            mService.changePlayerState("start");
     }
     public void pausePlayer(){
         if (mBound)
-        mService.changePlayerState("pause");
+            mService.changePlayerState("pause");
 
     }
     public void stopPlayer(){
@@ -414,7 +425,7 @@ mService.changePlayerState("start");
         return storeBook.get(categoryId);
     }
     public void setStoreBookForCategory(int categoryId,JSONArray bookArray) {
-         storeBook.put(categoryId, bookArray);
+        storeBook.put(categoryId, bookArray);
     }
 
     private void registerAppStateChangeBroadcastReceiver(){
@@ -428,7 +439,7 @@ mService.changePlayerState("start");
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
-          //  showNotification();
+            //  showNotification();
             Log.v("mAppEnterForegroundReceiver","mAppEnterForegroundReceiver");
             appEnterForeground();
 
@@ -449,22 +460,26 @@ mService.changePlayerState("start");
     };
 
     private void appEnterForeground(){
-if(!isAppIsInBackground()) {
-    if (isUserLogin()) {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null && !accessToken.isExpired()) {
-        } else {
-            Log.v(TAG, "AccessToken isExpired");
-            this.userId = null;
+        if(!isAppIsInBackground()) {
+            if (isUserLogin()) {
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                if (accessToken != null && !accessToken.isExpired()) {
+                    verifyUser();
+                } else {
+                    Log.v(TAG, "AccessToken isExpired");
+                    this.userId = null;
 
+                }
+
+
+
+            }
+            if (alarmManager != null) {
+                Intent intentAlarm = new Intent(getApplicationContext(), ReminderReceiver.class);
+
+                alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+            }
         }
-    }
-    if (alarmManager != null) {
-        Intent intentAlarm = new Intent(getApplicationContext(), ReminderReceiver.class);
-
-        alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
-    }
-}
     }
     private void appEnterBackground(){
 
@@ -520,6 +535,75 @@ if(!isAppIsInBackground()) {
         long time=System.currentTimeMillis()+(1000*60*60*6);
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
 
+
+    }
+    private String getUniqueID(){
+        String myAndroidDeviceId = "";
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            myAndroidDeviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        }else {
+            TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (mTelephony.getDeviceId() != null) {
+                myAndroidDeviceId = mTelephony.getDeviceId();
+            } else {
+                myAndroidDeviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            }
+        }
+        return myAndroidDeviceId;
+    }
+    private void removeUser(){
+        DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
+        downloadedAudioBook.removeBook(getApplicationContext());
+        this.userId="";
+    }
+    private void verifyUser(){
+
+        Log.v("response", "verifyUser");
+
+        //    http://app.lisn.audio/api/1.1/verifyuser.php?userid=1&device=1
+        String url=getString(R.string.verify_user_url);
+
+        Map<String, String> postParam = new HashMap<String, String>();
+
+        try {
+            postParam.put("userid",userId);
+            postParam.put("device",getUniqueID());
+
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Map<String,String> postParam = new HashMap<String, String>();
+
+        JsonUTF8StringRequest userVerifyReq = new JsonUTF8StringRequest(Request.Method.GET,url, postParam,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        //SUCCESS: UID=5
+                        Log.v("response", "verifyUser :" + response);
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("response","verifyUser error :"+error.getMessage());
+                NetworkResponse response = error.networkResponse;
+                if(response !=null) {
+                    Log.v("response", response.statusCode + " data: " + response.data.toString());
+                }
+
+                // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());
+            }
+        });
+        userVerifyReq.setShouldCache(false);
+        AppController.getInstance().addToRequestQueue(userVerifyReq, "tag_user_verify");
 
     }
 //    public void showNotification(){

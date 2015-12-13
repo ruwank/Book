@@ -1,5 +1,6 @@
 package audio.lisn.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
@@ -10,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -131,6 +133,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     ServiceProvider  serviceProvider;
     PaymentOption  paymentOption;
+    int PERMISSIONS_REQUEST_READ_PHONE_STATE=101;
 
     //  ListView reviewListView;
     //  BookReviewListAdapter bookReviewListAdapter;
@@ -229,21 +232,21 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private void findServiceProvider() {
         Log.v("deviceID", "findDeviceID");
         serviceProvider = ServiceProvider.PROVIDER_NONE;
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+//        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+//                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
+                    PERMISSIONS_REQUEST_READ_PHONE_STATE);
+        } else {
+            setServiceProvider();
+        }
 
-        //String serviceName = Context.TELEPHONY_SERVICE;
+    }
+    private void setServiceProvider(){
         TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//        int deviceType = m_telephonyManager.getPhoneType();
-//        switch (deviceType) {
-//            case (TelephonyManager.PHONE_TYPE_GSM):
-//                break;
-//            case (TelephonyManager.PHONE_TYPE_CDMA):
-//                break;
-//            case (TelephonyManager.PHONE_TYPE_NONE):
-//                break;
-//            default:
-//                break;
-//        }
-        //deviceID = m_telephonyManager.getDeviceId();
+
         String subscriberId = m_telephonyManager.getSubscriberId();
         if (subscriberId != null) {
             if (subscriberId.startsWith("41301")) {
@@ -254,6 +257,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 serviceProvider = ServiceProvider.PROVIDER_ETISALAT;
             }
 
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_PHONE_STATE
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setServiceProvider();
         }
     }
     private void termsAndConditionAccepted(){

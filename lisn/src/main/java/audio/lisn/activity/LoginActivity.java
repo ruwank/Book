@@ -1,5 +1,6 @@
 package audio.lisn.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -179,11 +181,18 @@ public class LoginActivity extends AppCompatActivity {
     }
     private String getUniqueID(){
         String myAndroidDeviceId = "";
-        TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (mTelephony.getDeviceId() != null){
-            myAndroidDeviceId = mTelephony.getDeviceId();
-        }else{
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
             myAndroidDeviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        }else {
+            TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (mTelephony.getDeviceId() != null) {
+                myAndroidDeviceId = mTelephony.getDeviceId();
+            } else {
+                myAndroidDeviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            }
         }
         return myAndroidDeviceId;
     }
@@ -596,6 +605,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 JSONObject obj = jsonArray.getJSONObject(i);
                 AudioBook book = new AudioBook(obj, i, getApplicationContext());
+                book.setPurchase(true);
                 downloadedAudioBook.addBookToList(getApplicationContext(), book.getBook_id(), book);
 
             } catch (JSONException e) {
