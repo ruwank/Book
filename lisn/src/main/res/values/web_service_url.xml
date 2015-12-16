@@ -17,6 +17,7 @@
     <string name="mobitel_pay_url">http://app.lisn.audio/cbgw/1.1/mobitel.php</string>
     <string name="etisalat_pay_url">http://app.lisn.audio/cbgw/1.1/etisalat.php</string>
     <string name="verify_user_url">https://app.lisn.audio/api/1.1/verifyuser.php</string>
+    <string name="user_feedback_url">https://app.lisn.audio/api/1.1/feedbackactivity.php</string>
 
 </resources>
 

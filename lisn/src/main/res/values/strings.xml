@@ -18,6 +18,7 @@
     <string name="action_feedback">Feedback</string>
     <string name="action_quick_tour">Quick Tour</string>
     <string name="action_about_us">About Us</string>
+    <string name="action_contact_us">Contract Us</string>
 
     <!-- pouup menu action data -->
     <string name="action_play">Play</string>
@@ -117,6 +118,7 @@
 
         ]]>
     </string>
+    <string name="title_activity_contactus">ContactusActivity</string>
 
 
 

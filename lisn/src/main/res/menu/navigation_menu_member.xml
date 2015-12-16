@@ -43,6 +43,10 @@
             android:icon="@drawable/ic_menu_about"
             android:title="@string/action_about_us"/>
         <item
+            android:id="@+id/drawer_contact_us"
+            android:icon="@drawable/ic_menu_contacts"
+            android:title="@string/action_contact_us"/>
+        <item
             android:id="@+id/drawer_settings"
             android:icon="@drawable/ic_menu_setting"
             android:title="@string/action_settings"/>

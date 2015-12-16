@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="audio.lisn"
-    android:versionCode="1026"
-    android:versionName="1.0.26" >
+    android:versionCode="1027"
+    android:versionName="1.0.27" >
 
     <uses-sdk
         android:minSdkVersion="15"
         android:targetSdkVersion="23" />
-
-
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -21,6 +19,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
@@ -105,7 +104,7 @@
             android:name=".activity.PurchaseActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_purchase"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.AboutUsActivity"
@@ -120,6 +119,11 @@
         <activity
             android:name=".activity.BookReviewActivity"
             android:label="@string/title_activity_book_review"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ContactusActivity"
+            android:label="@string/title_activity_contactus"
             android:screenOrientation="portrait" >
         </activity>
     </application>

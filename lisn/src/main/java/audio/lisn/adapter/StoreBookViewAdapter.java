@@ -60,6 +60,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
     private boolean isPlayingPreview,isLoadingPreview;
     int selectedBookIndex;
     private Context context;
+    View selectedView;
 
 
     String leftTime;
@@ -194,6 +195,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
                         switch (item.getItemId()) {
                             case R.id.action_preview:
+                                selectedView=holder.itemView;
                                 playButtonPressed((AudioBook)holder.itemView.getTag());
                                 break;
                             case R.id.action_purchase:
@@ -244,6 +246,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         holder.playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedView=holder.itemView;
                 playButtonPressed((AudioBook)holder.itemView.getTag());
 
             }
@@ -448,7 +451,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
         } else {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+            AlertDialog.Builder builder = new AlertDialog.Builder(selectedView.getContext());
             builder.setMessage("No Internet Connection").setPositiveButton(
                     "OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -461,6 +464,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
     }
 private void showErrorMessage(String msg){
+    /*
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setMessage(msg).setPositiveButton(
             "OK", new DialogInterface.OnClickListener() {
@@ -470,6 +474,7 @@ private void showErrorMessage(String msg){
             });
     AlertDialog dialog = builder.create();
     dialog.show();
+    */
 }
     private void startTimer(){
         new Thread(this).start();

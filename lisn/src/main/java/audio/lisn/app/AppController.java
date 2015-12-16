@@ -561,7 +561,6 @@ public class AppController extends Application {
     }
     private void verifyUser(){
 
-        Log.v("response", "verifyUser");
 
         //    http://app.lisn.audio/api/1.1/verifyuser.php?userid=1&device=1
         String url=getString(R.string.verify_user_url);
@@ -571,6 +570,7 @@ public class AppController extends Application {
         try {
             postParam.put("userid",userId);
             postParam.put("device",getUniqueID());
+            Log.v("response", "verifyUser" +getUniqueID());
 
 
         } catch (Exception e) {

@@ -249,6 +249,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragment = MyBookFragment.newInstance();
                 // title = getString(R.string.title_settings);
                 break;
+
             default:
                 break;
         }
@@ -277,6 +278,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             Intent intent = new Intent(this,
                     FeedBackActivity.class);
+            startActivity(intent);
+
+        }
+        else if(menuItem.getItemId() ==R.id.drawer_contact_us){
+
+            Intent intent = new Intent(this,
+                    ContactusActivity.class);
             startActivity(intent);
 
         }

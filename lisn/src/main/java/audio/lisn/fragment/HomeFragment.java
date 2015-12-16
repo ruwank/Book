@@ -316,11 +316,32 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         loadMyBookData();
 
     }
+    @Override
+    public void onPause() {
+        super.onPause();
+        removePlayer();
 
+        Log.v(TAG, "onPause");
+
+    }
     private void hidePDialog() {
         if (pDialog != null) {
             pDialog.dismiss();
             pDialog = null;
+        }
+    }
+    public void removePlayer(){
+        if(newReleaseBookViewAdapter !=null)
+        {
+            newReleaseBookViewAdapter.releaseMediaPlayer();
+        }
+        if(topRatedBookViewAdapter !=null)
+        {
+            topRatedBookViewAdapter.releaseMediaPlayer();
+        }
+        if(topDownloadBookViewAdapter !=null)
+        {
+            topDownloadBookViewAdapter.releaseMediaPlayer();
         }
     }
     private void downloadNewReleaseData() {
