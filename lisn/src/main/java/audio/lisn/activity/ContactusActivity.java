@@ -32,7 +32,7 @@ public class ContactusActivity extends AppCompatActivity {
     private void openMailApp(){
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("plain/text");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "wwdibu@gmail.com" });
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { getString(R.string.support_url) });
         startActivity(Intent.createChooser(intent, ""));
     }
     @Override

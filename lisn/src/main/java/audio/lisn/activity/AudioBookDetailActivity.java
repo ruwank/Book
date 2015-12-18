@@ -520,6 +520,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     addToBillButton.setVisibility(View.VISIBLE);
                     paymentOptionOr.setVisibility(View.VISIBLE);
                     buyFromCardDescription.setVisibility(View.VISIBLE);
+                    if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
+                        addToBillButton.setText("Add to Mobitel bill");
+                    }
+                    else if(serviceProvider ==ServiceProvider.PROVIDER_ETISALAT){
+                        addToBillButton.setText("Add to Etisalat bill");
+
+                    }
 
                 }else{
                     addToBillButton.setVisibility(View.GONE);
@@ -1038,15 +1045,27 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         Map<String, String> params = new HashMap<String, String>();
         params.put("userid", AppController.getInstance().getUserId());
         params.put("bookid", audioBook.getBook_id());
-        params.put("amount", audioBook.getPrice());
+        //params.put("amount", audioBook.getPrice());
+        params.put("amount", "3.50");
 
 
         JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        Log.v("response", "length"+response.length());
+
+                       // response=response.replaceAll("\n", "");
+                       // response=response.replaceAll("\r", "");
+                        Log.v("response", "length after"+response.length());
+
+                        Log.v("response", "response start 1");
+                        Log.v("response",response);
+                        Log.v("response", "response end 2");
+
                         progressDialog.dismiss();
-                        if (response.trim().equalsIgnoreCase("SUCCESS")) {
+                        if (response.toUpperCase().contains("SUCCESS")) {
 
                             Log.v("response", "response:" + response);
                             audioBook.setPurchase(true);
@@ -1065,7 +1084,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                     });
                             AlertDialog dialog = builder.create();
                             dialog.show();
-                        } else if (response.trim().equalsIgnoreCase("EMPTY_NUMBER")) {
+                        } else if (response.toUpperCase().contains("EMPTY_NUMBER")) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                             builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
                                     "OK", new DialogInterface.OnClickListener() {
@@ -1075,9 +1094,19 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                     });
                             AlertDialog dialog = builder.create();
                             dialog.show();
-                        } else if (response.trim().equalsIgnoreCase("FAILED")) {
+                        } else if (response.toUpperCase().contains("FAILED")) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                             builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
+                                    "OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // FIRE ZE MISSILES!
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }else{
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
                                     "OK", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
