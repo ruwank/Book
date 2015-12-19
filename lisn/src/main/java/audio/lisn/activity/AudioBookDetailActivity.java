@@ -537,7 +537,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
 
             }else{
-                btnDownload.setText("Get");
+                btnDownload.setText("Download");
                 addToBillButton.setVisibility(View.GONE);
                 paymentOptionOr.setVisibility(View.GONE);
                 btnPayFromCard.setVisibility(View.GONE);
@@ -949,7 +949,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         share.putExtra(Intent.EXTRA_SUBJECT, audioBook.getEnglish_title());
         share.putExtra(Intent.EXTRA_TEXT, getString(R.string.play_store_url));
 
-        startActivity(Intent.createChooser(share, "Share Book to..."));
+        startActivity(Intent.createChooser(share, "Share app through..."));
     }
     //    private void playGetButtonPressed(){
 //
@@ -1081,20 +1081,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     @Override
                     public void onResponse(String response) {
 
-                        Log.v("response", "length"+response.length());
-
-                       // response=response.replaceAll("\n", "");
-                       // response=response.replaceAll("\r", "");
-                        Log.v("response", "length after"+response.length());
-
-                        Log.v("response", "response start 1");
-                        Log.v("response",response);
-                        Log.v("response", "response end 2");
 
                         progressDialog.dismiss();
                         if (response.toUpperCase().contains("SUCCESS")) {
 
-                            Log.v("response", "response:" + response);
                             audioBook.setPurchase(true);
                             updateAudioBook(0);
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
@@ -1174,7 +1164,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 if(prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_MOBITEL, false)) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                    builder.setMessage("You will be charge RS:"+audioBook.getPrice()+". Are you sure want to continue?").setPositiveButton(
+                    builder.setTitle("Confirm Payment").setMessage("Rs:" + audioBook.getPrice() + " will be added to your Mobitel bill. Continue?").setPositiveButton(
                             getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     addToBillServerConnect();
@@ -1193,7 +1183,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
                         getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
@@ -1219,7 +1209,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if(prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_ETISALAT, false)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                    builder.setMessage("You will be charge Rs:"+audioBook.getPrice()+". Are you sure want to continue?").setPositiveButton(
+                    //Confirm Payment
+
+                    builder.setTitle("Confirm Payment").setMessage("Rs:" + audioBook.getPrice() + " will be added to your Etisalat bill. Continue?").setPositiveButton(
                             getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     addToBillServerConnect();
@@ -1238,7 +1230,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
                         getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!

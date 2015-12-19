@@ -42,7 +42,6 @@ import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.activity.AudioBookDetailActivity;
-import audio.lisn.activity.LoginActivity;
 import audio.lisn.activity.PlayerControllerActivity;
 import audio.lisn.activity.PurchaseActivity;
 import audio.lisn.adapter.StoreBookViewAdapter;
@@ -615,7 +614,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         switch (btnIndex){
             case ACTION_PURCHASE: {
                 Log.v(TAG,"onCreateView");
-
+/*
                 this.selectedBook=audioBook;
                 this.selectedView=view;
                 if(AppController.getInstance().isUserLogin()){
@@ -634,6 +633,9 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
                             LoginActivity.class);
                     startActivityForResult(intent, 33);
                 }
+                */
+                AudioBookDetailActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
+
 
             }
                 break;

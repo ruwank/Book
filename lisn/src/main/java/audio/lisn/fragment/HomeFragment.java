@@ -42,7 +42,6 @@ import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.activity.AudioBookDetailActivity;
-import audio.lisn.activity.LoginActivity;
 import audio.lisn.activity.PlayerControllerActivity;
 import audio.lisn.activity.PurchaseActivity;
 import audio.lisn.adapter.MyBookViewAdapter;
@@ -661,12 +660,13 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
     }
     private void deleteBook(final AudioBook audioBook){
-
+        String message="Are you sure you want to delete '"+audioBook.getEnglish_title()+"' from your device?";
         if(audioBook.isPurchase()) {
             AlertDialog confirmationDialog = new AlertDialog.Builder(getActivity())
                     //set message, title, and icon
+
                     .setTitle(getString(R.string.DELETE_CONFIRMATION_TITLE))
-                    .setMessage(R.string.DELETE_CONFIRMATION_MESSAGE)
+                    .setMessage(message)
                     .setPositiveButton(R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int whichButton) {
@@ -697,6 +697,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     public void onStoreBookSelect(View view, AudioBook audioBook, AudioBook.SelectedAction btnIndex) {
         switch (btnIndex){
             case ACTION_PURCHASE:{
+                /*
                 this.selectedBook=audioBook;
                 this.selectedView=view;
                 if(AppController.getInstance().isUserLogin()){
@@ -715,8 +716,13 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                             LoginActivity.class);
                     startActivityForResult(intent, 23);
                 }
+                */
+                AudioBookDetailActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
+
             }
-               // AudioBookDetailActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
+
+
+                // AudioBookDetailActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
                 break;
             case ACTION_DETAIL:
                 AudioBookDetailActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
@@ -1060,7 +1066,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         stopDownload();
         mProgressDialog.dismiss();
 
-        if (result.equalsIgnoreCase("UNAUTHORISED")){
+        if (result.toUpperCase().contains("UNAUTHORISED")){
             android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.USER_UNAUTHORISED_TITLE).setMessage(getString(R.string.USER_UNAUTHORISED_MESSAGE)).setPositiveButton(
                     R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
@@ -1068,10 +1074,11 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                             // FIRE ZE MISSILES!
                         }
                     });
+
             android.support.v7.app.AlertDialog dialog = builder.create();
             dialog.show();
 
-        }else if(result.equalsIgnoreCase("NOTFOUND")){
+        }else if(result.toUpperCase().contains("NOTFOUND")){
             android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
                     R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
@@ -1079,6 +1086,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                             // FIRE ZE MISSILES!
                         }
                     });
+
             android.support.v7.app.AlertDialog dialog = builder.create();
             dialog.show();
         }

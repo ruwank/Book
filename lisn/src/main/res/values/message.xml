@@ -29,11 +29,11 @@
     <string name="PAYMENT_FAILED_TITLE">Payment Failed</string>
     <string name="PAYMENT_FAILED_MESSAGE">Sorry! Charging failed. Please check your account.</string>
 
-    <string name="DELETE_CONFIRMATION_TITLE"></string>
-    <string name="DELETE_CONFIRMATION_MESSAGE">Do you want to Delete?</string>
+    <string name="DELETE_CONFIRMATION_TITLE">Delete</string>
+    <string name="DELETE_CONFIRMATION_MESSAGE">Are you sure you want to delete book from your device?</string>
 
-    <string name="NO_MOBILE_DATA_TITLE"></string>
-    <string name="NO_MOBILE_DATA_MESSAGE">Need To Enable Mobile Data first</string>
+    <string name="NO_MOBILE_DATA_TITLE">Add to Bill</string>
+    <string name="NO_MOBILE_DATA_MESSAGE">You can use add-to-bill option only with mobile data. Please enable mobile data and try again!</string>
 
     <string name="BUTTON_OK">OK</string>
     <string name="BUTTON_NOW">NOW</string>

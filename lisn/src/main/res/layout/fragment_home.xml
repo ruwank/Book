@@ -135,7 +135,7 @@
         android:layout_marginLeft="@dimen/layout_margin"
         android:layout_marginRight="@dimen/layout_margin"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="New Release"
+        android:text="New Releases"
         android:textColor="@color/textColor"
         android:id="@+id/textView"
         />
@@ -173,7 +173,7 @@
         android:layout_marginLeft="@dimen/layout_margin"
         android:layout_marginRight="@dimen/layout_margin"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Top Download"
+        android:text="Top Downloads"
         android:textColor="@color/textColor"
         android:id="@+id/textView"
         />

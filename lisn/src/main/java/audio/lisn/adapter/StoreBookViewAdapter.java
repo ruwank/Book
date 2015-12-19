@@ -49,6 +49,7 @@ import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.CustomTypeFace;
+import audio.lisn.view.EllipsizingTextView;
 
 public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdapter.ViewHolder> implements Runnable {
 
@@ -130,9 +131,14 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         if(book.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
             holder.title.setTypeface(CustomTypeFace.getSinhalaTypeFace(holder.title.getContext()));
             holder.author.setTypeface(CustomTypeFace.getSinhalaTypeFace(holder.author.getContext()));
+            holder.title.setEllipsized("'''");
+            holder.author.setEllipsized("'''");
         }else{
             holder.title.setTypeface(CustomTypeFace.getEnglishTypeFace(holder.title.getContext()));
             holder.author.setTypeface(CustomTypeFace.getEnglishTypeFace(holder.author.getContext()));
+            holder.title.setEllipsized("...");
+            holder.author.setEllipsized("...");
+
         }
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthor());
@@ -263,7 +269,8 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView thumbNail;
-        public TextView title, author,price;
+        public TextView price;
+        public EllipsizingTextView title, author;
         public RatingBar ratingBar;
         public ImageButton optionButton,playButton;
         public RelativeLayout previewLayout;
@@ -278,8 +285,8 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
             thumbNail=(ImageView) itemView
                     .findViewById(R.id.book_cover_thumbnail);
-            title= (TextView) itemView.findViewById(R.id.book_title);
-            author= (TextView) itemView.findViewById(R.id.book_author);
+            title= (EllipsizingTextView) itemView.findViewById(R.id.book_title);
+            author= (EllipsizingTextView) itemView.findViewById(R.id.book_author);
             price= (TextView) itemView.findViewById(R.id.book_price);
             ratingBar=(RatingBar)itemView.findViewById(R.id.rating_bar);
             optionButton=(ImageButton)itemView.findViewById(R.id.btn_action);
