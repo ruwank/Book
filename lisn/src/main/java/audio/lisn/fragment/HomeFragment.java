@@ -665,20 +665,19 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         if(audioBook.isPurchase()) {
             AlertDialog confirmationDialog = new AlertDialog.Builder(getActivity())
                     //set message, title, and icon
-                    .setTitle("")
-                    .setMessage("Do you want to Delete")
-                    .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    .setTitle(getString(R.string.DELETE_CONFIRMATION_TITLE))
+                    .setMessage(R.string.DELETE_CONFIRMATION_MESSAGE)
+                    .setPositiveButton(R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int whichButton) {
                             //your deleting code
-                            Log.v("audioBook", "audioBook :" + audioBook.getBook_id());
                             deleteAudioBook(audioBook);
                             dialog.dismiss();
                         }
 
                     })
 
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             dialog.dismiss();
@@ -773,8 +772,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
             }
             if (resultCode ==  Constants.RESULT_ERROR) {
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -789,13 +788,13 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                     selectedBook.setPurchase(true);
                     updateAudioBook(0);
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                            "Now", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.PAYMENT_COMPLETE_TITLE).setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
+                            R.string.BUTTON_NOW, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     downloadAudioFile();
                                 }
                             })
-                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.BUTTON_LATER, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -806,8 +805,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
             }
             if (resultCode == Constants.RESULT_ERROR) {
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -861,8 +860,9 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(
                             getActivity());
-                    builder.setMessage(R.string.no_enough_space).setPositiveButton(
-                            "OK", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE)
+                    .setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+                            R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -895,8 +895,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
             }else{
                 android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(
                         getActivity());
-                builder.setMessage("No Internet Connection").setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -923,8 +923,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         }else{
             android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(
                     getActivity());
-            builder.setMessage("No Internet Connection").setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -936,8 +936,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     private void starAudioPlayer() {
 
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-        builder.setMessage(getString(R.string.DOWNLOAD_COMPLETE)).setPositiveButton(
-                "YES", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.DOWNLOAD_COMPLETE_TITLE).setMessage(getString(R.string.DOWNLOAD_COMPLETE_MESSAGE)).setPositiveButton(
+                R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         PlayerControllerActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), selectedView.findViewById(R.id.book_cover_thumbnail), selectedBook);
 
@@ -945,7 +945,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
                     }
                 })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
                     }
@@ -1062,8 +1062,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
         if (result.equalsIgnoreCase("UNAUTHORISED")){
             android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.USER_UNAUTHORISED)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.USER_UNAUTHORISED_TITLE).setMessage(getString(R.string.USER_UNAUTHORISED_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -1073,8 +1073,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
         }else if(result.equalsIgnoreCase("NOTFOUND")){
             android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }

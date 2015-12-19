@@ -570,6 +570,7 @@ public class AppController extends Application {
         try {
             postParam.put("userid",userId);
             postParam.put("device",getUniqueID());
+            Log.v("response", "verifyUser postParam" + postParam);
             Log.v("response", "verifyUser" +getUniqueID());
 
 
@@ -579,13 +580,20 @@ public class AppController extends Application {
         }
         // Map<String,String> postParam = new HashMap<String, String>();
 
-        JsonUTF8StringRequest userVerifyReq = new JsonUTF8StringRequest(Request.Method.GET,url, postParam,
+        JsonUTF8StringRequest userVerifyReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
+                        if(response.toUpperCase().contains("DUPLICATE_USER")){
+                            removeUser();
+                        }
+                        else if(response.toUpperCase().contains("SUCCESS")){
+                            Log.v("response", "verifyUser :" + response);
+
+                        }
+
                         //SUCCESS: UID=5
-                        Log.v("response", "verifyUser :" + response);
 
 
 
@@ -596,7 +604,7 @@ public class AppController extends Application {
                 Log.v("response","verifyUser error :"+error.getMessage());
                 NetworkResponse response = error.networkResponse;
                 if(response !=null) {
-                    Log.v("response", response.statusCode + " data: " + response.data.toString());
+                    Log.v("response", "verifyUser "+response.statusCode + " data: " + response.data.toString());
                 }
 
                 // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());

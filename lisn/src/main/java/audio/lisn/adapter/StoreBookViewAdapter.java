@@ -452,8 +452,8 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         } else {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(selectedView.getContext());
-            builder.setMessage("No Internet Connection").setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }

@@ -353,8 +353,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
             if (resultCode ==  Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.SERVER_ERROR)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }

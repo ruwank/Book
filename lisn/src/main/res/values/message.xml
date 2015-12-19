@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_internet">No Internet</string>
+    <string name="NO_INTERNET_TITLE">No Internet</string>
+    <string name="NO_INTERNET_MESSAGE">Please check your internet connectivity.</string>
+
     <string name="no_valid_data">Enter Valid Data</string>
-    <string name="USER_UNAUTHORISED">You are not authorized.Please log into system</string>
-    <string name="FILE_NOTFOUND">Internal server error try again later.</string>
-    <string name="SERVER_ERROR">Internal server error try again later.</string>
-    <string name="DOWNLOAD_COMPLETE">Download completed. Do you want to start player?</string>
-    <string name="PAYMENT_COMPLETE">Payment successfully completed. Do you want to start download?</string>
-    <string name="no_enough_space">No enough space to download this file</string>
-    <string name="EMPTY_NUMBER">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy
+
+    <string name="USER_UNAUTHORISED_TITLE">Unauthorized</string>
+    <string name="USER_UNAUTHORISED_MESSAGE">You are not authorized to use this service. Please login to the system.</string>
+
+    <string name="SERVER_ERROR_TITLE">Internal Error</string>
+    <string name="SERVER_ERROR_MESSAGE">Server error. Please try again later.</string>
+
+    <string name="DOWNLOAD_COMPLETE_TITLE">Download Completed</string>
+    <string name="DOWNLOAD_COMPLETE_MESSAGE">Download completed. Do you want to start listening?</string>
+
+    <string name="PAYMENT_COMPLETE_TITLE">Payment Successful</string>
+    <string name="PAYMENT_COMPLETE_MESSAGE">Payment successfully completed. Do you want to start downloading?</string>
+
+    <string name="NO_ENOUGH_SPACE_TITLE">No Space</string>
+    <string name="NO_ENOUGH_SPACE_MESSAGE">Not enough space to download this file. Please free up some space and try again.</string>
+
+    <string name="EMPTY_NUMBER_TITLE">Number Error</string>
+    <string name="EMPTY_NUMBER_MESSAGE_MOBITEL">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy
         settings. Please contact Mobitel.</string>
-    <string name="MOBILE_PAYMENT_FAILED">Sorry! Charging failed. Please check your account.</string>
+    <string name="EMPTY_NUMBER_MESSAGE_ETISALAT">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy settings.
+        Please contact Etisalat.</string>
+
+    <string name="PAYMENT_FAILED_TITLE">Payment Failed</string>
+    <string name="PAYMENT_FAILED_MESSAGE">Sorry! Charging failed. Please check your account.</string>
+
+    <string name="DELETE_CONFIRMATION_TITLE"></string>
+    <string name="DELETE_CONFIRMATION_MESSAGE">Do you want to Delete?</string>
+
+    <string name="NO_MOBILE_DATA_TITLE"></string>
+    <string name="NO_MOBILE_DATA_MESSAGE">Need To Enable Mobile Data first</string>
+
+    <string name="BUTTON_OK">OK</string>
+    <string name="BUTTON_NOW">NOW</string>
+    <string name="BUTTON_LATER">LATER</string>
+    <string name="BUTTON_CANCEL">CANCEL</string>
+    <string name="BUTTON_YES">YES</string>
+    <string name="BUTTON_NO">NO</string>
+
 
 </resources>

@@ -195,20 +195,18 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
         if(audioBook.isPurchase()) {
             AlertDialog confirmationDialog = new AlertDialog.Builder(getActivity())
                     //set message, title, and icon
-                    .setTitle("")
-                    .setMessage("Do you want to Delete")
-                    .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    .setTitle(R.string.DELETE_CONFIRMATION_TITLE)
+                    .setMessage(R.string.DELETE_CONFIRMATION_MESSAGE)
+                    .setPositiveButton(R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            //your deleting code
-                            Log.v("audioBook", "audioBook :" + audioBook.getBook_id());
                             deleteAudioBook(audioBook);
                             dialog.dismiss();
                         }
 
                     })
 
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             dialog.dismiss();

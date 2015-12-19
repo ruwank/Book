@@ -347,8 +347,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
             }
             if (resultCode ==  Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -363,13 +363,13 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
                     selectedBook.setPurchase(true);
                     updateAudioBook(0);
                     android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-                    builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                            "Now", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.PAYMENT_COMPLETE_TITLE).setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
+                            R.string.BUTTON_NOW, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     downloadAudioFile();
                                 }
                             })
-                            .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.BUTTON_LATER, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -380,8 +380,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
             }
             if (resultCode == Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -436,8 +436,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
                     android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
                         getActivity());
-                builder.setMessage(R.string.no_enough_space).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -470,8 +470,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(
                         getActivity());
-                builder.setMessage("No Internet Connection").setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -498,8 +498,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         }else{
             AlertDialog.Builder builder = new AlertDialog.Builder(
                     getActivity());
-            builder.setMessage("No Internet Connection").setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -511,8 +511,8 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     private void starAudioPlayer() {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.DOWNLOAD_COMPLETE)).setPositiveButton(
-                    "YES", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.DOWNLOAD_COMPLETE_TITLE).setMessage(getString(R.string.DOWNLOAD_COMPLETE_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             PlayerControllerActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), selectedView.findViewById(R.id.book_cover_thumbnail), selectedBook);
 
@@ -520,7 +520,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
                         }
                     })
-                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -678,10 +678,10 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         stopDownload();
         mProgressDialog.dismiss();
 
-        if (result.equalsIgnoreCase("UNAUTHORISED")){
+        if (result.toUpperCase().contains("UNAUTHORISED")){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.USER_UNAUTHORISED)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.USER_UNAUTHORISED_TITLE).setMessage(getString(R.string.USER_UNAUTHORISED_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -689,10 +689,10 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
             AlertDialog dialog = builder.create();
             dialog.show();
 
-        }else if(result.equalsIgnoreCase("NOTFOUND")){
+        }else if(result.toUpperCase().contains("NOTFOUND")){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }

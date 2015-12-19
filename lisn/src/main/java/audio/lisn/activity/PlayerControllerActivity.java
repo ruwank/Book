@@ -448,8 +448,8 @@ private void setBookTitle(int position){
         }else{
            AlertDialog.Builder builder = new AlertDialog.Builder(
                     this);
-            builder.setMessage(getString(R.string.no_internet)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -494,8 +494,8 @@ private void setBookTitle(int position){
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(
                             this);
-                    builder.setMessage(R.string.no_enough_space).setPositiveButton(
-                            "OK", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+                            R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -526,14 +526,17 @@ private void setBookTitle(int position){
                 mProgressDialog.dismiss();
                 starAudioPlayer();
             }else{
+
+
                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
                         this);
-                builder.setMessage("No Internet Connection").setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(getString(R.string.NO_INTERNET_TITLE)).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
                         });
+
                 android.app.AlertDialog dialog = builder.create();
                 dialog.show();
             }
@@ -851,8 +854,15 @@ private void setBookTitle(int position){
                 toast.show();
             }
         }else{
-            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
-            toast.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
     }
@@ -1037,10 +1047,11 @@ private void setBookTitle(int position){
             stopDownload();
             mProgressDialog.dismiss();
 
-            if (result.equalsIgnoreCase("UNAUTHORISED")){
+            if (result.toUpperCase().contains("UNAUTHORISED")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.USER_UNAUTHORISED)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+
+                builder.setTitle(R.string.USER_UNAUTHORISED_TITLE).setMessage(getString(R.string.USER_UNAUTHORISED_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -1048,10 +1059,10 @@ private void setBookTitle(int position){
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
-            }else if(result.equalsIgnoreCase("NOTFOUND")){
+            }else if(result.toUpperCase().contains("NOTFOUND")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }

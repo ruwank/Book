@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -742,8 +743,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         } else {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("No Internet Connection").setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -816,8 +817,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }else{
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
                     this);
-            builder.setMessage("No Internet Connection").setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(getString(R.string.NO_INTERNET_TITLE)).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -872,8 +873,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(
                             this);
-                    builder.setMessage(R.string.no_enough_space).setPositiveButton(
-                            "OK", new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+                            R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -905,8 +906,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(
                         this);
-                builder.setMessage("No Internet Connection").setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -923,14 +924,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         }else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.DOWNLOAD_COMPLETE)).setPositiveButton(
-                    "YES", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.DOWNLOAD_COMPLETE_TITLE).setMessage(getString(R.string.DOWNLOAD_COMPLETE_MESSAGE)).setPositiveButton(
+                    R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             PlayerControllerActivity.navigate(AudioBookDetailActivity.this,bookCoverImage, audioBook);
 
                         }
                     })
-                    .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -1020,14 +1021,40 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
 
     private void addToMyBillButtonPressed(){
-        if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
-            paymentOption=PaymentOption.OPTION_MOBITEL;
-            addToMobitelBill();
-        }else if(serviceProvider ==ServiceProvider.PROVIDER_ETISALAT){
-            paymentOption=PaymentOption.OPTION_ETISALAT;
-            addToEtisalatBill();
+        if(isMobileDataEnable()) {
+            if (serviceProvider == ServiceProvider.PROVIDER_MOBITEL) {
+                paymentOption = PaymentOption.OPTION_MOBITEL;
+                addToMobitelBill();
+            } else if (serviceProvider == ServiceProvider.PROVIDER_ETISALAT) {
+                paymentOption = PaymentOption.OPTION_ETISALAT;
+                addToEtisalatBill();
 
+            }
+        }else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(
+                    this);
+            builder.setTitle(R.string.NO_MOBILE_DATA_TITLE).setMessage(R.string.NO_MOBILE_DATA_MESSAGE).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
+
+    }
+    private boolean isMobileDataEnable(){
+
+        boolean mobileYN = false;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
+        {
+            mobileYN = Settings.Global.getInt(getContentResolver(), "mobile_data", 1) == 1;
+        }
+        else{
+            mobileYN = Settings.Secure.getInt(getContentResolver(), "mobile_data", 1) == 1;
+        }
+        return mobileYN;
 
     }
     private void addToBillServerConnect(){
@@ -1071,13 +1098,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             audioBook.setPurchase(true);
                             updateAudioBook(0);
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                            builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                                    "Now", new DialogInterface.OnClickListener() {
+                            builder.setTitle(getString(R.string.PAYMENT_COMPLETE_TITLE)).
+                                    setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
+                                    getString(R.string.BUTTON_NOW), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             downloadAudioFile();
                                         }
                                     })
-                                    .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                                    .setNegativeButton(getString(R.string.BUTTON_LATER), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
                                         }
@@ -1085,29 +1113,29 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             AlertDialog dialog = builder.create();
                             dialog.show();
                         } else if (response.toUpperCase().contains("EMPTY_NUMBER")) {
+                            String title="";
+                            String message="";
+                            title=getString(R.string.EMPTY_NUMBER_TITLE);
+
+                            if(paymentOption==PaymentOption.OPTION_MOBITEL){
+                                message=getString(R.string.EMPTY_NUMBER_MESSAGE_MOBITEL);
+                            } else if(paymentOption==PaymentOption.OPTION_ETISALAT){
+                                message=getString(R.string.EMPTY_NUMBER_MESSAGE_ETISALAT);
+
+                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                                    "OK", new DialogInterface.OnClickListener() {
+                            builder.setTitle(title).setMessage(message).setPositiveButton(
+                                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
                                         }
                                     });
                             AlertDialog dialog = builder.create();
                             dialog.show();
-                        } else if (response.toUpperCase().contains("FAILED")) {
+                        } else{
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                            builder.setMessage(getString(R.string.MOBILE_PAYMENT_FAILED)).setPositiveButton(
-                                    "OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            // FIRE ZE MISSILES!
-                                        }
-                                    });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }else{
-                            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                                    "OK", new DialogInterface.OnClickListener() {
+                            builder.setTitle(getString(R.string.SERVER_ERROR_TITLE)).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
                                         }
@@ -1124,8 +1152,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 progressDialog.dismiss();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -1147,12 +1175,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                     builder.setMessage("You will be charge RS:"+audioBook.getPrice()+". Are you sure want to continue?").setPositiveButton(
-                            "Ok", new DialogInterface.OnClickListener() {
+                            getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     addToBillServerConnect();
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getString(R.string.BUTTON_CANCEL), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -1164,8 +1192,16 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 }
 
             }else{
-                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
-                toast.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
             }
 
 
@@ -1183,13 +1219,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if(prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_ETISALAT, false)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                    builder.setMessage("You will be charge RS:"+audioBook.getPrice()+". Are you sure want to continue?").setPositiveButton(
-                            "Ok", new DialogInterface.OnClickListener() {
+                    builder.setMessage("You will be charge Rs:"+audioBook.getPrice()+". Are you sure want to continue?").setPositiveButton(
+                            getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     addToBillServerConnect();
                                 }
                             })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(getString(R.string.BUTTON_CANCEL), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
@@ -1201,8 +1237,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 }
 
             }else{
-                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
-                toast.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
 
 
@@ -1595,8 +1638,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         if (result.equalsIgnoreCase("UNAUTHORISED")){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.USER_UNAUTHORISED)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+
+            builder.setTitle(R.string.USER_UNAUTHORISED_TITLE).setMessage(getString(R.string.USER_UNAUTHORISED_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
@@ -1606,12 +1650,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         }else if(result.equalsIgnoreCase("NOTFOUND")){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
                     });
+
             AlertDialog dialog = builder.create();
             dialog.show();
         }
@@ -1703,8 +1748,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 toast.show();
             }
         }else{
-            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT);
-            toast.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
     }
@@ -1728,8 +1780,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             if (resultCode == Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -1743,13 +1795,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 audioBook.setPurchase(true);
                 updateAudioBook(0);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.PAYMENT_COMPLETE)).setPositiveButton(
-                        "Now", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.PAYMENT_COMPLETE_TITLE).setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
+                        R.string.BUTTON_NOW, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 downloadAudioFile();
                             }
                         })
-                        .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.BUTTON_LATER, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }
@@ -1761,8 +1813,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             if (resultCode == Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(getString(R.string.FILE_NOTFOUND)).setPositiveButton(
-                        "OK", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
                             }

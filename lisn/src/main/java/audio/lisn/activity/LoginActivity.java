@@ -169,8 +169,8 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             AlertDialog.Builder builder = new AlertDialog.Builder(
                     this);
-            builder.setMessage(getString(R.string.SERVER_ERROR)).setPositiveButton(
-                    "OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(getString(R.string.SERVER_ERROR_TITLE)).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
                         }
