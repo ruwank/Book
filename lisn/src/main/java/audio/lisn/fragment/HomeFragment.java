@@ -152,9 +152,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         topRatedBookContainer =(RecyclerView)view.findViewById(R.id.topRatedBookContainer);
         myBooksLinearLayout=(LinearLayout)view.findViewById(R.id.my_book_layout);
 
-        if(!AppController.getInstance().isUserLogin()){
-            myBooksLinearLayout.setVisibility(View.GONE);
-        }
+
         // get layout parameters for that view
 
 
@@ -311,6 +309,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     @Override
     public void onResume() {
         super.onResume();
+
+
         loadData();
         loadMyBookData();
 
@@ -557,34 +557,39 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
     }
     private void loadMyBookData(){
-        myBookList.clear();
-        DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getActivity().getApplicationContext());
-        downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
-        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList();
-        int count=0;
-        for (AudioBook item : hashMap.values()) {
-            count++;
-            myBookList.add(item);
-            if(count==3){
-                break;
+        if(AppController.getInstance().isUserLogin()) {
+
+            myBookList.clear();
+            DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(getActivity().getApplicationContext());
+            downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
+            HashMap<String, AudioBook> hashMap = downloadedAudioBook.getBookList();
+            int count = 0;
+            for (AudioBook item : hashMap.values()) {
+                count++;
+                myBookList.add(item);
+                if (count == 3) {
+                    break;
+                }
             }
-        }
-        if(count<1){
+            if (count < 1) {
+                myBooksLinearLayout.setVisibility(View.GONE);
+            } else {
+                myBooksLinearLayout.setVisibility(View.VISIBLE);
+
+            }
+            if (hashMap.size() > 3) {
+                myBookMore.setVisibility(View.VISIBLE);
+
+            } else {
+                myBookMore.setVisibility(View.GONE);
+            }
+            myBookViewAdapter = new MyBookViewAdapter(getActivity().getApplicationContext(), myBookList);
+            myBookViewAdapter.setMyBookSelectListener(this);
+            myBookContainer.setAdapter(myBookViewAdapter);
+        }else{
             myBooksLinearLayout.setVisibility(View.GONE);
-        }else{
-            myBooksLinearLayout.setVisibility(View.VISIBLE);
 
         }
-        if(hashMap.size()>3){
-            myBookMore.setVisibility(View.VISIBLE);
-
-        }else{
-            myBookMore.setVisibility(View.GONE);
-        }
-        myBookViewAdapter = new MyBookViewAdapter(getActivity().getApplicationContext(),myBookList);
-        myBookViewAdapter.setMyBookSelectListener(this);
-        myBookContainer.setAdapter(myBookViewAdapter);
-
 
     }
     private void updateMyBookContainer(){

@@ -131,8 +131,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }else{
             navigationView.inflateMenu(R.menu.navigation_menu_none_member);
             userName.setText("");
+            mNavItemId =R.id.drawer_home ;
+            navigateFragment(mNavItemId);
 
         }
+
     }
 
     private void initToolbar() {
@@ -205,6 +208,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 	}
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+            item.setEnabled(false);
+
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 drawer.openDrawer(GravityCompat.START);
@@ -216,7 +222,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
         return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -268,6 +273,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         if(menuItem.getItemId() ==R.id.drawer_about_us){
+            //menuItem.setChecked(false);
 
             Intent intent = new Intent(this,
                     AboutUsActivity.class);
@@ -275,6 +281,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         }
         else if(menuItem.getItemId() ==R.id.drawer_feedback){
+            //menuItem.setChecked(false);
 
             Intent intent = new Intent(this,
                     FeedBackActivity.class);
@@ -282,6 +289,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         }
         else if(menuItem.getItemId() ==R.id.drawer_contact_us){
+            //menuItem.setChecked(false);
 
             Intent intent = new Intent(this,
                     ContactusActivity.class);
@@ -294,7 +302,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         }else if(menuItem.getItemId() ==R.id.drawer_my_book){
             if(AppController.getInstance().isUserLogin()){
-                menuItem.setChecked(true);
                 mNavItemId = menuItem.getItemId();
                 navigateFragment(mNavItemId);
             }else{
@@ -305,7 +312,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         }
         else {
-            menuItem.setChecked(true);
+           // menuItem.setChecked(true);
             mNavItemId = menuItem.getItemId();
             navigateFragment(mNavItemId);
         }
@@ -325,11 +332,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onOptionButtonClicked(int buttonIndex) {
 
-        MenuItem menuItem=navigationView.getMenu().getItem(buttonIndex);
-
-            menuItem.setChecked(true);
-            mNavItemId = menuItem.getItemId();
-            navigateFragment(mNavItemId);
+//        MenuItem menuItem=navigationView.getMenu().getItem(buttonIndex);
+//
+//            menuItem.setChecked(false);
+//            mNavItemId = menuItem.getItemId();
+//            navigateFragment(mNavItemId);
 
 
     }

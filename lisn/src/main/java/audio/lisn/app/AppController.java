@@ -559,6 +559,7 @@ public class AppController extends Application {
         downloadedAudioBook.removeBook(getApplicationContext());
         this.userId="";
     }
+    //synchronizing profile
     private void verifyUser(){
 
 
@@ -587,14 +588,12 @@ public class AppController extends Application {
 
                         if(response.toUpperCase().contains("DUPLICATE_USER")){
                             removeUser();
+
                         }
                         else if(response.toUpperCase().contains("SUCCESS")){
                             Log.v("response", "verifyUser :" + response);
 
                         }
-
-                        //SUCCESS: UID=5
-
 
 
                     }

@@ -2,6 +2,7 @@ package audio.lisn.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText userName, password;
     private CallbackManager callbackManager;
     private LoginButton loginButton;
+    ProgressDialog progressDialog;
     // CallbackManager callbackManager;
 
 
@@ -73,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.app_name);
         loginButton = (LoginButton) findViewById(R.id.authButton);
-        loginButton.setReadPermissions(Arrays.asList("public_profile","email"));
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -106,7 +108,9 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         //printKeyHash(this);
-
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Synchronizing Profile...");
 
 
     }
@@ -162,6 +166,8 @@ public class LoginActivity extends AppCompatActivity {
 //		}
 //	}
     private  void userAddedSuccess(boolean status){
+        progressDialog.dismiss();
+
         if(status) {
             Intent returnIntent = new Intent();
             setResult(Constants.RESULT_SUCCESS, returnIntent);
@@ -197,6 +203,8 @@ public class LoginActivity extends AppCompatActivity {
         return myAndroidDeviceId;
     }
     private void addUser( JSONObject object){
+        progressDialog.show();
+
         Log.v("object",object.toString());
         String url=getString(R.string.add_user_url);
 
@@ -266,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
         // Map<String,String> postParam = new HashMap<String, String>();
 
         final String finalUserName = userName;
-        JsonUTF8StringRequest bookListReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
+        JsonUTF8StringRequest userAddReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -313,8 +321,8 @@ public class LoginActivity extends AppCompatActivity {
                 userAddedSuccess(false);
             }
         });
-        bookListReq.setShouldCache(false);
-        AppController.getInstance().addToRequestQueue(bookListReq, "tag_search_book");
+        userAddReq.setShouldCache(false);
+        AppController.getInstance().addToRequestQueue(userAddReq, "tag_user_add");
 
 
     }
@@ -526,51 +534,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
     private void downloadUserBook(String userId){
+
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
         downloadedAudioBook.removeBook(getApplicationContext());
         String url=getString(R.string.user_book_list_url);
 
-        /*
 
-        Map<String, String> postParam = new HashMap<String, String>();
-
-        try {
-            postParam.put("userid",userId);
-
-
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // Map<String,String> postParam = new HashMap<String, String>();
-
-        JsonUTF8StringRequest bookListReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        //SUCCESS: UID=5
-                        Log.v("response", "respondString :" + response);
-
-                        userAddedSuccess(true);
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("response","error :"+error.getMessage());
-                NetworkResponse response = error.networkResponse;
-                if(response !=null) {
-                    Log.v("response", response.statusCode + " data: " + response.data.toString());
-                }
-
-                // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());
-
-                userAddedSuccess(true);
-            }
-        });
-        */
         Map<String, String> params = new HashMap<String, String>();
         params.put("userid", userId);
 
@@ -587,7 +556,7 @@ public class LoginActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                userAddedSuccess(true);
 
             }
         });
@@ -598,6 +567,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void addToDownloadList(JSONArray jsonArray){
+
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
 
         for (int i = 0; (i < jsonArray.length() && i< 3) ; i++) {

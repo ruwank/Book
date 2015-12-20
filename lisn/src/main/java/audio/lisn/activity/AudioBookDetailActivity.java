@@ -419,7 +419,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         });
 
-        TextView paymentOptionOr = (TextView) findViewById(R.id.mobitelOption);
+       // TextView paymentOptionOr = (TextView) findViewById(R.id.mobitelOption);
         TextView buyFromCardDescription = (TextView) findViewById(R.id.buyFromCardButtonText);
 
         RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
@@ -517,7 +517,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             addToBillButton.setVisibility(View.GONE);
             btnPayFromCard.setVisibility(View.GONE);
-            paymentOptionOr.setVisibility(View.GONE);
+           // paymentOptionOr.setVisibility(View.GONE);
             buyFromCardDescription.setVisibility(View.GONE);
             // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
         }else{
@@ -529,7 +529,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
                     // btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
                     addToBillButton.setVisibility(View.VISIBLE);
-                    paymentOptionOr.setVisibility(View.VISIBLE);
+                    //paymentOptionOr.setVisibility(View.VISIBLE);
                     buyFromCardDescription.setVisibility(View.VISIBLE);
                     if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
                         addToBillButton.setText("Add to Mobitel bill");
@@ -541,7 +541,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
                 }else{
                     addToBillButton.setVisibility(View.GONE);
-                    paymentOptionOr.setVisibility(View.GONE);
+                   // paymentOptionOr.setVisibility(View.GONE);
                 }
                 btnPayFromCard.setVisibility(View.VISIBLE);
 
@@ -549,7 +549,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }else{
                 btnDownload.setText("Download");
                 addToBillButton.setVisibility(View.GONE);
-                paymentOptionOr.setVisibility(View.GONE);
+               // paymentOptionOr.setVisibility(View.GONE);
                 btnPayFromCard.setVisibility(View.GONE);
                 buyFromCardDescription.setVisibility(View.GONE);
 

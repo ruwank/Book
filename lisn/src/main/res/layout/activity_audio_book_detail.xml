@@ -290,15 +290,16 @@
                             android:textColor="@android:color/white"
                             android:text="Add to bill"
                             android:layout_centerVertical="true"
+                            android:layout_marginBottom="@dimen/layout_margin_large"
 
                             />
-                        <TextView
-                            android:id="@+id/mobitelOption"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:layout_margin="@dimen/layout_margin_large"
-                            android:text="Or"/>
+                        <!--<TextView-->
+                            <!--android:id="@+id/mobitelOption"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:gravity="center_horizontal"-->
+                            <!--android:layout_margin="@dimen/layout_margin_large"-->
+                            <!--android:text="Or"/>-->
                         <Button
                             android:id="@+id/buyFromCardButton"
                             android:layout_width="match_parent"
