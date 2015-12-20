@@ -11,26 +11,21 @@
 
 
     <TextView
-        android:id="@+id/description"
-
+        android:id="@+id/contact_us_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="We believe that reading great books (or any books, really)
-        makes a person happier, helps them learn and makes them grow. A wise man, Stephen King,
-        once said 'books are a uniquely portable magic'. We couldn't agree more.
-"
-        android:layout_margin="@dimen/activity_vertical_margin"
+        android:text=""
         />
 
     <Button
         android:id="@+id/btnEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="Email Us"
         android:drawableLeft="@android:drawable/ic_dialog_email"
-        android:layout_below="@+id/description"
+        android:layout_below="@+id/contact_us_text"
         />
 
 

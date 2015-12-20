@@ -15,6 +15,7 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
 
+        <item name="android:windowContentTransitions">true</item>
 
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
@@ -26,8 +27,8 @@
 
     <style name="bookRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/large_rating_stars</item>
-        <item name="android:minHeight">48dip</item>
-        <item name="android:maxHeight">48dip</item>
+        <item name="android:minHeight">32dip</item>
+        <item name="android:maxHeight">32dip</item>
     </style>
 
     <style name="bookSmallRatingBar" parent="@android:style/Widget.RatingBar">

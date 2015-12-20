@@ -10,16 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="We believe that reading great books (or any books, really) makes a person happier, helps them learn and makes them grow. A wise man, Stephen King, once said 'books are a uniquely portable magic'. We couldn't agree more.
-
-That's why we've created an audio book service that lets us, and all of the other audio book lovers out there, take our favorite books anywhere. We listen at work, at the gym and on weekend road trips, which makes finding the time to be inspired, educated and entertained by books really easy.
-
-We're all about combining our love of books with our passion for technology and innovation to create a service unlike any other, with features like cloudmark sync (patent pending) and intelligent restart (patent pending).
-
-To put it simply, we're a bunch of book and tech nerds doing cool things to make listening to books better.
-
-"
-        android:id="@+id/textView3"
+        android:text=""
+        android:id="@+id/about_us"
         android:layout_margin="@dimen/activity_vertical_margin"
          />
 </RelativeLayout>
