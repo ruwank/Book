@@ -29,7 +29,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -143,24 +142,30 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     public static void navigate(AppCompatActivity activity, View transitionImage, AudioBook audioBook) {
         Intent intent = new Intent(activity, AudioBookDetailActivity.class);
         intent.putExtra("audioBook", audioBook);
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage, TRANSITION_NAME);
+     //   Pair<View, String> imagePair = Pair.create((View) transitionImage, activity.getString(R.string.transition_book));
+        //Pair<View, String> holderPair = Pair.create((View) placeNameHolder, "tNameHolder");
+// 3
+       // ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity,imagePair);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionImage,activity.getString(R.string.transition_book));
         ActivityCompat.startActivity(activity, intent, options.toBundle());
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initActivityTransitions();
+        //postponeTransition(); // postpone shared element transition until we release it explicitly
+
+        // initActivityTransitions();
         setContentView(R.layout.activity_audio_book_detail);
         findServiceProvider();
 
-        ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
+       // ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
         downloadedFileCount=0;
         audioBook = (AudioBook) getIntent().getSerializableExtra("audioBook");
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        supportStartPostponedEnterTransition();
+       // supportStartPostponedEnterTransition();
 
         String itemTitle = audioBook.getEnglish_title();
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -192,6 +197,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                         });
 
             }
+
             @Override
             public void onSingleTap() {
                 showAudioPlayer();
@@ -200,6 +206,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         });
         updateData();
 
+        // Do all heavy processing here, activity will not enter transition until you explicitly call startPostponedEnterTransition()
+
+        // all heavy init() done
+       // startPostponedTransition();
 
     }
     @Override
@@ -919,15 +929,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
 
     private void starAudioPlayer() {
-        if(previousDownloadedFileCount==0){
-            PlayerControllerActivity.navigate(this,bookCoverImage, audioBook);
+        if (previousDownloadedFileCount == 0) {
+            PlayerControllerActivity.navigate(this, bookCoverImage, audioBook);
 
-        }else {
+        } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.DOWNLOAD_COMPLETE_TITLE).setMessage(getString(R.string.DOWNLOAD_COMPLETE_MESSAGE)).setPositiveButton(
                     R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            PlayerControllerActivity.navigate(AudioBookDetailActivity.this,bookCoverImage, audioBook);
+                            PlayerControllerActivity.navigate(AudioBookDetailActivity.this, bookCoverImage, audioBook);
 
                         }
                     })
@@ -1279,6 +1289,21 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             getWindow().setReturnTransition(transition);
         }
 
+    }
+    private void postponeTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+        } else {
+            ActivityCompat.postponeEnterTransition(this);
+        }
+    }
+
+    private void startPostponedTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            startPostponedEnterTransition();
+        } else {
+            ActivityCompat.startPostponedEnterTransition(this);
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

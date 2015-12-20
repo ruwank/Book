@@ -35,6 +35,8 @@
         <item>Top rated</item>
     </string-array>
 
+    <string name="transition_book">BookTransition</string>
+
     <string name="search_hint"> Title or Author</string>
     <string name="menu_item_search">Search</string>
     <string name="title_home">Home</string>
@@ -115,6 +117,20 @@
          6 month Subscriptions, or (B) if only a 12 month term is available,
          you would be charged for the 12 month Subscription.</p>
 
+
+        ]]>
+    </string>
+    <string name="about_us_text">
+        <![CDATA[
+        <p>Thank you for using Lisn! We are a 100% Sri Lankan start up company that is on a quest to revolutionize the literary culture in the island. At Lisn, we have set up an ambitious goal of making our rich literature available to anyone, anywhere in the world, anytime of the day.</p>
+        <p>Want to know more about the company? Please go ahead and write to us through the Contact Us page or through our Facebook page. Visit our website at www.lisn.audio.</p>
+
+        ]]>
+    </string>
+    <string name="contact_us_text">
+        <![CDATA[
+        <p>Are you an author, publisher, voice artist or a bookworm? Want to learn more or to be a part of Lisn? Then, you are at the right place.</p>
+        <p>Please go ahead and write to us with a short description of your interest and we will get back to you with in 2 working days.</p>
 
         ]]>
     </string>
