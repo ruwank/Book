@@ -1082,8 +1082,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         Map<String, String> params = new HashMap<String, String>();
         params.put("userid", AppController.getInstance().getUserId());
         params.put("bookid", audioBook.getBook_id());
-        //params.put("amount", audioBook.getPrice());
-        params.put("amount", "3.50");
+        params.put("amount", audioBook.getPrice());
 
 
         JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
