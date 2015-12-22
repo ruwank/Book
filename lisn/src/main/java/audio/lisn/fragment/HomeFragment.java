@@ -294,6 +294,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                     stopDownload();
                 }
             });
+            pDialog = new ProgressDialog(context);
+            pDialog.setMessage(getString(R.string.loading_text));
 
         } catch (Exception e) {
         }
@@ -326,7 +328,6 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     private void hidePDialog() {
         if (pDialog != null) {
             pDialog.dismiss();
-            pDialog = null;
         }
     }
     public void removePlayer(){
@@ -545,10 +546,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     private void showHiddenProgressBar(boolean show){
 
         if(show){
-            pDialog = new ProgressDialog(getActivity());
-            // Showing progress dialog before making http request
 
-            pDialog.setMessage(getString(R.string.loading_text));
             pDialog.show();
         }else{
             if(requestCount ==respondCount)
