@@ -345,8 +345,12 @@ public class AppController extends Application {
     }
 
     public String getPlayingBookId() {
+if(currentAudioBook != null){
+    return currentAudioBook.getBook_id();
+}else{
+    return "";
+}
 
-        return currentAudioBook.getBook_id();
     }
 
     public void bookmarkAudioBook(){
