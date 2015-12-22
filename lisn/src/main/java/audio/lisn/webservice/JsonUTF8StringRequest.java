@@ -2,6 +2,7 @@ package audio.lisn.webservice;
 
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -33,6 +34,18 @@ public class JsonUTF8StringRequest extends Request<String> {
         super(method, url, errorListener);
         this.listener = reponseListener;
         this.params = params;
+//        RetryPolicy mRetryPolicy = new DefaultRetryPolicy(
+//
+//                0,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+//        this.setRetryPolicy(mRetryPolicy);
+
+
+        this.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 
     protected Map<String, String> getParams()

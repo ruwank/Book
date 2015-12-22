@@ -56,8 +56,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
@@ -1069,6 +1071,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
     private void addToBillServerConnect(){
 
+        Log.v("addToBillServerConnect","addToBillServerConnect 1");
+
         String url = "";
 
         if(paymentOption==PaymentOption.OPTION_MOBITEL){
@@ -1089,10 +1093,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.v("addToBillServerConnect","addToBillServerConnect 2");
 
 
                         progressDialog.dismiss();
                         if (response.toUpperCase().contains("SUCCESS")) {
+                            Log.v("addToBillServerConnect","addToBillServerConnect 3");
 
                             audioBook.setPurchase(true);
                             updateAudioBook(0);
@@ -1132,6 +1138,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             AlertDialog dialog = builder.create();
                             dialog.show();
                         } else{
+                            Log.v("addToBillServerConnect","addToBillServerConnect 4");
+
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                             builder.setTitle(getString(R.string.SERVER_ERROR_TITLE)).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
                                     getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
@@ -1143,12 +1151,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             dialog.show();
                         }
 
+                        Log.v("addToBillServerConnect","addToBillServerConnect 5");
 
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
+                Log.v("addToBillServerConnect", "addToBillServerConnect 6");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                 builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
@@ -1161,16 +1171,28 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 dialog.show();
             }
         });
+        RetryPolicy mRetryPolicy = new DefaultRetryPolicy(
+
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+       // stringRequest.setRetryPolicy(mRetryPolicy);
+        Log.v("addToBillServerConnect","addToBillServerConnect 7");
 
         AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
     }
     private void addToMobitelBill(){
+        Log.v("addToMobitelBill","addToMobitelBill 1");
 
         if(AppController.getInstance().isUserLogin()){
+            Log.v("addToMobitelBill","addToMobitelBill 2");
 
             if (connectionDetector.isConnectingToInternet()) {
+                Log.v("addToMobitelBill","addToMobitelBill 3");
+
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 if(prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_MOBITEL, false)) {
+                    Log.v("addToMobitelBill","addToMobitelBill 4");
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                     builder.setTitle("Confirm Payment").setMessage("Rs:" + audioBook.getPrice() + " will be added to your Mobitel bill. Continue?").setPositiveButton(
@@ -1778,6 +1800,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v("onActivityResult","onActivityResult");
 
         if (requestCode == 1) {
             if(resultCode == Constants.RESULT_SUCCESS){

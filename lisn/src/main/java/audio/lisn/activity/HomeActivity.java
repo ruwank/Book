@@ -332,11 +332,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onOptionButtonClicked(int buttonIndex) {
 
-//        MenuItem menuItem=navigationView.getMenu().getItem(buttonIndex);
-//
-//            menuItem.setChecked(false);
-//            mNavItemId = menuItem.getItemId();
-//            navigateFragment(mNavItemId);
+        MenuItem menuItem=navigationView.getMenu().getItem(buttonIndex);
+
+            menuItem.setChecked(false);
+            mNavItemId = menuItem.getItemId();
+            navigateFragment(mNavItemId);
 
 
     }
