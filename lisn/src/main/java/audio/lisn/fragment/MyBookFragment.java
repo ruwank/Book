@@ -50,7 +50,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
     private RecyclerView myBookView;
     private static final String TAG = MyBookFragment.class.getSimpleName();
     private AudioBook selectedBook;
-    AudioBook.BookCategory bookCategory;
+    //AudioBook.BookCategory bookCategory;
 
 
     /**
@@ -67,10 +67,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
     public MyBookFragment() {
         // Required empty public constructor
     }
-    public MyBookFragment(AudioBook.BookCategory bookCategory) {
-        super();
-        this.bookCategory=bookCategory;
-    }
+
 
     private void sendMessage() {
             Intent intent = new Intent("preview_audio-event");

@@ -76,7 +76,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     private RecyclerView storeBookView;
     private static final String TAG = StoreFragment.class.getSimpleName();
     private AudioBook selectedBook;
-    AudioBook.BookCategory bookCategory;
+    int bookCategory;
     List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
     ProgressDialog mProgressDialog;
     View selectedView;
@@ -98,10 +98,10 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         // Required empty public constructor
     }
     public static StoreFragment newInstance() {
-        StoreFragment fragment = new StoreFragment(AudioBook.BookCategory.CATEGORY_1);
+        StoreFragment fragment = new StoreFragment(1);
         return fragment;
     }
-    public StoreFragment(AudioBook.BookCategory bookCategory) {
+    public StoreFragment(int bookCategory) {
         super();
         this.bookCategory=bookCategory;
     }
@@ -220,7 +220,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     private void downloadData() {
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("cat", "" + bookCategory.getValue());
+        params.put("cat", "" + bookCategory);
 
         String url = getString(R.string.book_category_url);
 
@@ -230,7 +230,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
                     @Override
                     public void onResponse(JSONArray jsonArray) {
 
-                        AppController.getInstance().setStoreBookForCategory(bookCategory.getValue(),jsonArray);
+                        AppController.getInstance().setStoreBookForCategory(bookCategory,jsonArray);
                         setData(jsonArray);
 
                     }
@@ -297,7 +297,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
 
             // Cache data not exist.
-            JSONArray jsonArray = AppController.getInstance().getStoreBookForCategory(bookCategory.getValue());
+            JSONArray jsonArray = AppController.getInstance().getStoreBookForCategory(bookCategory);
             if (jsonArray != null) {
                 setData(jsonArray);
             } else {

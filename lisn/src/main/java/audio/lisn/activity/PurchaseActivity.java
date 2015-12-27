@@ -68,10 +68,13 @@ public class PurchaseActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void completedPayment(boolean status){
+    private void completedPayment(int status){
         Intent returnIntent = new Intent();
-        if(status){
+        if(status==0){
             setResult(Constants.RESULT_SUCCESS, returnIntent);
+
+        }else if(status==2){
+            setResult(Constants.RESULT_SUCCESS_ALREADY, returnIntent);
 
         }else {
             setResult(Constants.RESULT_ERROR, returnIntent);
@@ -86,11 +89,15 @@ public class PurchaseActivity extends AppCompatActivity {
             Log.v("should","url:"+url);
 
             if(url.equalsIgnoreCase(getString(R.string.purchase_success_url))){
-                completedPayment(true);
+                completedPayment(0);
                 return true;
             }
             else if(url.equalsIgnoreCase(getString(R.string.purchase_failed_url))){
-                completedPayment(false);
+                completedPayment(1);
+
+                return true;
+            }else if(url.equalsIgnoreCase(getString(R.string.purchase_already_url))){
+                completedPayment(2);
 
                 return true;
             }

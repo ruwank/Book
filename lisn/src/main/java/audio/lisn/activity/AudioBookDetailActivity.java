@@ -1093,7 +1093,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.v("addToBillServerConnect","addToBillServerConnect 2");
+                        Log.v("addToBillServerConnect", "addToBillServerConnect 2");
 
 
                         progressDialog.dismiss();
@@ -1117,7 +1117,28 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                     });
                             AlertDialog dialog = builder.create();
                             dialog.show();
-                        } else if (response.toUpperCase().contains("EMPTY_NUMBER")) {
+                        } else if (response.toUpperCase().contains("ALREADY_PAID")) {
+                            Log.v("addToBillServerConnect","addToBillServerConnect 3");
+
+                            audioBook.setPurchase(true);
+                            updateAudioBook(0);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                            builder.setTitle(getString(R.string.ALREADY_PAID_TITLE)).
+                                    setMessage(getString(R.string.ALREADY_PAID_MESSAGE)).setPositiveButton(
+                                    getString(R.string.BUTTON_NOW), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            downloadAudioFile();
+                                        }
+                                    })
+                                    .setNegativeButton(getString(R.string.BUTTON_LATER), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // FIRE ZE MISSILES!
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                        else if (response.toUpperCase().contains("EMPTY_NUMBER")) {
                             String title="";
                             String message="";
                             title=getString(R.string.EMPTY_NUMBER_TITLE);
@@ -1849,6 +1870,26 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 dialog.show();
 
 
+            }else if (resultCode == Constants.RESULT_SUCCESS_ALREADY) {
+                Log.v("addToBillServerConnect","addToBillServerConnect 3");
+
+                audioBook.setPurchase(true);
+                updateAudioBook(0);
+                AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                builder.setTitle(getString(R.string.ALREADY_PAID_TITLE)).
+                        setMessage(getString(R.string.ALREADY_PAID_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_NOW), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                downloadAudioFile();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.BUTTON_LATER), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
             if (resultCode == Constants.RESULT_ERROR) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

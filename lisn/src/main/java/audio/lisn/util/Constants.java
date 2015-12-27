@@ -12,5 +12,6 @@ public class Constants {
     public static final int RESULT_SERVER_ERROR = 60;
     public static final int RESULT_ERROR = 61;
     public static final int RESULT_SUCCESS = 62;
+    public static final int RESULT_SUCCESS_ALREADY = 63;
 
 }

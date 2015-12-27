@@ -570,7 +570,7 @@ public class LoginActivity extends AppCompatActivity {
 
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
 
-        for (int i = 0; (i < jsonArray.length() && i< 3) ; i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
             try {
 
                 JSONObject obj = jsonArray.getJSONObject(i);

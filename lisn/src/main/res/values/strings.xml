@@ -14,7 +14,7 @@
     <string name="action_my_book">My Books</string>
     <string name="action_search">Search</string>
     <string name="action_edit_profile">Edit Profiles</string>
-    <string name="action_settings">Logout</string>
+    <string name="action_settings">Log out</string>
     <string name="action_feedback">Feedback</string>
     <string name="action_quick_tour">Quick Tour</string>
     <string name="action_about_us">About Us</string>
@@ -26,6 +26,7 @@
     <string name="action_detail">Details</string>
     <string name="action_purchase">Purchase</string>
     <string name="action_get">Get</string>
+    <string name="action_download">Download</string>
     <string name="action_delete">Delete</string>
 
 

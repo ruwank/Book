@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_purchase"
-        android:title="@string/action_get"/>
+        android:title="@string/action_download"/>
 
     <item
         android:id="@+id/action_preview"

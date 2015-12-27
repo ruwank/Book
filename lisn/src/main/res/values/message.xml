@@ -35,6 +35,11 @@
     <string name="NO_MOBILE_DATA_TITLE">Add to Bill</string>
     <string name="NO_MOBILE_DATA_MESSAGE">You can use add-to-bill option only with mobile data. Please enable mobile data and try again!</string>
 
+    <string name="ALREADY_PAID_TITLE">Already Paid</string>
+    <string name="ALREADY_PAID_MESSAGE">This book is already in your library. Do you want to start downloading?</string>
+
+
+
     <string name="BUTTON_OK">OK</string>
     <string name="BUTTON_NOW">NOW</string>
     <string name="BUTTON_LATER">LATER</string>

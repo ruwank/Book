@@ -43,6 +43,7 @@ import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.model.AudioBook;
+import audio.lisn.model.BookCategory;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.AudioPlayerService.AudioPlayerServiceBinder;
@@ -79,6 +80,7 @@ public class AppController extends Application {
 
     private static final int NOTIFY_ID=158;
     AlarmManager alarmManager = null;
+    private BookCategory[] bookCategories;
 
     @Override
     public void onCreate() {
@@ -740,5 +742,13 @@ if(currentAudioBook != null){
 
     public void setTopDownloadedBookList(JSONArray topDownloadedBookList) {
         this.topDownloadedBookList = topDownloadedBookList;
+    }
+
+    public BookCategory[] getBookCategories() {
+        return bookCategories;
+    }
+
+    public void setBookCategories(BookCategory[] bookCategories) {
+        this.bookCategories = bookCategories;
     }
 }

@@ -141,19 +141,19 @@ public class AudioBook implements Serializable{
     public enum SelectedAction {
         ACTION_MORE, ACTION_PREVIEW,ACTION_DETAIL,ACTION_PURCHASE,ACTION_PLAY,ACTION_DELETE
     }
-    public enum BookCategory {
-        CATEGORY_1(1), CATEGORY_2(2), CATEGORY_3(3),CATEGORY_OTHER(0);
-
-        private final int value;
-        private BookCategory(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-        //CATEGORY_HOME,CATEGORY_1, CATEGORY_2,CATEGORY_3,CATEGORY_4,CATEGORY_5
-    }
+//    public enum BookCategory {
+//        CATEGORY_1(1), CATEGORY_2(2), CATEGORY_3(3),CATEGORY_OTHER(0);
+//
+//        private final int value;
+//        private BookCategory(int value) {
+//            this.value = value;
+//        }
+//
+//        public int getValue() {
+//            return value;
+//        }
+//        //CATEGORY_HOME,CATEGORY_1, CATEGORY_2,CATEGORY_3,CATEGORY_4,CATEGORY_5
+//    }
 
     public AudioBook() {
     }
