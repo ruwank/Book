@@ -86,12 +86,18 @@ public class LoginActivity extends AppCompatActivity {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.v("response","addUser onCompleted :"+response.getJSONObject());
                                 addUser(object);
 
                             }
                         });
-
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,email,first_name,middle_name,last_name,name,link");
+                request.setParameters(parameters);
                 request.executeAsync();
+
+
+
 
 
             }
@@ -205,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
     private void addUser( JSONObject object){
         progressDialog.show();
 
-        Log.v("object",object.toString());
+        Log.v("object","addUser : "+object.toString());
         String url=getString(R.string.add_user_url);
 
         String username="NULL";

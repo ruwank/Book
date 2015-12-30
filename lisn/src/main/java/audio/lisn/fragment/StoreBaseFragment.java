@@ -122,6 +122,7 @@ public class StoreBaseFragment extends Fragment {
             }
         }else{
             mSlidingTabLayout.setViewPager(mViewPager);
+            sectionsPagerAdapter.notifyDataSetChanged();
 
         }
         // END_INCLUDE (setup_slidingtablayout)
@@ -142,8 +143,9 @@ private void updateCategoryList(JSONArray jsonArray){
 
     }
     AppController.getInstance().setBookCategories(bookCategories);
-    sectionsPagerAdapter.notifyDataSetChanged();
     mSlidingTabLayout.setViewPager(mViewPager);
+    sectionsPagerAdapter.notifyDataSetChanged();
+
 
 }
     private void downloadCategoryList() {

@@ -84,10 +84,13 @@ public class FileDownloadTask extends AsyncTask<String, Integer, String> {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty( "charset", "utf-8");
-                connection.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
-                connection.setUseCaches (false);
+                connection.setRequestProperty("Content-Length", Integer.toString(postDataLength));
+                connection.setUseCaches(false);
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
+                connection.setConnectTimeout(30000);
+
+                connection.setReadTimeout(30000);
                 DataOutputStream printout = new DataOutputStream(connection.getOutputStream ());
                 // printout.write(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
                 printout.writeBytes(urlParameters.toString());
