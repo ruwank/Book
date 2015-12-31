@@ -29,6 +29,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.os.ResultReceiver;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -79,6 +80,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.BookReview;
 import audio.lisn.model.DownloadedAudioBook;
+import audio.lisn.service.DownloadService;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
@@ -822,9 +824,17 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             if (file.exists()) {
                 file.delete();
             }
-            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
-            downloadTask.execute(dirPath, "" + filePart);
-            downloadingList.add(downloadTask);
+
+            Intent intent = new Intent(this, DownloadService.class);
+            intent.putExtra("book_id", audioBook.getBook_id());
+            intent.putExtra("filePart", filePart);
+            intent.putExtra("dirPath", dirPath);
+            intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+            startService(intent);
+
+//            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
+//            downloadTask.execute(dirPath, "" + filePart);
+//            downloadingList.add(downloadTask);
 
         }else{
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
@@ -1198,7 +1208,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
        // stringRequest.setRetryPolicy(mRetryPolicy);
-        Log.v("addToBillServerConnect","addToBillServerConnect 7");
+        Log.v("addToBillServerConnect", "addToBillServerConnect 7");
 
         AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
     }
@@ -1918,4 +1928,45 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             playerControllerView.updateView();
         }
     };
+
+    private class DownloadReceiver extends ResultReceiver {
+        public DownloadReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == DownloadService.UPDATE_PROGRESS) {
+                int progress = resultData.getInt("progress");
+//                mProgressDialog.setProgress(progress);
+//                if (progress == 100) {
+//                    mProgressDialog.dismiss();
+//                }
+
+                String result=resultData.getString("result");
+                String file_name=resultData.getString("file_name");
+                ;
+
+                    if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
+                        showMessage("UNAUTHORISED");
+
+                    }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
+                        showMessage("NOTFOUND");
+
+                    }else {
+                        mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
+
+                        downloadedFileCount++;
+                        if (result == null) {
+                            updateAudioBook(Integer.parseInt(file_name));
+
+                            if (totalAudioFileCount == downloadedFileCount) {
+                                downloadAudioFile();
+                            }
+                        }
+                    }
+            }
+        }
+    }
 }

@@ -86,6 +86,7 @@
         <!-- android:theme="@android:style/Theme.Translucent.NoTitleBar" /> -->
 
         <service android:name=".util.AudioPlayerService" />
+        <service android:name=".service.DownloadService" />
         <service android:name=".util.PreviewAudioPlayerService" />
 
         <receiver android:name=".util.PlayerActionReceiver" />

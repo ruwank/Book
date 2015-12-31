@@ -74,10 +74,10 @@ public class FileDownloadTask extends AsyncTask<String, Integer, String> {
             // CipherOutputStream cos = null;
             HttpURLConnection connection = null;
             try {
-                JSONObject jsonParam = new JSONObject();
-                jsonParam.put("userid", AppController.getInstance().getUserId());
-                jsonParam.put("bookid", book_id);
-                jsonParam.put("part", fileName);
+//                JSONObject jsonParam = new JSONObject();
+//                jsonParam.put("userid", AppController.getInstance().getUserId());
+//                jsonParam.put("bookid", book_id);
+//                jsonParam.put("part", fileName);
 
                 // connect to url
                 URL url = new URL(urlString);
@@ -152,11 +152,10 @@ public class FileDownloadTask extends AsyncTask<String, Integer, String> {
             } finally // closing streams and connection
             {
                 try {
-
-
                     if (input != null)
                         input.close();
                 } catch (IOException ignored) {
+
                 }
 
                 if (connection != null)
