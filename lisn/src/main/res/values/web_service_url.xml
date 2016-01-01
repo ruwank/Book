@@ -9,7 +9,7 @@
     <string name="search_book_url">https://app.lisn.audio/api/1.1/searchedbooklist.php</string>
     <string name="book_category_list_url">https://app.lisn.audio/api/1.1/categorylist.php</string>
     <string name="book_category_url">https://app.lisn.audio/api/1.1/categorybooklist.php</string>
-    <string name="book_download_url">https://app.lisn.audio/api/1.1/download.php</string>
+    <string name="book_download_url">http://app.lisn.audio/api/1.1/download.php</string>
     <string name="add_review_url">https://app.lisn.audio/api/1.1/reviewactivity.php</string>
     <string name="purchase_book_url">https://app.lisn.audio/spgw/1.5.6/payment/init.php</string>
     <string name="purchase_success_url">http://app.lisn.audio/spgw/1.5.6/payment/success.php</string>

@@ -89,7 +89,6 @@ import audio.lisn.util.CustomTypeFace;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.util.WCLinearLayoutManager;
 import audio.lisn.view.PlayerControllerView;
-import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 
@@ -113,7 +112,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     ProgressDialog mProgressDialog;
     ProgressDialog progressDialog;
     int totalAudioFileCount, downloadedFileCount;
-    List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
+    //List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
+    List<Intent> downloadingList = new ArrayList<Intent>();
     ImageView bookCoverImage;
     private PopupWindow pwindo;
     int previousDownloadedFileCount;
@@ -652,8 +652,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     private void stopDownload(){
         for (int i = 0; i < downloadingList.size(); i++) {
-            FileDownloadTask downloadTask = downloadingList.get(i);
-            downloadTask.cancel(true);
+            Intent intent=downloadingList.get(i);
+            stopService(intent);
+           // FileDownloadTask downloadTask = downloadingList.get(i);
+           // downloadTask.cancel(true);
+
         }
     }
 
@@ -827,10 +830,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             Intent intent = new Intent(this, DownloadService.class);
             intent.putExtra("book_id", audioBook.getBook_id());
-            intent.putExtra("filePart", filePart);
+            intent.putExtra("filePart", ""+filePart);
             intent.putExtra("dirPath", dirPath);
             intent.putExtra("receiver", new DownloadReceiver(new Handler()));
             startService(intent);
+            downloadingList.add(intent);
+
 
 //            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
 //            downloadTask.execute(dirPath, "" + filePart);
@@ -1938,6 +1943,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
             if (resultCode == DownloadService.UPDATE_PROGRESS) {
+                Log.v("DownloadService","DownloadService :"+resultData);
                 int progress = resultData.getInt("progress");
 //                mProgressDialog.setProgress(progress);
 //                if (progress == 100) {
@@ -1946,7 +1952,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
                 String result=resultData.getString("result");
                 String file_name=resultData.getString("file_name");
-                ;
+
 
                     if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
                         showMessage("UNAUTHORISED");
@@ -1954,17 +1960,19 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
                         showMessage("NOTFOUND");
 
-                    }else {
+                    }else if(result != null && result.equalsIgnoreCase("OK")){
+                        Log.v("DownloadService","DownloadService getDownloadedChapter :"+audioBook.getDownloadedChapter().size());
+
                         mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
 
                         downloadedFileCount++;
-                        if (result == null) {
+                       // if (result == null) {
                             updateAudioBook(Integer.parseInt(file_name));
 
                             if (totalAudioFileCount == downloadedFileCount) {
                                 downloadAudioFile();
                             }
-                        }
+                       // }
                     }
             }
         }

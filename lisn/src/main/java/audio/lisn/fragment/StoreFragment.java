@@ -43,18 +43,14 @@ import java.util.Map;
 import audio.lisn.R;
 import audio.lisn.activity.AudioBookDetailActivity;
 import audio.lisn.activity.PlayerControllerActivity;
-import audio.lisn.activity.PurchaseActivity;
 import audio.lisn.adapter.StoreBookViewAdapter;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.ConnectionDetector;
-import audio.lisn.util.Constants;
 import audio.lisn.webservice.FileDownloadTask;
-import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
-import audio.lisn.webservice.JsonUTF8StringRequest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,7 +60,7 @@ import audio.lisn.webservice.JsonUTF8StringRequest;
  * Use the {@link StoreFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StoreFragment extends Fragment implements  StoreBookViewAdapter.StoreBookSelectListener ,FileDownloadTaskListener{
+public class StoreFragment extends Fragment implements  StoreBookViewAdapter.StoreBookSelectListener{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
 
@@ -331,182 +327,182 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.v("onActivityResult", "onActivityResult StoreFragment");
 
-        if (requestCode == 33) {
-            if(resultCode ==  Constants.RESULT_SUCCESS){
-                if (Float.parseFloat(selectedBook.getPrice()) > 0) {
-                    Intent intent = new Intent(getActivity(),
-                            PurchaseActivity.class);
-                    intent.putExtra("audioBook", selectedBook);
-                    startActivityForResult(intent, 34);
-
-                }else{
-                    logUserDownload();
-                }
-
-            }
-            if (resultCode ==  Constants.RESULT_ERROR) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
-                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // FIRE ZE MISSILES!
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        }
-        else if (requestCode == 34) {
-            if(resultCode == Constants.RESULT_SUCCESS){
-                if(selectedBook !=null) {
-                    selectedBook.setPurchase(true);
-                    updateAudioBook(0);
-                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-                    builder.setTitle(R.string.PAYMENT_COMPLETE_TITLE).setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
-                            R.string.BUTTON_NOW, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    downloadAudioFile();
-                                }
-                            })
-                            .setNegativeButton(R.string.BUTTON_LATER, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // FIRE ZE MISSILES!
-                                }
-                            });
-                    android.app.AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            }
-            if (resultCode == Constants.RESULT_ERROR) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
-                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // FIRE ZE MISSILES!
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        }
+//        if (requestCode == 33) {
+//            if(resultCode ==  Constants.RESULT_SUCCESS){
+//                if (Float.parseFloat(selectedBook.getPrice()) > 0) {
+//                    Intent intent = new Intent(getActivity(),
+//                            PurchaseActivity.class);
+//                    intent.putExtra("audioBook", selectedBook);
+//                    startActivityForResult(intent, 34);
+//
+//                }else{
+//                    logUserDownload();
+//                }
+//
+//            }
+//            if (resultCode ==  Constants.RESULT_ERROR) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+//                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                // FIRE ZE MISSILES!
+//                            }
+//                        });
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            }
+//        }
+//        else if (requestCode == 34) {
+//            if(resultCode == Constants.RESULT_SUCCESS){
+//                if(selectedBook !=null) {
+//                    selectedBook.setPurchase(true);
+//                    updateAudioBook(0);
+//                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
+//                    builder.setTitle(R.string.PAYMENT_COMPLETE_TITLE).setMessage(getString(R.string.PAYMENT_COMPLETE_MESSAGE)).setPositiveButton(
+//                            R.string.BUTTON_NOW, new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    downloadAudioFile();
+//                                }
+//                            })
+//                            .setNegativeButton(R.string.BUTTON_LATER, new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    // FIRE ZE MISSILES!
+//                                }
+//                            });
+//                    android.app.AlertDialog dialog = builder.create();
+//                    dialog.show();
+//                }
+//            }
+//            if (resultCode == Constants.RESULT_ERROR) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+//                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                // FIRE ZE MISSILES!
+//                            }
+//                        });
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            }
+//        }
     }
 
-    private void downloadAudioFile() {
-        String dirPath = AppUtils.getDataDirectory(getContext())
-                + selectedBook.getBook_id()+ File.separator;
-        File fileDir = new File(dirPath);
-        if (!fileDir.exists()) {
-            fileDir.mkdirs();
-
-        }
-
-        if (connectionDetector.isConnectingToInternet()) {
-            //  updateAudioBook(null,null);
-
-
-            mProgressDialog.show();
-
-            downloadedFileCount=0;
-            // String [] file_urls=audioBook.getAudio_file_urls();
-            //totalAudioFileCount=file_urls.length;
-            totalAudioFileCount=0;
-            downloadingList.clear();
-
-            //  HashMap fileList= audioBook.getDownloadedFileList();
-
-            for (int filePart=1; filePart<=(selectedBook.getAudioFileCount()); filePart++){
-                File file = new File(dirPath +filePart+".lisn");
-
-                if (!file.exists() ||  !(selectedBook.getDownloadedChapter().contains(filePart)) ) {
-                    downloadAudioFileFromUrl(filePart);
-                    totalAudioFileCount++;
-                }
-
-
-            }
-            if(downloadedFileCount == totalAudioFileCount){
-                mProgressDialog.dismiss();
-                starAudioPlayer();
-
-
-            }else{
-                if(AppUtils.getAvailableMemory() < selectedBook.getFileSize()){
-                    stopDownload();
-
-                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
-                        getActivity());
-                builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
-                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // FIRE ZE MISSILES!
-                            }
-                        });
-                android.app.AlertDialog dialog = builder.create();
-                dialog.show();
-
-            }else{
-                mProgressDialog.setMessage("Downloading " + (selectedBook.getDownloadedChapter().size() + 1) + " of " + selectedBook.getAudioFileCount());
-            }
-
-            }
-
-        } else {
-
-            downloadedFileCount=0;
-            totalAudioFileCount=0;
-
-            for (int filePart=1; filePart<=(selectedBook.getAudioFileCount()); filePart++){
-                File file = new File(dirPath +filePart+".lisn");
-                if (!file.exists()) {
-                    totalAudioFileCount++;
-                }
-
-
-            }
-            if(downloadedFileCount ==totalAudioFileCount){
-                mProgressDialog.dismiss();
-                starAudioPlayer();
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        getActivity());
-                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
-                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // FIRE ZE MISSILES!
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        }
-    }
-    private void downloadAudioFileFromUrl(int filePart){
-
-        if (connectionDetector.isConnectingToInternet()) {
-            String dirPath = AppUtils.getDataDirectory(getContext())
-                    + selectedBook.getBook_id()+File.separator;
-            File file = new File(dirPath + filePart + ".lisn");
-
-            if (file.exists()) {
-                file.delete();
-            }
-            FileDownloadTask downloadTask =  new FileDownloadTask(getContext(),this,selectedBook.getBook_id());
-            downloadTask.execute(dirPath, "" + filePart);
-            downloadingList.add(downloadTask);
-
-        }else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(
-                    getActivity());
-            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
-                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // FIRE ZE MISSILES!
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-    }
+//    private void downloadAudioFile() {
+//        String dirPath = AppUtils.getDataDirectory(getContext())
+//                + selectedBook.getBook_id()+ File.separator;
+//        File fileDir = new File(dirPath);
+//        if (!fileDir.exists()) {
+//            fileDir.mkdirs();
+//
+//        }
+//
+//        if (connectionDetector.isConnectingToInternet()) {
+//            //  updateAudioBook(null,null);
+//
+//
+//            mProgressDialog.show();
+//
+//            downloadedFileCount=0;
+//            // String [] file_urls=audioBook.getAudio_file_urls();
+//            //totalAudioFileCount=file_urls.length;
+//            totalAudioFileCount=0;
+//            downloadingList.clear();
+//
+//            //  HashMap fileList= audioBook.getDownloadedFileList();
+//
+//            for (int filePart=1; filePart<=(selectedBook.getAudioFileCount()); filePart++){
+//                File file = new File(dirPath +filePart+".lisn");
+//
+//                if (!file.exists() ||  !(selectedBook.getDownloadedChapter().contains(filePart)) ) {
+//                    downloadAudioFileFromUrl(filePart);
+//                    totalAudioFileCount++;
+//                }
+//
+//
+//            }
+//            if(downloadedFileCount == totalAudioFileCount){
+//                mProgressDialog.dismiss();
+//                starAudioPlayer();
+//
+//
+//            }else{
+//                if(AppUtils.getAvailableMemory() < selectedBook.getFileSize()){
+//                    stopDownload();
+//
+//                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
+//                        getActivity());
+//                builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+//                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                // FIRE ZE MISSILES!
+//                            }
+//                        });
+//                android.app.AlertDialog dialog = builder.create();
+//                dialog.show();
+//
+//            }else{
+//                mProgressDialog.setMessage("Downloading " + (selectedBook.getDownloadedChapter().size() + 1) + " of " + selectedBook.getAudioFileCount());
+//            }
+//
+//            }
+//
+//        } else {
+//
+//            downloadedFileCount=0;
+//            totalAudioFileCount=0;
+//
+//            for (int filePart=1; filePart<=(selectedBook.getAudioFileCount()); filePart++){
+//                File file = new File(dirPath +filePart+".lisn");
+//                if (!file.exists()) {
+//                    totalAudioFileCount++;
+//                }
+//
+//
+//            }
+//            if(downloadedFileCount ==totalAudioFileCount){
+//                mProgressDialog.dismiss();
+//                starAudioPlayer();
+//            }else{
+//                AlertDialog.Builder builder = new AlertDialog.Builder(
+//                        getActivity());
+//                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+//                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                // FIRE ZE MISSILES!
+//                            }
+//                        });
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            }
+//        }
+//    }
+//    private void downloadAudioFileFromUrl(int filePart){
+//
+//        if (connectionDetector.isConnectingToInternet()) {
+//            String dirPath = AppUtils.getDataDirectory(getContext())
+//                    + selectedBook.getBook_id()+File.separator;
+//            File file = new File(dirPath + filePart + ".lisn");
+//
+//            if (file.exists()) {
+//                file.delete();
+//            }
+//            FileDownloadTask downloadTask =  new FileDownloadTask(getContext(),this,selectedBook.getBook_id());
+//            downloadTask.execute(dirPath, "" + filePart);
+//            downloadingList.add(downloadTask);
+//
+//        }else{
+//            AlertDialog.Builder builder = new AlertDialog.Builder(
+//                    getActivity());
+//            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+//                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            // FIRE ZE MISSILES!
+//                        }
+//                    });
+//            AlertDialog dialog = builder.create();
+//            dialog.show();
+//        }
+//    }
     private void starAudioPlayer() {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -541,38 +537,38 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
     }
 
-    private void logUserDownload(){
-        saveCoverImage();
-        showProgress();
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("userid", AppController.getInstance().getUserId());
-        params.put("bookid", selectedBook.getBook_id());
-        params.put("actid", ""+1);
-        params.put("content", "" + 1);
-
-        String url = getResources().getString(R.string.user_action_url);
-
-        JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url,params,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.v("response","response:"+response);
-                        hidePDialog();
-                        downloadAudioFile();
-                        selectedBook.setPurchase(true);
-                        updateAudioBook(0);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                hidePDialog();
-            }
-        });
-
-
-        AppController.getInstance().addToRequestQueue(stringRequest, "tag_download_book");
-
-    }
+//    private void logUserDownload(){
+//        saveCoverImage();
+//        showProgress();
+//        Map<String, String> params = new HashMap<String, String>();
+//        params.put("userid", AppController.getInstance().getUserId());
+//        params.put("bookid", selectedBook.getBook_id());
+//        params.put("actid", ""+1);
+//        params.put("content", "" + 1);
+//
+//        String url = getResources().getString(R.string.user_action_url);
+//
+//        JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url,params,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        Log.v("response","response:"+response);
+//                        hidePDialog();
+//                        downloadAudioFile();
+//                        selectedBook.setPurchase(true);
+//                        updateAudioBook(0);
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                hidePDialog();
+//            }
+//        });
+//
+//
+//        AppController.getInstance().addToRequestQueue(stringRequest, "tag_download_book");
+//
+//    }
     private void saveCoverImage() {
         String dirPath = AppUtils.getDataDirectory(selectedView.getContext())
                 + selectedBook.getBook_id() + File.separator;
@@ -654,28 +650,28 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
     }
 
-    @Override
-    public void onPostExecute(String result, String file_name) {
-        if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
-            showMessage("UNAUTHORISED");
-
-        }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
-            showMessage("NOTFOUND");
-
-        }else {
-            mProgressDialog.setMessage("Downloading " + (selectedBook.getDownloadedChapter().size() + 1) + " of " + selectedBook.getAudioFileCount());
-
-            downloadedFileCount++;
-            if (result == null) {
-                updateAudioBook(Integer.parseInt(file_name));
-
-                if (totalAudioFileCount == downloadedFileCount) {
-                    downloadAudioFile();
-                }
-            }
-        }
-
-    }
+//    @Override
+//    public void onPostExecute(String result, String file_name) {
+//        if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
+//            showMessage("UNAUTHORISED");
+//
+//        }else if(result != null && result.equalsIgnoreCase("NOTFOUND")){
+//            showMessage("NOTFOUND");
+//
+//        }else {
+//            mProgressDialog.setMessage("Downloading " + (selectedBook.getDownloadedChapter().size() + 1) + " of " + selectedBook.getAudioFileCount());
+//
+//            downloadedFileCount++;
+//            if (result == null) {
+//                updateAudioBook(Integer.parseInt(file_name));
+//
+//                if (totalAudioFileCount == downloadedFileCount) {
+//                    downloadAudioFile();
+//                }
+//            }
+//        }
+//
+//    }
     private void showMessage(String result){
         stopDownload();
         mProgressDialog.dismiss();

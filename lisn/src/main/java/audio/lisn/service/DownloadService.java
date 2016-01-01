@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.os.ResultReceiver;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
@@ -12,8 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
@@ -45,7 +46,9 @@ public class DownloadService extends IntentService {
             }
 
             URL url = new URL(urlToDownload);
-            URLConnection connection = url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+
             DataOutputStream printout = new DataOutputStream(connection.getOutputStream ());
             printout.writeBytes(urlParameters.toString());
 
@@ -76,12 +79,15 @@ public class DownloadService extends IntentService {
             output.close();
             input.close();
         } catch (IOException e) {
+            Log.v("DownloadService","DownloadService: "+e.getMessage());
             e.printStackTrace();
         }
+        Log.v("DownloadService","DownloadService: "+book_id);
 
         Bundle resultData = new Bundle();
         resultData.putString("file_name", filePart);
         resultData.putString("result", "OK");
         receiver.send(UPDATE_PROGRESS, resultData);
     }
+
 }
