@@ -277,6 +277,7 @@ public class AppController extends Application {
 
                 }
 
+
             }else{
                 fileIndex=fileList.length;
             }

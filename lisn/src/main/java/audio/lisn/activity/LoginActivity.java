@@ -13,6 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -59,6 +61,9 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private LoginButton loginButton;
     ProgressDialog progressDialog;
+    private String userLoginId;
+    private static final int REQUEST_WRITE_STORAGE = 115;
+
     // CallbackManager callbackManager;
 
 
@@ -282,6 +287,7 @@ public class LoginActivity extends AppCompatActivity {
         final String finalUserName = userName;
         JsonUTF8StringRequest userAddReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
                 new Response.Listener<String>() {
+
                     @Override
                     public void onResponse(String response) {
                         Log.v("response", "response :" + response);
@@ -299,7 +305,9 @@ public class LoginActivity extends AppCompatActivity {
                                     uid = separated2[1].trim();
                                 }
                                 loginSuccess(uid, finalUserName);
-                                downloadUserBook(uid);
+                                userLoginId=uid;
+
+                                downloadUserBook();
 
                                 Log.v("response", "uid :" + uid);
                             }else{
@@ -539,49 +547,55 @@ public class LoginActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void downloadUserBook(String userId){
+    private void downloadUserBook(){
+        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);}
+        else {
+            DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(getApplicationContext());
+            downloadedAudioBook.removeBook(getApplicationContext());
+            String url = getString(R.string.user_book_list_url);
 
-        DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
-        downloadedAudioBook.removeBook(getApplicationContext());
-        String url=getString(R.string.user_book_list_url);
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("userid", userLoginId);
 
+            JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST, url, params,
+                    new Response.Listener<JSONArray>() {
+                        @Override
+                        public void onResponse(JSONArray jsonArray) {
+                            Log.v("response", "respondString :" + jsonArray);
+                            addToDownloadList(jsonArray);
+                            userAddedSuccess(true);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    userAddedSuccess(true);
 
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("userid", userId);
-
-
-
-        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST,url, params,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray jsonArray) {
-                        Log.v("response", "respondString :" + jsonArray);
-                        addToDownloadList(jsonArray);
-                        userAddedSuccess(true);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                userAddedSuccess(true);
-
-            }
-        });
-        bookListReq.setShouldCache(true);
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(bookListReq, "tag_boo_list");
+                }
+            });
+            bookListReq.setShouldCache(true);
+            // Adding request to request queue
+            AppController.getInstance().addToRequestQueue(bookListReq, "tag_boo_list");
+        }
 
     }
 
     private void addToDownloadList(JSONArray jsonArray){
 
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
-
+Log.v("jsonArray","jsonArray :"+jsonArray);
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
 
                 JSONObject obj = jsonArray.getJSONObject(i);
                 AudioBook book = new AudioBook(obj, i, getApplicationContext());
                 book.setPurchase(true);
+                book.setDownloaded(true);
+
                 downloadedAudioBook.addBookToList(getApplicationContext(), book.getBook_id(), book);
 
             } catch (JSONException e) {
@@ -613,6 +627,27 @@ public class LoginActivity extends AppCompatActivity {
 //
 //
 //        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+
+
+        switch (requestCode)
+        {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    downloadUserBook();
+                    //reload my activity with permission granted or use the features what required the permission
+                } else
+                {
+                    Toast.makeText(this, "The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                }
+            }
+
+        }
+
     }
 
 

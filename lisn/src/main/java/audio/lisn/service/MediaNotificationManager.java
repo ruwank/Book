@@ -326,7 +326,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
         */
         art = BitmapFactory.decodeResource(mService.getResources(),
-                R.drawable.ic_launcher);
+                R.drawable.ic_notification);
 
 
         notificationBuilder

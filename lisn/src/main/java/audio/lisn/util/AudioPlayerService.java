@@ -86,14 +86,8 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 			  mediaPlayer.reset();  
 			  mediaPlayer.release();
 			  mediaPlayer = null;
-	        }  
-	        mediaPlayer = new MediaPlayer();
-	        /*  */  
-	        mediaPlayer.setOnCompletionListener(this);
-	    	mediaPlayer.setOnPreparedListener(this);
-          mediaPlayer.setOnErrorListener(this);
-
-          mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+	        }
+          createPlayer();
           mAudioFocusHelper = new AudioFocusHelper(getApplicationContext(), this);
 
           // Register mMessageReceiver to receive messages.
@@ -103,9 +97,18 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 
 
       }
+    private void createPlayer(){
+        mediaPlayer = new MediaPlayer();
+	        /*  */
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.setOnPreparedListener(this);
+        mediaPlayer.setOnErrorListener(this);
+
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    }
 	  private void playDecodedAudioFile(byte[] mp3SoundByteArray) {
 		    try {
-
+        Log.v("playDecodedAudioFile","playDecodedAudioFile:");
                 //int fileIndex= AppController.getInstance().fileIndex;
 		        // create temp file that will hold byte array
 		        File tempMp3 = File.createTempFile("audiobook", "mp3", getCacheDir());
@@ -125,6 +128,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
                 mediaPlayer.prepareAsync();
 
 		    } catch (Exception ex) {
+                Log.v("playDecodedAudioFile","playDecodedAudioFile Exception: "+ex.toString());
 
 		        String s = ex.toString();
 		        ex.printStackTrace();
@@ -317,6 +321,11 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
         if (mediaPlayer != null) {
             mediaPlayer.reset();
             playAudioBook(filePath);
+        }else {
+            createPlayer();
+            playAudioBook(filePath);
+            Log.v("playAudioFile ","filePath mediaPlayer null: "+filePath);
+
         }
 
     }
@@ -337,7 +346,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 
     // Send an Intent with an action named "my-event".
     private void sendMessage() {
-        if(mediaPlayer.isPlaying()) {
+        if(mediaPlayer !=null && mediaPlayer.isPlaying()) {
             Intent intent = new Intent("audio-event");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }else{

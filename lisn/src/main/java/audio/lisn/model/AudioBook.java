@@ -6,9 +6,12 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import audio.lisn.util.AppUtils;
 
 public class AudioBook implements Serializable{
 
@@ -216,10 +219,14 @@ public class AudioBook implements Serializable{
             } else {
                 this.lanCode = LanguageCode.LAN_EN;
             }
-            if(obj.getJSONArray("reviews") !=null){
+            if(context !=null) {
+                this.isPurchase = isBookDownloaded(book_id, context);
+            }
+
+            if(obj.get("reviews") !=null && obj.getJSONArray("reviews") !=null){
                 JSONArray arr = obj.getJSONArray("reviews");
                 ArrayList<BookReview> reviewArray= new ArrayList<>();
-                Log.v("reviews:","reviews:"+arr);
+               // Log.v("reviews:","reviews:"+arr);
                 for(int index = 0; index< arr.length(); index++) {
 
                     String userName="";
@@ -247,14 +254,13 @@ public class AudioBook implements Serializable{
                     reviewArray.add(bookReview);
 
                 }
-                Log.v("reviewArray","reviewArray:"+reviewArray.size());
+               // Log.v("reviewArray","reviewArray:"+reviewArray.size());
                 this.reviews=reviewArray;
 
             }
 
 
-            if(context !=null)
-            this.isPurchase=isBookDownloaded(book_id,context);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -283,6 +289,7 @@ public class AudioBook implements Serializable{
             returnBook.setAudioFileCount(this.audioFileCount);
             returnBook.setPrice(this.price);
             returnBook.setReviews(this.reviews);
+
             this.setDownloadedChapter(returnBook.getDownloadedChapter());
 
             downloadedAudioBook.addBookToList(context,
@@ -468,10 +475,25 @@ public class AudioBook implements Serializable{
 //        downloadedFileList.put(key, url);
 //
 //    }
-    public void removeDownloadedFile(){
-        if(downloadedChapter == null){
-            downloadedChapter.clear();
+    public void removeDownloadedFile(Context context){
+        if(this.downloadedChapter != null){
+            this.downloadedChapter.clear();
         }
+
+        String dirPath = AppUtils.getDataDirectory(context)
+                + this.getBook_id();
+        File dir = new File(dirPath);
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++)
+            {
+
+                new File(dir, children[i]).delete();
+            }
+        }
+     //   this.setDownloadCount(0);
+
     }
     public String getRate() {
         return rate;

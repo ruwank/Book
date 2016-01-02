@@ -648,7 +648,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     private void deleteAudioBook(AudioBook audioBook){
         stopPlayer(audioBook);
 
-        audioBook.removeDownloadedFile();
+        audioBook.removeDownloadedFile(getContext());
         DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
                 getActivity().getApplicationContext());
         downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
@@ -656,9 +656,9 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                 audioBook.getBook_id(), audioBook);
 
     }
-    private void deleteBook(final AudioBook audioBook){
-        String message="Are you sure you want to delete '"+audioBook.getEnglish_title()+"' from your device?";
-        if(audioBook.isPurchase()) {
+    private void deleteBook(){
+        String message="Are you sure you want to delete '"+selectedBook.getEnglish_title()+"' from your device?";
+        if(selectedBook.isPurchase()) {
             AlertDialog confirmationDialog = new AlertDialog.Builder(getActivity())
                     //set message, title, and icon
 
@@ -668,7 +668,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
                         public void onClick(DialogInterface dialog, int whichButton) {
                             //your deleting code
-                            deleteAudioBook(audioBook);
+                            deleteAudioBook(selectedBook);
                             dialog.dismiss();
                         }
 
@@ -748,7 +748,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
                 PlayerControllerActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
                 break;
             case ACTION_DELETE:
-                deleteBook(audioBook);
+                this.selectedBook=audioBook;
+                deleteBook();
                 break;
 
             default:

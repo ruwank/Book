@@ -179,7 +179,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
     private void deleteAudioBook(AudioBook audioBook){
         stopPlayer(audioBook);
 
-        audioBook.removeDownloadedFile();
+        audioBook.removeDownloadedFile(getContext());
         DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
                 getActivity().getApplicationContext());
         downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
@@ -187,10 +187,10 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
                 audioBook.getBook_id(), audioBook);
 
     }
-    private void deleteBook(final AudioBook audioBook){
+    private void deleteBook(){
 
-        if(audioBook.isPurchase()) {
-            String message="Are you sure you want to delete '"+audioBook.getEnglish_title()+"' from your device?";
+        if(selectedBook.isPurchase()) {
+            String message="Are you sure you want to delete '"+selectedBook.getEnglish_title()+"' from your device?";
 
             AlertDialog confirmationDialog = new AlertDialog.Builder(getActivity())
                     //set message, title, and icon
@@ -199,7 +199,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
                     .setPositiveButton(R.string.BUTTON_YES, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            deleteAudioBook(audioBook);
+                            deleteAudioBook(selectedBook);
                             dialog.dismiss();
                         }
 
@@ -231,7 +231,8 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
                 PlayerControllerActivity.navigate((android.support.v7.app.AppCompatActivity) getActivity(), view.findViewById(R.id.book_cover_thumbnail), audioBook);
                 break;
             case ACTION_DELETE:
-                deleteBook(audioBook);
+                this.selectedBook=audioBook;
+                deleteBook();
                 break;
 
             default:

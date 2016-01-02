@@ -413,6 +413,8 @@ private void setBookTitle(int position){
 
         String[] fileList=new String[audioBook.getDownloadedChapter().size()];
         for (int i=0; i<audioBook.getDownloadedChapter().size();i++){
+            Log.v("getDownloadedChapter","getDownloadedChapter:"+audioBook.getBook_id()+"/"+(i+1)+".lisn");
+
             fileList[i]= AppUtils.getDataDirectory(getApplicationContext())+audioBook.getBook_id()+"/"+(i+1)+".lisn";
 
         }
@@ -707,17 +709,17 @@ private void setBookTitle(int position){
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private void bookmarkAudioBook(){
-        AudioBook audioBook=AppController.getInstance().getCurrentAudioBook();
-        Log.v("bookmarkAudioBook", "LastPlayFileIndex:" + audioBook.getLastPlayFileIndex());
-        Log.v("bookmarkAudioBook","LastSeekPoint:"+audioBook.getLastSeekPoint());
-
-        DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
-                this);
-        downloadedAudioBook.addBookToList(this,
-                audioBook.getBook_id(), audioBook);
-
-    }
+//    private void bookmarkAudioBook(){
+//        AudioBook audioBook=AppController.getInstance().getCurrentAudioBook();
+//        Log.v("bookmarkAudioBook", "LastPlayFileIndex:" + audioBook.getLastPlayFileIndex());
+//        Log.v("bookmarkAudioBook","LastSeekPoint:"+audioBook.getLastSeekPoint());
+//
+//        DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
+//                this);
+//        downloadedAudioBook.addBookToList(this,
+//                audioBook.getBook_id(), audioBook);
+//
+//    }
     private void updateAudioBook(int chapter){
         if(chapter>0) {
             audioBook.addChapterToDownloadedChapter(chapter);

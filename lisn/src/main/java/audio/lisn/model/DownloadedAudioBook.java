@@ -21,10 +21,10 @@ public class DownloadedAudioBook implements Serializable {
 	private static final long serialVersionUID = 1322L;
 	private HashMap<String, AudioBook> bookList=null;
 	
-	public DownloadedAudioBook (Context context) {	
+	public DownloadedAudioBook (Context context) {
+
 		File file = new File(AppUtils.getDataDirectory(context));
-		if (!file.exists()) file.mkdirs();
-		bookList = new HashMap<String, AudioBook>();
+		readFileFromDisk(context);
 	}
 	
 	public HashMap<String, AudioBook> getBookList() {
@@ -83,7 +83,10 @@ public class DownloadedAudioBook implements Serializable {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				} 
-			} 
+			} else{
+				file.mkdirs();
+				bookList = new HashMap<String, AudioBook>();
+			}
 		}
 		return false;
 	}

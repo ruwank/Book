@@ -64,6 +64,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
+import com.thin.downloadmanager.ThinDownloadManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -89,6 +90,7 @@ import audio.lisn.util.CustomTypeFace;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.util.WCLinearLayoutManager;
 import audio.lisn.view.PlayerControllerView;
+import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 
@@ -112,13 +114,17 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     ProgressDialog mProgressDialog;
     ProgressDialog progressDialog;
     int totalAudioFileCount, downloadedFileCount;
-    //List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
-    List<Intent> downloadingList = new ArrayList<Intent>();
+    List<FileDownloadTask> downloadingList = new ArrayList<FileDownloadTask>();
+   // List<Intent> downloadingList = new ArrayList<Intent>();
     ImageView bookCoverImage;
     private PopupWindow pwindo;
     int previousDownloadedFileCount;
     PlayerControllerView playerControllerView;
     //TextView downloaded;
+    private ThinDownloadManager downloadManager;
+    private static final int REQUEST_WRITE_STORAGE = 112;
+    private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE=101;
+
 
     BookReviewViewAdapter bookReviewViewAdapter;
     RecyclerView reviewContainer;
@@ -137,7 +143,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     ServiceProvider  serviceProvider;
     PaymentOption  paymentOption;
-    int PERMISSIONS_REQUEST_READ_PHONE_STATE=101;
 
     //  ListView reviewListView;
     //  BookReviewListAdapter bookReviewListAdapter;
@@ -209,7 +214,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         });
         updateData();
-
+        downloadManager = new ThinDownloadManager();
         // Do all heavy processing here, activity will not enter transition until you explicitly call startPostponedEnterTransition()
 
         // all heavy init() done
@@ -277,10 +282,31 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_READ_PHONE_STATE
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            setServiceProvider();
+//        if (requestCode == PERMISSIONS_REQUEST_READ_PHONE_STATE
+//                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            setServiceProvider();
+//        }
+
+        switch (requestCode)
+        {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    downloadAudioFile();
+                    //reload my activity with permission granted or use the features what required the permission
+                } else
+                {
+                    Toast.makeText(this, "The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                }
+            }
+            case PERMISSIONS_REQUEST_READ_PHONE_STATE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    setServiceProvider();
+                }
+
+            }
         }
+
     }
     private void termsAndConditionAccepted(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -652,10 +678,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     private void stopDownload(){
         for (int i = 0; i < downloadingList.size(); i++) {
-            Intent intent=downloadingList.get(i);
-            stopService(intent);
-           // FileDownloadTask downloadTask = downloadingList.get(i);
-           // downloadTask.cancel(true);
+            //Intent intent=downloadingList.get(i);
+            //stopService(intent);
+            FileDownloadTask downloadTask = downloadingList.get(i);
+            downloadTask.cancel(true);
 
         }
     }
@@ -822,11 +848,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if (connectionDetector.isConnectingToInternet()) {
             String dirPath = AppUtils.getDataDirectory(getApplicationContext())
                     + audioBook.getBook_id()+File.separator;
-            File file = new File(dirPath + filePart + ".lisn");
+            String filePath=dirPath + filePart + ".lisn";
+            File file = new File(filePath);
 
             if (file.exists()) {
                 file.delete();
             }
+            /*
 
             Intent intent = new Intent(this, DownloadService.class);
             intent.putExtra("book_id", audioBook.getBook_id());
@@ -835,11 +863,37 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             intent.putExtra("receiver", new DownloadReceiver(new Handler()));
             startService(intent);
             downloadingList.add(intent);
+            */
 
 
-//            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
-//            downloadTask.execute(dirPath, "" + filePart);
-//            downloadingList.add(downloadTask);
+            FileDownloadTask downloadTask =  new FileDownloadTask(this,this,audioBook.getBook_id());
+            downloadTask.execute(dirPath, "" + filePart);
+            downloadingList.add(downloadTask);
+
+//            Uri downloadUri = Uri.parse("http://tcrn.ch/Yu1Ooo1");
+//            Uri destinationUri = Uri.parse(filePath);
+//            DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
+//                    .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.HIGH)
+//                    .setDownloadListener(new DownloadStatusListener() {
+//                        @Override
+//                        public void onDownloadComplete(int id) {
+//                            Log.v("DownloadRequest","DownloadRequest onDownloadComplete: "+id);
+//
+//                        }
+//
+//                        @Override
+//                        public void onDownloadFailed(int id, int errorCode, String errorMessage) {
+//                            Log.v("DownloadRequest","DownloadRequest onDownloadFailed: "+id);
+//
+//                        }
+//
+//                        @Override
+//                        public void onProgress(int id, long totalBytes, long downlaodedBytes, int progress) {
+//                            Log.v("DownloadRequest","DownloadRequest onDownloadComplete: "+ id);
+//
+//                        }
+//                    });
+//            int downloadId = downloadManager.add(downloadRequest);
 
         }else{
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(
@@ -855,92 +909,100 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
     }
     private void downloadAudioFile() {
-        previousDownloadedFileCount=downloadedFileCount;
-        String dirPath = AppUtils.getDataDirectory(getApplicationContext())
-                + audioBook.getBook_id()+File.separator;
-        File fileDir = new File(dirPath);
-        if (!fileDir.exists()) {
-            fileDir.mkdirs();
-
-        }
-
-        if (connectionDetector.isConnectingToInternet()) {
-            //  updateAudioBook(null,null);
-
-
-            mProgressDialog.show();
-
-
-            downloadedFileCount = 0;
-            // String [] file_urls=audioBook.getAudio_file_urls();
-            //totalAudioFileCount=file_urls.length;
-            totalAudioFileCount=0;
-            downloadingList.clear();
-
-            //  HashMap fileList= audioBook.getDownloadedFileList();
-
-            for (int filePart=1; filePart<=(audioBook.getAudioFileCount()); filePart++){
-                File file = new File(dirPath +filePart+".lisn");
-
-                if (!file.exists() ||  !(audioBook.getDownloadedChapter().contains(filePart)) ) {
-                    downloadAudioFileFromUrl(filePart);
-                    totalAudioFileCount++;
-                }
-
+        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
+        }else {
+            previousDownloadedFileCount = downloadedFileCount;
+            String dirPath = AppUtils.getDataDirectory(getApplicationContext())
+                    + audioBook.getBook_id() + File.separator;
+            File fileDir = new File(dirPath);
+            if (!fileDir.exists()) {
+                fileDir.mkdirs();
 
             }
-            if(downloadedFileCount == totalAudioFileCount){
-                mProgressDialog.dismiss();
-                starAudioPlayer();
+
+            if (connectionDetector.isConnectingToInternet()) {
+                //  updateAudioBook(null,null);
 
 
-            }else{
-                if(AppUtils.getAvailableMemory() < audioBook.getFileSize()){
-                    stopDownload();
+                mProgressDialog.show();
 
+
+                downloadedFileCount = 0;
+                // String [] file_urls=audioBook.getAudio_file_urls();
+                //totalAudioFileCount=file_urls.length;
+                totalAudioFileCount = 0;
+                downloadingList.clear();
+
+                //  HashMap fileList= audioBook.getDownloadedFileList();
+
+                for (int filePart = 1; filePart <= (audioBook.getAudioFileCount()); filePart++) {
+                    File file = new File(dirPath + filePart + ".lisn");
+
+                    if (!file.exists() || !(audioBook.getDownloadedChapter().contains(filePart))) {
+                        downloadAudioFileFromUrl(filePart);
+                        totalAudioFileCount++;
+                    }
+
+
+                }
+                if (downloadedFileCount == totalAudioFileCount) {
+                    mProgressDialog.dismiss();
+                    starAudioPlayer();
+
+
+                } else {
+                    if (AppUtils.getAvailableMemory() < audioBook.getFileSize()) {
+                        stopDownload();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(
+                                this);
+                        builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
+                                R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        // FIRE ZE MISSILES!
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    } else {
+                        mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
+                    }
+                }
+
+            } else {
+
+                downloadedFileCount = 0;
+                totalAudioFileCount = 0;
+
+                for (int filePart = 1; filePart <= (audioBook.getAudioFileCount()); filePart++) {
+                    File file = new File(dirPath + filePart + ".lisn");
+                    if (!file.exists()) {
+                        totalAudioFileCount++;
+                    }
+
+
+                }
+                if (downloadedFileCount == totalAudioFileCount) {
+                    mProgressDialog.dismiss();
+                    starAudioPlayer();
+                } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(
                             this);
-                    builder.setTitle(R.string.NO_ENOUGH_SPACE_TITLE).setMessage(R.string.NO_ENOUGH_SPACE_MESSAGE).setPositiveButton(
-                            R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                            getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     // FIRE ZE MISSILES!
                                 }
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
-                }else {
-                    mProgressDialog.setMessage("Downloading " + (audioBook.getDownloadedChapter().size() + 1) + " of " + audioBook.getAudioFileCount());
                 }
-            }
-
-        } else {
-
-            downloadedFileCount=0;
-            totalAudioFileCount=0;
-
-            for (int filePart=1; filePart<=(audioBook.getAudioFileCount()); filePart++){
-                File file = new File(dirPath +filePart+".lisn");
-                if (!file.exists()) {
-                    totalAudioFileCount++;
-                }
-
-
-            }
-            if(downloadedFileCount ==totalAudioFileCount){
-                mProgressDialog.dismiss();
-                starAudioPlayer();
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        this);
-                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
-                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // FIRE ZE MISSILES!
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
             }
         }
     }
@@ -1463,6 +1525,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     @Override
     public void onPostExecute(String result,String file_name) {
+        Log.v("onPostExecute","onPostExecute"+file_name +"result"+result);
         if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
             showMessage("UNAUTHORISED");
 
@@ -1977,4 +2040,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         }
     }
+
+
+
 }

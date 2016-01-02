@@ -125,6 +125,24 @@ public class StoreBaseFragment extends Fragment {
             sectionsPagerAdapter.notifyDataSetChanged();
 
         }
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.v("onPageSelected","onPageSelected");
+                removePlayer();
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         // END_INCLUDE (setup_slidingtablayout)
     }
 private void updateCategoryList(JSONArray jsonArray){
@@ -148,6 +166,15 @@ private void updateCategoryList(JSONArray jsonArray){
 
 
 }
+    private void  removePlayer(){
+        for (int i = 0; i <mPageReferenceMap.size() ; i++) {
+            StoreFragment storeFragment = mPageReferenceMap.get(i);
+            if(storeFragment !=null){
+                storeFragment.removePlayer();
+
+            }
+        }
+    }
     private void downloadCategoryList() {
         pDialog.show();
         String url=getString(R.string.book_category_list_url);
@@ -270,7 +297,9 @@ private void updateCategoryList(JSONArray jsonArray){
                 return bookCategory.getEnglish_name();
 
             }
+
         }
+
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
@@ -284,8 +313,11 @@ private void updateCategoryList(JSONArray jsonArray){
 
         }
         public StoreFragment getFragment(int key) {
+
+
             return (StoreFragment) mPageReferenceMap.get(key);
         }
+
 
 
     }
