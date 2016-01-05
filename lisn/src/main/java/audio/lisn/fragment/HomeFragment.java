@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -50,6 +51,7 @@ import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Constants;
 import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
@@ -310,7 +312,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
         loadData();
         loadMyBookData();
-
+        updateMenu();
     }
     @Override
     public void onPause() {
@@ -1114,6 +1116,11 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         public void onHomeItemSelected(int position,boolean isDownloadedBook);
         public void onOptionButtonClicked(int buttonIndex);
 
+    }
+    private void updateMenu() {
+        Intent intent = new Intent(Constants.MENU_ITEM_SELECT);
+        intent.putExtra("index", 0);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
     }
 
 }

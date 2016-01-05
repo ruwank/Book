@@ -111,7 +111,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         navigateFragment(mNavItemId);
         registerBroadcastReceiver();
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(menuUpdateReceiver,
+                new IntentFilter(Constants.MENU_ITEM_SELECT));
 
     }
     private void showAudioPlayer(){
@@ -405,6 +406,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             playerControllerView.updateView();
+        }
+    };
+
+    private BroadcastReceiver menuUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int index = intent.getExtras().getInt("index");
+            navigationView.getMenu().getItem(index).setChecked(true);
         }
     };
 }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.model.BookCategory;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Constants;
 import audio.lisn.view.SlidingTabLayout;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
@@ -207,16 +209,7 @@ private void updateCategoryList(JSONArray jsonArray){
     }
 
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -230,6 +223,11 @@ private void updateCategoryList(JSONArray jsonArray){
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateMenu();
+    }
 
     @Override
     public void onDetach() {
@@ -333,5 +331,9 @@ private void updateCategoryList(JSONArray jsonArray){
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+    private void updateMenu() {
+        Intent intent = new Intent(Constants.MENU_ITEM_SELECT);
+        intent.putExtra("index", 1);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
+    }
 }

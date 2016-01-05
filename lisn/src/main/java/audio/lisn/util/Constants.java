@@ -6,6 +6,8 @@ public class Constants {
     public static final String PASSWORD = "audio.lisn.password";
     public static final String PLAYER_STATE_CHANGE = "audio.lisn.player_state_change";
     public static final String PREVIEW_PLAYER_STATE_CHANGE = "audio.lisn.preview_player_state_change";
+    public static final String MENU_ITEM_SELECT = "audio.lisn.menu_state_update";
+
     public static final String APP_STATE_FOREGROUND = "foreground_event";
     public static final String APP_STATE_BACKGROUND = "foreground_event";
 

@@ -31,6 +31,7 @@ import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Constants;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -119,7 +120,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
     public void onResume() {
         super.onResume();
         loadData();
-
+        updateMenu();
     }
 
     @Override
@@ -247,6 +248,10 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
         public void onStoreBookSelected(int position);
 
     }
-
+    private void updateMenu() {
+        Intent intent = new Intent(Constants.MENU_ITEM_SELECT);
+        intent.putExtra("index", 2);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
+    }
 
 }
