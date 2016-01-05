@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -655,6 +656,9 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         downloadedAudioBook.addBookToList(getActivity().getApplicationContext(),
                 audioBook.getBook_id(), audioBook);
 
+        String message=getString(R.string.DELETE_BOOK_SUCCESS)+selectedBook.getEnglish_title()+"' from your device";
+        Toast toast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
     }
     private void deleteBook(){
         String message="Are you sure you want to delete '"+selectedBook.getEnglish_title()+"' from your device?";

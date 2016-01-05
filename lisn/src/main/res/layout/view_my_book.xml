@@ -30,28 +30,32 @@
                 />
 
 
+
+
             <audio.lisn.view.EllipsizingTextView
                 android:id="@+id/book_title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:maxLines="1"
+                android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/book_item_margin"
                 android:layout_below="@+id/book_cover_thumbnail"
-                android:layout_toLeftOf="@+id/btn_action"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/grid_view_textSize" />
 
             <audio.lisn.view.EllipsizingTextView
                 android:id="@+id/book_author"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:maxLines="1"
                 android:layout_below="@+id/book_title"
-                android:layout_toLeftOf="@+id/btn_action"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginLeft="@dimen/book_item_margin"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/grid_view_textSize" />

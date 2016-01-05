@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,6 +184,9 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
         downloadedAudioBook.addBookToList(getActivity().getApplicationContext(),
                 audioBook.getBook_id(), audioBook);
 
+        String message=getString(R.string.DELETE_BOOK_SUCCESS)+selectedBook.getEnglish_title()+"' from your device";
+        Toast toast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
     }
     private void deleteBook(){
 
@@ -198,6 +202,7 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
                         public void onClick(DialogInterface dialog, int whichButton) {
                             deleteAudioBook(selectedBook);
                             dialog.dismiss();
+
                         }
 
                     })

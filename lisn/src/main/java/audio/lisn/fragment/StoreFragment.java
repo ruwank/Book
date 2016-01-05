@@ -128,7 +128,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         // BEGIN_INCLUDE (setup_viewpager)
         storeBookView=(RecyclerView)view.findViewById(R.id.storeBookContainer);
         storeBookView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
-
+        loadData();
     }
 
     @Override
@@ -186,10 +186,12 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     @Override
     public void setMenuVisibility(final boolean visible) {
         super.setMenuVisibility(visible);
-        if (visible) {
-            loadData();
-        }else{
+        if (!visible) {
             removePlayer();
+        }else{
+            if (isResumed()){
+                loadData();
+            }
         }
     }
     private void stopDownload(){
@@ -297,9 +299,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
 
 
         if (connectionDetector.isConnectingToInternet()) {
-
             showProgress();
-
 
             // Cache data not exist.
             JSONArray jsonArray = AppController.getInstance().getStoreBookForCategory(bookCategory);

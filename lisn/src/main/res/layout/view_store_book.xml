@@ -78,30 +78,48 @@
                 android:src="@drawable/btn_play_preview_start"
                 android:layout_centerHorizontal="true" />
 
+            <!--<TextView-->
+                <!--android:id="@+id/book_title"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:ellipsize="end"-->
+                <!--android:singleLine="true"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_marginLeft="@dimen/book_item_margin"-->
+                <!--android:layout_below="@+id/playButton"-->
+                <!--android:layout_toLeftOf="@+id/btn_action"-->
+                <!--android:textColor="@color/textColor"-->
+                <!--android:textSize="@dimen/grid_view_textSize"-->
+                <!--/>-->
+
             <audio.lisn.view.EllipsizingTextView
                 android:id="@+id/book_title"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:maxLines="1"
+                android:layout_alignParentLeft="true"
                 android:layout_marginLeft="@dimen/book_item_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_below="@+id/playButton"
-                android:layout_toLeftOf="@+id/btn_action"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/grid_view_textSize"
                 />
 
+            <!--                 android:layout_toLeftOf="@+id/btn_action"
+-->
             <audio.lisn.view.EllipsizingTextView
                 android:id="@+id/book_author"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:layout_toLeftOf="@+id/btn_action"
+                android:layout_alignParentLeft="true"
                 android:layout_below="@+id/book_title"
                 android:layout_marginLeft="@dimen/book_item_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/grid_view_textSize" />
             <ImageButton
