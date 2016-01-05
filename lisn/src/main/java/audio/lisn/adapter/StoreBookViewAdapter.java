@@ -18,12 +18,14 @@ package audio.lisn.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +50,7 @@ import audio.lisn.R;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
 import audio.lisn.view.EllipsizingTextView;
 
@@ -110,7 +113,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         final AudioBook book = items.get(position);
         selectedBookIndex=position;
 
-        if((isLoadingPreview || isPlayingPreview) && selectedAudioBook.getBook_id().equalsIgnoreCase(book.getBook_id()) ){
+        if((isLoadingPreview || isPlayingPreview) && selectedAudioBook != null && selectedAudioBook.getBook_id().equalsIgnoreCase(book.getBook_id()) ){
             holder.previewLayout.setVisibility(View.VISIBLE);
             holder.playButton.setImageResource(R.drawable.btn_play_preview_pause);
 
@@ -383,7 +386,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
     private void playPreview( ) {
         isLoadingPreview=true;
         isPlayingPreview=false;
-
+        pausePlayer();
         if (connectionDetector.isConnectingToInternet()) {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
@@ -506,6 +509,11 @@ private void showErrorMessage(String msg){
 
         }
 
+    }
+    private void pausePlayer() {
+        Intent intent = new Intent(Constants.PLAYER_STATE_CHANGE);
+        intent.putExtra("state", "pause");
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
     public interface StoreBookSelectListener
     {

@@ -38,7 +38,7 @@
     <string name="ALREADY_PAID_TITLE">Already Paid</string>
     <string name="ALREADY_PAID_MESSAGE">This book is already in your library. Do you want to start downloading?</string>
 
-
+    <string name="REVIEW_PUBLISH_SUCCESS">Review Published Successfully</string>
 
     <string name="BUTTON_OK">OK</string>
     <string name="BUTTON_NOW">NOW</string>

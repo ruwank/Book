@@ -197,8 +197,8 @@ public class SearchResultsActivity extends AppCompatActivity implements
     private AudioBook getDownloadedBook(String key){
         AudioBook returnBook=null;
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
-        downloadedAudioBook.readFileFromDisk(getApplicationContext());
-        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList();
+        //downloadedAudioBook.readFileFromDisk(getApplicationContext());
+        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList(getApplicationContext());
 
         returnBook=hashMap.get(key);
         return  returnBook;

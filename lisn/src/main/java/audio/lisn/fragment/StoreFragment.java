@@ -167,7 +167,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     @Override
     public void onResume() {
         super.onResume();
-        loadData();
+
         registerBroadcastReceiver();
         Log.v(TAG, "onResume");
 
@@ -180,8 +180,17 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         removePlayer();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mPlayerUpdateReceiver);
 
-        Log.v(TAG,"onPause");
+        Log.v(TAG, "onPause");
 
+    }
+    @Override
+    public void setMenuVisibility(final boolean visible) {
+        super.setMenuVisibility(visible);
+        if (visible) {
+            loadData();
+        }else{
+            removePlayer();
+        }
     }
     private void stopDownload(){
         for (int i = 0; i < downloadingList.size(); i++) {

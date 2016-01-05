@@ -553,8 +553,8 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
             myBookList.clear();
             DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(getActivity().getApplicationContext());
-            downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
-            HashMap<String, AudioBook> hashMap = downloadedAudioBook.getBookList();
+            //downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
+            HashMap<String, AudioBook> hashMap = downloadedAudioBook.getBookList(getActivity().getApplicationContext());
             int count = 0;
             for (AudioBook item : hashMap.values()) {
                 count++;

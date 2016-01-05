@@ -45,7 +45,7 @@ public class PurchaseActivity extends AppCompatActivity {
 
         audioBook = (AudioBook) getIntent().getSerializableExtra("audioBook");
 
-        float amount= (float) ((Float.parseFloat(audioBook.getPrice())) * 0.9);
+        float amount= (float) ((Float.parseFloat(audioBook.getPrice())) * ((100.0-audioBook.getDiscount())/100.0));
         // http://app.lisn.audio/spgw/1.5.6/payment/init.php?userid=1&bookid=1&amount=150.00
         String url=getString(R.string.purchase_book_url);
         url=url+"?userid="+ AppController.getInstance().getUserId()+"&bookid="+audioBook.getBook_id()+"&amount="+amount;

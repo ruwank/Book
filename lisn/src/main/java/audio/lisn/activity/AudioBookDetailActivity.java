@@ -70,7 +70,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -234,6 +237,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         playerControllerView.updateView();
         registerPlayerUpdateBroadcastReceiver();
         bookReviewViewAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mediaPlayer !=null && mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+        }
     }
 
     @Override
@@ -540,6 +550,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         title.setText(audioBook.getTitle());
         duration.setText(durationText);
         description.setText(audioBook.getDescription());
+        //buyFromCardDescription.setText("(and get a "+audioBook.getDiscount()+"% discount)");
+        btnPayFromCard.setText("Pay by Card ("+audioBook.getDiscount()+"% discount)");
+
         if(audioBook.isPurchase()){
             rateLayout.setVisibility(View.VISIBLE);
 
@@ -586,6 +599,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
 
         }
+        buyFromCardDescription.setVisibility(View.GONE);
+
         btnShare=(ImageButton)findViewById(R.id.btnShare);
         btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -733,9 +748,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         updatePreviewLayout();
     }
     private void playPreview( ) {
+
         isLoadingPreview=true;
         isPlayingPreview=false;
         if (connectionDetector.isConnectingToInternet()) {
+            pausePlayer();
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
             }
@@ -803,7 +820,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
         DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
                 getApplicationContext());
-        downloadedAudioBook.readFileFromDisk(getApplicationContext());
+       // downloadedAudioBook.readFileFromDisk(getApplicationContext());
         downloadedAudioBook.addBookToList(getApplicationContext(),
                 audioBook.getBook_id(), audioBook);
 
@@ -1525,7 +1542,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     @Override
     public void onPostExecute(String result,String file_name) {
-        Log.v("onPostExecute","onPostExecute"+file_name +"result"+result);
+        Log.v("onPostExecute", "onPostExecute" + file_name + "result" + result);
         if (result != null && result.equalsIgnoreCase("UNAUTHORISED")){
             showMessage("UNAUTHORISED");
 
@@ -1837,11 +1854,31 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             e.printStackTrace();
         }
     }
-    private void publishUserReview( float rate,String title,String comment){
+    private void updateReview(float rate,String title,String comment){
+        ArrayList<BookReview> reviews=audioBook.getReviews();
+        BookReview bookReview=new BookReview();
+        bookReview.setRateValue("" + rate);
+        bookReview.setTitle(title);
+        bookReview.setMessage(comment);
+        bookReview.setUserId(AppController.getInstance().getUserId());
+        bookReview.setUserName(AppController.getInstance().getUserName());
+       // bookReview.setTimeString(Date.);
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+        bookReview.setTimeString(dateFormat.format(date));
+
+
+
+        reviews.add(bookReview);
+
+        updateData();
+    }
+    private void publishUserReview( final float rate, final String title, final String comment){
 
 
         if (connectionDetector.isConnectingToInternet()) {
-            if(rate>0 && title.length()>0 && comment.length()>0) {
+            if (rate > 0 && title.length() > 0 && comment.length() > 0) {
 
                 progressDialog.setMessage("Publishing...");
                 progressDialog.show();
@@ -1861,9 +1898,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             public void onResponse(String response) {
                                 pwindo.dismiss();
                                 progressDialog.dismiss();
+                                updateReview(rate, title, comment);
 
                                 Log.v("response", "response:" + response);
-                                Toast toast = Toast.makeText(getApplicationContext(), "Review Publish Success", Toast.LENGTH_SHORT);
+                                Toast toast = Toast.makeText(getApplicationContext(), R.string.REVIEW_PUBLISH_SUCCESS, Toast.LENGTH_SHORT);
                                 toast.show();
 
 
@@ -1880,11 +1918,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 });
 
                 AppController.getInstance().addToRequestQueue(stringRequest, "tag_review_book");
-            }else{
+            } else {
                 Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.no_valid_data), Toast.LENGTH_SHORT);
                 toast.show();
             }
-        }else{
+        }
+        else{
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_ENOUGH_SPACE_MESSAGE)).setPositiveButton(
                     getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
@@ -2040,7 +2079,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         }
     }
-
+    private void pausePlayer() {
+        Intent intent = new Intent(Constants.PLAYER_STATE_CHANGE);
+        intent.putExtra("state", "pause");
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
 
 
 }

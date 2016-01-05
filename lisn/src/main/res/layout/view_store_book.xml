@@ -138,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/book_item_margin"
-                android:layout_below="@+id/btn_action"
+                android:layout_below="@+id/rating_bar"
                 android:layout_alignParentRight="true"
                 android:textColor="@color/accent_material_light"
                 android:textSize="@dimen/grid_view_textSize" />

@@ -153,8 +153,8 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
     private void loadData() {
         bookList.clear();
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getActivity().getApplicationContext());
-        downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
-        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList();
+       // downloadedAudioBook.readFileFromDisk(getActivity().getApplicationContext());
+        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList(getActivity().getApplicationContext());
         for (AudioBook item : hashMap.values()) {
             bookList.add(item);
         }
@@ -162,9 +162,6 @@ public class MyBookFragment extends Fragment implements MyBookViewAdapter.MyBook
         myBookViewAdapter = new MyBookViewAdapter(getActivity().getApplicationContext(),bookList);
         myBookViewAdapter.setMyBookSelectListener(this);
         myBookView.setAdapter(myBookViewAdapter);
-
-
-
     }
     private void stopPlayer(AudioBook audioBook) {
         if (AudioPlayerService.mediaPlayer != null) {

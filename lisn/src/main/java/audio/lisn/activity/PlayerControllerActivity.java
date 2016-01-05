@@ -96,6 +96,7 @@ public class PlayerControllerActivity extends AppCompatActivity implements FileD
     ProgressDialog progressDialog;
     ImageButton commentButton;
 View topOverLayView;
+    TextView bookTitleView;
 
 
 
@@ -130,14 +131,15 @@ View topOverLayView;
             audioBook = AppController.getInstance().getCurrentAudioBook();
 
         }
-        TextView textView= (TextView) mTitle.getCurrentView();
+        bookTitleView= (TextView) findViewById(R.id.book_title);
 
         if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
-            textView.setTypeface(CustomTypeFace.getSinhalaTypeFace(this));
+            bookTitleView.setTypeface(CustomTypeFace.getSinhalaTypeFace(this));
         }else{
-            textView.setTypeface(CustomTypeFace.getEnglishTypeFace(this));
+            bookTitleView.setTypeface(CustomTypeFace.getEnglishTypeFace(this));
         }
         mTitle.setText(audioBook.getTitle());
+        bookTitleView.setText(audioBook.getTitle());
         setCoverFlowPosition();
         progressDialog = new ProgressDialog(PlayerControllerActivity.this);
         progressDialog.setIndeterminate(true);
@@ -182,8 +184,8 @@ Log.v("position","position:"+position);
 
         bookList.clear();
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(this);
-        downloadedAudioBook.readFileFromDisk(this);
-        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList();
+       // downloadedAudioBook.readFileFromDisk(this);
+        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList(this);
         for (AudioBook item : hashMap.values()) {
             bookList.add(item);
         }
@@ -194,9 +196,9 @@ Log.v("position","position:"+position);
             public View makeView() {
                 LayoutInflater inflater = LayoutInflater.from(PlayerControllerActivity.this);
                 TextView textView = (TextView) inflater.inflate(R.layout.play_book_title, null);
-
                 return textView;
             }
+
         });
         Animation in = AnimationUtils.loadAnimation(this, R.anim.slide_in_top);
         Animation out = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom);
@@ -356,16 +358,21 @@ Log.v("position","position:"+position);
 private void setBookTitle(int position){
 
    // AudioBook book = bookList.get(position);
-    TextView textView= (TextView) mTitle.getCurrentView();
-   // Log.v("book.getLanguageCode()",""+book.getLanguageCode());
+  //  TextView textView= (TextView) mTitle.getCurrentView();
+    Log.v("book.getLanguageCode()","audioBook : "+audioBook.getLanguageCode());
 
-    if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
-        textView.setTypeface(CustomTypeFace.getSinhalaTypeFace(this));
+    if(audioBook.getLanguageCode() == AudioBook.LanguageCode.LAN_SI){
+        bookTitleView.setTypeface(CustomTypeFace.getSinhalaTypeFace(this));
     }else{
-        textView.setTypeface(CustomTypeFace.getEnglishTypeFace(this));
+        bookTitleView.setTypeface(CustomTypeFace.getEnglishTypeFace(this));
     }
-    mTitle.setText(audioBook.getTitle());
+    bookTitleView.setText(audioBook.getTitle());
 
+//    if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
+//        textView.setTypeface(CustomTypeFace.getSinhalaTypeFace(this));
+//    }else{
+//        textView.setTypeface(CustomTypeFace.getEnglishTypeFace(this));
+//    }
     String img_path = AppUtils.getDataDirectory(getApplicationContext())
             + audioBook.getBook_id()+ File.separator+"book_cover.jpg";
 
@@ -479,10 +486,21 @@ private void setBookTitle(int position){
 
             for (int filePart=1; filePart<=(audioBook.getAudioFileCount()); filePart++){
                 File file = new File(dirPath +filePart+".lisn");
+                Log.v("audioBook","audioBook player"+audioBook.getDownloadedChapter().size());
+
+                if(file.exists()){
+                    Log.v("audioBook","audioBook player file exits" +dirPath +filePart+".lisn");
+
+                }else{
+
+                }
 
                 if (!file.exists() ||  !(audioBook.getDownloadedChapter().contains(filePart)) ) {
                     downloadAudioFileFromUrl(filePart);
                     totalAudioFileCount++;
+                }else{
+
+
                 }
 
 
@@ -726,7 +744,7 @@ private void setBookTitle(int position){
         }
         DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
                 getApplicationContext());
-        downloadedAudioBook.readFileFromDisk(getApplicationContext());
+       // downloadedAudioBook.readFileFromDisk(getApplicationContext());
         downloadedAudioBook.addBookToList(getApplicationContext(),
                 audioBook.getBook_id(), audioBook);
 
@@ -834,7 +852,7 @@ private void setBookTitle(int position){
                                 progressDialog.dismiss();
 
                                 Log.v("response", "response:" + response);
-                                Toast toast = Toast.makeText(getApplicationContext(), "Review Publish Success", Toast.LENGTH_SHORT);
+                                Toast toast = Toast.makeText(getApplicationContext(), R.string.REVIEW_PUBLISH_SUCCESS, Toast.LENGTH_SHORT);
                                 toast.show();
 
 

@@ -1,7 +1,6 @@
 package audio.lisn.model;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +24,7 @@ public class AudioBook implements Serializable{
     private int lastSeekPoint;
     private int downloadCount;
     private float previewDuration;
+    private int discount;
     private boolean isDownloaded;
     private int audioFileCount;
     private int fileSize;
@@ -137,6 +137,14 @@ public class AudioBook implements Serializable{
         this.fileSize = fileSize;
     }
 
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
 
     public enum LanguageCode {
 		LAN_EN, LAN_SI
@@ -188,9 +196,9 @@ public class AudioBook implements Serializable{
                 this.duration = obj.getString("duration");
             if(obj.getString("narrator") !=null)
                 this.narrator = obj.getString("narrator");
-            if(obj.getString("downloads") !=null)
-                this.downloads = obj.getString("downloads");
-            Log.v("audio_file",""+obj.getString("audio_file"));
+//            if(obj.getString("downloads") !=null)
+//                this.downloads = obj.getString("downloads");
+//            Log.v("audio_file",""+obj.getString("audio_file"));
             if(obj.getString("audio_file") !=null){
                 String audio_file=obj.getString("audio_file");
                 this.audioFileCount=Integer.parseInt(audio_file);
@@ -201,6 +209,12 @@ public class AudioBook implements Serializable{
                 this.fileSize=Integer.parseInt(size);
 
             }
+            if(obj.getString("discount") !=null){
+                String discountValue=obj.getString("discount");
+                this.discount=Integer.parseInt(discountValue);
+                //Log.v("discount","discount "+discount);
+            }
+
             if(obj.getString("banner_image") !=null)
                 this.banner_image = obj.getString("banner_image");
 
@@ -223,7 +237,7 @@ public class AudioBook implements Serializable{
                 this.isPurchase = isBookDownloaded(book_id, context);
             }
 
-            if(obj.get("reviews") !=null && obj.getJSONArray("reviews") !=null){
+            if(obj.get("reviews") !=null && (obj.get("reviews") instanceof JSONArray)){
                 JSONArray arr = obj.getJSONArray("reviews");
                 ArrayList<BookReview> reviewArray= new ArrayList<>();
                // Log.v("reviews:","reviews:"+arr);
@@ -272,8 +286,8 @@ public class AudioBook implements Serializable{
     private boolean isBookDownloaded(String key,Context context){
         AudioBook returnBook=null;
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(context);
-        downloadedAudioBook.readFileFromDisk(context);
-        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList();
+        //downloadedAudioBook.readFileFromDisk(context);
+        HashMap< String, AudioBook> hashMap=downloadedAudioBook.getBookList(context);
 
         returnBook=hashMap.get(key);
         if(returnBook !=null){

@@ -531,6 +531,7 @@ if(currentAudioBook != null){
         }
         this.userId=null;
     }
+
     private void showReminder ()
     {
         alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -563,7 +564,7 @@ if(currentAudioBook != null){
     }
     private void removeUser(){
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
-        downloadedAudioBook.removeBook(getApplicationContext());
+       // downloadedAudioBook.removeBook(getApplicationContext());
         this.userId="";
     }
     //synchronizing profile
@@ -592,13 +593,13 @@ if(currentAudioBook != null){
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.v("response", "verifyUser :" + response);
 
                         if(response.toUpperCase().contains("DUPLICATE_USER")){
                             removeUser();
 
                         }
                         else if(response.toUpperCase().contains("SUCCESS")){
-                            Log.v("response", "verifyUser :" + response);
 
                         }
 

@@ -89,10 +89,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/whiteColor"
+            android:visibility="gone"
 />
         <TextView
+            android:id="@+id/book_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/whiteColor"
+            />
+        <TextView
             android:id="@+id/audioTitle"
-            android:layout_below="@+id/play_book_title"
+            android:layout_below="@+id/book_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/whiteColor"

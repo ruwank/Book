@@ -23,11 +23,15 @@ public class DownloadedAudioBook implements Serializable {
 	
 	public DownloadedAudioBook (Context context) {
 
-		File file = new File(AppUtils.getDataDirectory(context));
+		//File file = new File(AppUtils.getDataDirectory(context));
 		readFileFromDisk(context);
 	}
 	
-	public HashMap<String, AudioBook> getBookList() {
+	public HashMap<String, AudioBook> getBookList(Context context) {
+		if(bookList == null){
+			readFileFromDisk(context);
+
+		}
 		return bookList;
 	}
 
@@ -35,12 +39,16 @@ public class DownloadedAudioBook implements Serializable {
 		this.bookList = bookList;
 	}
 	public void addBookToList(Context context,String key, AudioBook audioBook) {
-		bookList.put(key, audioBook);
-		writeFileToDisk(context);
+		if(bookList !=null) {
+			bookList.put(key, audioBook);
+			writeFileToDisk(context);
+		}
 	}
 	public void removeBook(Context context){
-		bookList.clear();
-		writeFileToDisk(context);
+		if(bookList !=null) {
+			bookList.clear();
+			writeFileToDisk(context);
+		}
 	}
 
 	
@@ -51,7 +59,9 @@ public class DownloadedAudioBook implements Serializable {
 			File file = new File(AppUtils.getDataDirectory(context)+"book.ser");
 			try {
                 if (!file.exists()) {
-                    file.createNewFile();
+					file.getParentFile().mkdirs();
+
+					//file.createNewFile();
                 }
                 FileOutputStream fos = new FileOutputStream(file);
                 ObjectOutputStream out = new ObjectOutputStream(fos);
@@ -81,12 +91,17 @@ public class DownloadedAudioBook implements Serializable {
                     fis.close();
 					return true;
 				} catch (Exception ex) {
+					bookList = new HashMap<String, AudioBook>();
+
 					ex.printStackTrace();
 				} 
 			} else{
-				file.mkdirs();
+				file.getParentFile().mkdirs();
 				bookList = new HashMap<String, AudioBook>();
 			}
+		}else{
+			bookList = new HashMap<String, AudioBook>();
+
 		}
 		return false;
 	}

@@ -39,7 +39,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -555,8 +554,7 @@ public class LoginActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     REQUEST_WRITE_STORAGE);}
         else {
-            DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(getApplicationContext());
-            downloadedAudioBook.removeBook(getApplicationContext());
+
             String url = getString(R.string.user_book_list_url);
 
             Map<String, String> params = new HashMap<String, String>();
@@ -587,7 +585,16 @@ public class LoginActivity extends AppCompatActivity {
     private void addToDownloadList(JSONArray jsonArray){
 
         DownloadedAudioBook downloadedAudioBook=new DownloadedAudioBook(getApplicationContext());
-Log.v("jsonArray","jsonArray :"+jsonArray);
+        HashMap<String, AudioBook> hashMap = downloadedAudioBook.getBookList(getApplicationContext());
+        Log.v("DownloadedChapter", "DownloadedChapter hashMap size befor" +hashMap.size());
+        HashMap<String, AudioBook> bookList=new HashMap<String, AudioBook>();
+        for (AudioBook item : hashMap.values()) {
+            bookList.put(item.getBook_id(), item);
+        }
+        downloadedAudioBook.removeBook(getApplicationContext());
+
+        Log.v("DownloadedChapter", "DownloadedChapter hashMap size after" +hashMap.size());
+
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
 
@@ -596,9 +603,23 @@ Log.v("jsonArray","jsonArray :"+jsonArray);
                 book.setPurchase(true);
                 book.setDownloaded(true);
 
+                if(bookList !=null && bookList.size()>0) {
+                    AudioBook returnBook = bookList.get(book.getBook_id());
+
+                        if (returnBook != null && returnBook.getDownloadedChapter() != null && returnBook.getDownloadedChapter().size() > 0) {
+                            book.setDownloadedChapter(returnBook.getDownloadedChapter());
+
+                        Log.v("DownloadedChapter", "DownloadedChapter" + returnBook.getDownloadedChapter().size());
+                        //
+                    } else {
+                        Log.v("DownloadedChapter", "DownloadedChapter" + returnBook.getDownloadedChapter().size());
+
+                    }
+                }
+
                 downloadedAudioBook.addBookToList(getApplicationContext(), book.getBook_id(), book);
 
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
