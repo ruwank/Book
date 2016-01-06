@@ -110,6 +110,12 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
             holder.title.setEllipsized("...");
             holder.author.setEllipsized("...");
         }
+        if(book.getAudioFileCount() == book.getDownloadedChapter().size()){
+            holder.downloadIcon.setVisibility(View.GONE);
+
+        }else{
+            holder.downloadIcon.setVisibility(View.VISIBLE);
+        }
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthor());
 
@@ -230,6 +236,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
         public EllipsizingTextView title, author;
         public ImageButton optionButton;
         public String bookId;
+        public ImageView downloadIcon;
 
 
 
@@ -241,6 +248,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
             title= (EllipsizingTextView) itemView.findViewById(R.id.book_title);
             author= (EllipsizingTextView) itemView.findViewById(R.id.book_author);
             optionButton=(ImageButton)itemView.findViewById(R.id.btn_action);
+            downloadIcon=(ImageView)itemView.findViewById(R.id.downloaded_icon);
 
 
 

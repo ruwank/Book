@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.List;
 
 import audio.lisn.R;
+import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.ConnectionDetector;
@@ -149,7 +150,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         if( Float.parseFloat(book.getPrice())>0 ){
             priceText="LKR "+book.getPrice();
         }
-        if(book.isPurchase()){
+        if(AppController.getInstance().isUserLogin() && book.isPurchase()){
             holder.downloadedIcon.setVisibility(View.VISIBLE);
             holder.price.setVisibility(View.GONE);
 

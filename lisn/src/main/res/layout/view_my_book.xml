@@ -29,7 +29,16 @@
                 android:transitionName="@string/transition_book"
                 />
 
-
+            <ImageView
+                android:id="@+id/downloaded_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layout_below="@+id/book_cover_thumbnail"
+                android:layout_marginTop="-24dp"
+                android:layout_marginRight="@dimen/book_item_margin"
+                android:src="@drawable/ic_downloaded"
+                android:layout_alignParentRight="true"/>
 
 
             <audio.lisn.view.EllipsizingTextView

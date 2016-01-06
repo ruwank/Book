@@ -29,16 +29,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.fragment.HomeFragment;
 import audio.lisn.fragment.MyBookFragment;
 import audio.lisn.fragment.StoreBaseFragment;
 import audio.lisn.fragment.StoreFragment;
+import audio.lisn.model.BookCategory;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.Constants;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.view.PlayerControllerView;
+import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
 //import android.support.v7.widget.SearchView;
 
@@ -346,13 +355,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void onStoreBookSelected(int position) {
 
     }
+    private void downloadBookCategoryList() {
+        String url=getString(R.string.book_category_list_url);
+
+        JsonUTF8ArrayRequest categoryListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        updateCategoryList(jsonArray);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        categoryListReq.setShouldCache(true);
+        AppController.getInstance().addToRequestQueue(categoryListReq, "tag_category_list");
+    }
+    private void updateCategoryList(JSONArray jsonArray){
+        BookCategory[] bookCategories= new BookCategory[jsonArray.length()];
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+
+                JSONObject obj = jsonArray.getJSONObject(i);
+                BookCategory bookCategory=new BookCategory(obj);
+                bookCategories[i]=bookCategory;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        AppController.getInstance().setBookCategories(bookCategories);
+        onOptionButtonClicked(2);
+
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 13) {
             if(resultCode ==  Constants.RESULT_SUCCESS){
                 new Handler().post(new Runnable() {
                     public void run() {
-                        onOptionButtonClicked(2);
+                        downloadBookCategoryList();
+
                     }
                 });
 

@@ -13,14 +13,18 @@ import android.widget.ProgressBar;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
+import audio.lisn.model.BookCategory;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
@@ -168,6 +172,7 @@ public class MainActivity extends Activity {
         downloadNewReleaseBookList();
         downloadTopDownloadedBookList();
         downloadTopRatedBookList();
+        downloadBookCategoryList();
     }
     private void downloadBookCategoryData(){
         downloadCount=4;
@@ -201,6 +206,45 @@ public class MainActivity extends Activity {
             // Adding request to request queue
             AppController.getInstance().addToRequestQueue(bookListReq, "tag_category_list"+i);
         }
+    }
+    private void downloadBookCategoryList() {
+        String url=getString(R.string.book_category_list_url);
+
+        JsonUTF8ArrayRequest categoryListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        updateCategoryList(jsonArray);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        categoryListReq.setShouldCache(true);
+        AppController.getInstance().addToRequestQueue(categoryListReq, "tag_category_list");
+    }
+    private void updateCategoryList(JSONArray jsonArray){
+        BookCategory[] bookCategories= new BookCategory[jsonArray.length()];
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+
+                JSONObject obj = jsonArray.getJSONObject(i);
+                BookCategory bookCategory=new BookCategory(obj);
+                bookCategories[i]=bookCategory;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        AppController.getInstance().setBookCategories(bookCategories);
+
+
     }
     private void downloadData() {
         progressBar.setVisibility(View.VISIBLE);

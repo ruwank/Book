@@ -752,5 +752,6 @@ if(currentAudioBook != null){
 
     public void setBookCategories(BookCategory[] bookCategories) {
         this.bookCategories = bookCategories;
+        this.storeBook.clear();
     }
 }
