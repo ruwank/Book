@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -54,6 +53,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
     ConnectionDetector connectionDetector;
     int selectedBookIndex;
     private Context context;
+    AudioBook.SelectedAction selectedAction= AudioBook.SelectedAction.ACTION_MORE;
 
 
 
@@ -94,7 +94,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
 
 
     @Override public void onBindViewHolder(final ViewHolder holder, int position) {
-        AudioBook book = items.get(position);
+        final AudioBook book = items.get(position);
         selectedBookIndex=position;
         holder.bookId=book.getBook_id();
 
@@ -173,43 +173,68 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
             public void onClick(View v) {
 
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
-                popupMenu.inflate(R.menu.my_book_menu);
+                if(book.getAudioFileCount() == book.getDownloadedChapter().size()){
+                    popupMenu.inflate(R.menu.my_book_menu);
+
+                }else{
+                    popupMenu.inflate(R.menu.my_book_menu_not_download);
+
+                }
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
 
                         switch (item.getItemId()) {
                             case R.id.action_detail:
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_DETAIL);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_DETAIL;
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_DETAIL);
+//                                        }
+//                                    }, 200);
+//                                }
                                 break;
                             case R.id.action_play:
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_PLAY);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_PLAY;
+
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_PLAY);
+//                                        }
+//                                    }, 200);
+//                                }
                                 break;
                             case R.id.action_delete:
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_DELETE);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_DELETE;
+
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_DELETE);
+//                                        }
+//                                    }, 200);
+//                                }
+                                break;
+                            case R.id.action_download:
+                                selectedAction=AudioBook.SelectedAction.ACTION_DOWNLOAD;
+
                                 break;
                             default:
                                 break;
 
                         }
+                        if(selectedAction !=AudioBook.SelectedAction.ACTION_MORE) {
 
+                            if (listener != null) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), selectedAction);
+                                    }
+                                }, 200);
+                            }
+                        }
                         return true;
                     }
                 });

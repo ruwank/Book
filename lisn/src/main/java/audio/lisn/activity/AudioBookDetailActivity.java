@@ -553,10 +553,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         //buyFromCardDescription.setText("(and get a "+audioBook.getDiscount()+"% discount)");
         btnPayFromCard.setText("Pay by Card ("+audioBook.getDiscount()+"% discount)");
 
-        if(audioBook.isPurchase()){
-            rateLayout.setVisibility(View.VISIBLE);
+        if(AppController.getInstance().isUserLogin() && audioBook.isPurchase()){
+            btnDownload.setText("Download");
 
-            btnDownload.setText("Play");
+            if(audioBook.getAudioFileCount() == audioBook.getDownloadedChapter().size()){
+                btnDownload.setText("Play");
+            }
+            rateLayout.setVisibility(View.VISIBLE);
 
             addToBillButton.setVisibility(View.GONE);
             btnPayFromCard.setVisibility(View.GONE);
@@ -2033,6 +2036,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             playerControllerView.updateView();
+            if(AudioPlayerService.mediaPlayer!=null && AudioPlayerService.mediaPlayer.isPlaying()) {
+                releaseMediaPlayer();
+            }
         }
     };
 

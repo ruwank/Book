@@ -306,7 +306,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
         if (mState ==State.Playing || mState==State.Paused ){
             Log.v("updatePlaybackState", "mState :" + mState);
             mMediaNotificationManager.startNotification();
-
+            sendMessage();
         }else{
             stopForeground(true);
         }
@@ -346,7 +346,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 
     // Send an Intent with an action named "my-event".
     private void sendMessage() {
-        if(mediaPlayer !=null && mediaPlayer.isPlaying()) {
+        if(mediaPlayer !=null && hasStartedPlayer) {
             Intent intent = new Intent("audio-event");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }else{
@@ -412,6 +412,8 @@ public State getPlaybackState(){
             }
             hasStartedPlayer=false;
             mState = State.Stopped;
+            mMediaNotificationManager.startNotification();
+
         }
         else if(state =="start"){
             if (mediaPlayer!=null ) {

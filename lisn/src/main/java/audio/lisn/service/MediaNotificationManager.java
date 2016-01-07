@@ -326,7 +326,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
         */
         art = BitmapFactory.decodeResource(mService.getResources(),
-                R.drawable.ic_notification);
+                R.drawable.ic_notification_large);
 
 
         notificationBuilder
@@ -392,7 +392,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
         if (AudioPlayerService.mediaPlayer.isPlaying()
                 && AudioPlayerService.seekPosition >= 0) {
-         //   LogHelper.d(TAG, "updateNotificationPlaybackState. updating playback position to ",
+            Log.v("addPlayPauseAction", "updatePlayPauseAction isPlaying");
+
+            //   LogHelper.d(TAG, "updateNotificationPlaybackState. updating playback position to ",
             //        (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000, " seconds");
             builder
                     .setWhen(System.currentTimeMillis() - AudioPlayerService.mediaPlayer.getCurrentPosition())
@@ -400,7 +402,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setShowWhen(true)
                 .setUsesChronometer(true);
         } else {
-          //  LogHelper.d(TAG, "updateNotificationPlaybackState. hiding playback position");
+            Log.v("addPlayPauseAction", "updatePlayPauseAction not isPlaying");
+
+            //  LogHelper.d(TAG, "updateNotificationPlaybackState. hiding playback position");
             builder
                 .setWhen(0)
                 .setShowWhen(false)

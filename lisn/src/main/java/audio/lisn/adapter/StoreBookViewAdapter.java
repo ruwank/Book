@@ -16,9 +16,11 @@
 
 package audio.lisn.adapter;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.media.AudioManager;
@@ -50,6 +52,7 @@ import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
+import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
@@ -66,6 +69,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
     int selectedBookIndex;
     private Context context;
     View selectedView;
+    AudioBook.SelectedAction selectedAction= AudioBook.SelectedAction.ACTION_MORE;
 
 
     String leftTime;
@@ -187,8 +191,14 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             public void onClick(View v) {
 
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
-                if(book.isPurchase()){
-                    popupMenu.inflate(R.menu.store_book_menu_downloaded);
+                if(AppController.getInstance().isUserLogin() && book.isPurchase()){
+                    if(book.getAudioFileCount() == book.getDownloadedChapter().size()){
+                        popupMenu.inflate(R.menu.store_book_menu_downloaded);
+
+                    }else{
+                        popupMenu.inflate(R.menu.store_book_menu_free);
+
+                    }
 
                 }else {
                     if (Float.parseFloat(book.getPrice()) < 1) {
@@ -205,42 +215,64 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
 
                         switch (item.getItemId()) {
                             case R.id.action_preview:
+                                releaseMediaPlayer();
                                 selectedView=holder.itemView;
                                 playButtonPressed((AudioBook)holder.itemView.getTag());
                                 break;
                             case R.id.action_purchase:
-                                releaseMediaPlayer();
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_PURCHASE);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_PURCHASE;
+
+//                                releaseMediaPlayer();
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_PURCHASE);
+//                                        }
+//                                    }, 200);
+//                                }
                                 break;
                             case R.id.action_detail:
-                                releaseMediaPlayer();
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_DETAIL);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_DETAIL;
+
+//                                releaseMediaPlayer();
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_DETAIL);
+//                                        }
+//                                    }, 200);
+//                                }
                                 break;
                             case R.id.action_play:
-                                releaseMediaPlayer();
-                                if (listener != null) {
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override public void run() {
-                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_PLAY);
-                                        }
-                                    }, 200);
-                                }
+                                selectedAction=AudioBook.SelectedAction.ACTION_PLAY;
+
+//                                releaseMediaPlayer();
+//                                if (listener != null) {
+//                                    new Handler().postDelayed(new Runnable() {
+//                                        @Override public void run() {
+//                                            listener.onStoreBookSelect(holder.itemView,(AudioBook) holder.itemView.getTag(),AudioBook.SelectedAction.ACTION_PLAY);
+//                                        }
+//                                    }, 200);
+//                                }
+                                break;
+                            case R.id.action_download:
+                                selectedAction=AudioBook.SelectedAction.ACTION_DOWNLOAD;
+
                                 break;
                             default:
                                 break;
 
+                        }
+                        if(selectedAction !=AudioBook.SelectedAction.ACTION_MORE) {
+                            releaseMediaPlayer();
+                            if (listener != null) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onStoreBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), selectedAction);
+                                    }
+                                }, 200);
+                            }
                         }
 
                         return true;
