@@ -308,6 +308,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
             mMediaNotificationManager.startNotification();
             sendMessage();
         }else{
+            mMediaNotificationManager.stopNotification();
             stopForeground(true);
         }
     }

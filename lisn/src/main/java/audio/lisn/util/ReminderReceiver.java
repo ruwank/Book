@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.util.Log;
+
+import java.util.Random;
 
 import audio.lisn.R;
 import audio.lisn.activity.MainActivity;
@@ -21,16 +24,25 @@ public class ReminderReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.v("AlarmReceiver","AlarmReceiver");
+        String quotesArray[]=context.getResources().getStringArray(R.array.quotes);
+        Random r = new Random();
+        int index = r.nextInt(quotesArray.length);
+        String quotes= quotesArray[index];
         Bitmap art = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.ic_launcher);
+
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.setBigContentTitle(context.getString(R.string.app_name));
+        bigTextStyle.bigText(Html.fromHtml(quotes));
 
         android.support.v4.app.NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setLargeIcon(art)
-                        .setContentTitle("Lisn app notification")
+                        .setContentTitle(context.getString(R.string.app_name))
+                        .setContentText(Html.fromHtml(quotes))
                         .setAutoCancel(true)
-                        .setContentText("enjoy with this Lisn app!");
+                        .setStyle(bigTextStyle);;
 
         Intent resultIntent = new Intent(context, MainActivity.class);
 

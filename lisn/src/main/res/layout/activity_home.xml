@@ -25,6 +25,8 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+
+
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
@@ -44,7 +46,13 @@
 
 
     </android.support.design.widget.CoordinatorLayout>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/snackbar_height"
+    android:background="@color/colorPrimary"
+    android:layout_below="@+id/content">
 
+</LinearLayout>
         <audio.lisn.view.PlayerControllerView
             android:id="@+id/audio_player_layout"
             android:layout_alignParentBottom="true"

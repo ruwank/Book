@@ -137,6 +137,141 @@
     </string>
     <string name="title_activity_contactus">ContactusActivity</string>
 
+    <string-array name="quotes">
+        <item><![CDATA[
+        <p>"A reader lives a thousand lives before he dies, said Jojen. The man who never reads lives only one." </p>
+        <p><b>― George R.R. Martin, A Dance with Dragons</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>"You can never get a cup of tea large enough or a book long enough to suit me" </p>
+        <p><b>― C.S. Lewis</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>"I find television very educating. Every time somebody turns on the set, I go into the other room and read a book." </p>
+        <p><b>― Groucho Marx</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Classic’ - a book which people praise and don’t read.</p>
+        <p><b>― Mark Twain</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>If you don’t have time to read, you don’t have the time (or the tools) to write. Simple as that.</p>
+        <p><b>― Stephen King</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Some books should be tasted, some devoured, but only a few should be chewed and digested thoroughly.</p>
+        <p><b>― Francis Bacon</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Books are mirrors: you only see in them what you already have inside you.</p>
+        <p><b>― Carlos Ruiz Zafón, The Shadow of the Wind</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Today a reader, tomorrow a leader.</p>
+        <p><b>― Margaret Fuller</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Only a generation of readers will spawn a generation of writers</p>
+        <p><b>― Steven Spielberg</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>My alma mater was books, a good library.... I could spend the rest of my life reading, just satisfying my curiosity</p>
+        <p><b>― Malcolm X</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>If you don’t like to read, you haven’t found the right book.</p>
+        <p><b>― J.K. Rowling</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Reading is to the mind what exercise is to the body.</p>
+        <p><b>― Joseph Addison</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>Literature is strewn with the wreckage of those who have minded beyond reason the opinion of others.</p>
+        <p><b>― Virginia Woolf, A Room of One\’s Own </b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>I am a part of everything that I have read.</p>
+        <p><b>―  Theodore Roosevelt</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> The person who deserves most pity is a lonesome one on a rainy day who doesn’t know how to read.</p>
+        <p><b>― Benjamin Franklin</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> A well-read woman is a dangerous creature.</p>
+        <p><b>― Lisa Kleypas, A Wallflower Christmas</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> All I have learned, I learned from books. </p>
+        <p><b>― Abraham Lincoln</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> To know a man’s library is, in some measure, to know a man’s mind. </p>
+        <p><b>― Geraldine Brooks, March</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> When I am king they shall not have bread and shelter only, but also teachings out of books, for a full belly is little worth where the mind is starved. </p>
+        <p><b>― Mark Twain, The Prince and the Pauper</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> Reading... a vacation for the mind.... </p>
+        <p><b>― Dave Barry</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> Books are the bees which carry the quickening pollen from one to another mind. </p>
+        <p><b> ― James Russell Lowell</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> I really had a lot of dreams when I was a kid, and I think a great deal of that grew out of the fact that I had a chance to read a lot. </p>
+        <p><b>― Bill Gates</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> Each book was a world unto itself, and in it I took refuge. </p>
+        <p><b>― Alberto Manguel, A History of Reading</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> You must write, and read, as if your life depended on it. </p>
+        <p><b>― Adrienne Rich</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> I do not read a book; I hold a conversation with the author. </p>
+        <p><b>― Elbert Hubbard</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> I think it’s the books that you read when you’re young that live with you forever. </p>
+        <p><b>― J.K. Rowling</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> Some books are so familiar that reading them is like being home again. </p>
+        <p><b>― Louisa May Alcott</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> Not all readers are leaders, but all leaders are readers. </p>
+        <p><b>― Harry S. Truman</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> An hour spent reading is one stolen from paradise. </p>
+        <p><b>― Thomas Wharton</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> A book is like a garden carried in the pocket. </p>
+        <p><b>- Chinese Proverb</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p> You cannot open a book without learning something. </p>
+        <p><b>- Confucius</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>You can’t get a cup of tea big enough or a book long enough to suit me. </p>
+        <p><b>- C. S. Lewis</b></p>
+        ]]></item>
+        <item><![CDATA[
+        <p>We read to know we are not alone. </p>
+        <p><b> -C. S. Lewis</b></p>
+        ]]></item>
 
+
+    </string-array>
 
 </resources>

@@ -541,6 +541,7 @@ if(currentAudioBook != null){
 
         //6 hours
         long time=System.currentTimeMillis()+(1000*60*60*6);
+
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
 
 
