@@ -88,15 +88,15 @@ public class PurchaseActivity extends AppCompatActivity {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Log.v("should","url:"+url);
 
-            if(url.equalsIgnoreCase(getString(R.string.purchase_success_url))){
+            if(url.equalsIgnoreCase(getString(R.string.purchase_success_url)) || url.equalsIgnoreCase(getString(R.string.purchase_success_url_http))){
                 completedPayment(0);
                 return true;
             }
-            else if(url.equalsIgnoreCase(getString(R.string.purchase_failed_url))){
+            else if(url.equalsIgnoreCase(getString(R.string.purchase_failed_url)) || url.equalsIgnoreCase(getString(R.string.purchase_failed_url_http))){
                 completedPayment(1);
 
                 return true;
-            }else if(url.equalsIgnoreCase(getString(R.string.purchase_already_url))){
+            }else if(url.equalsIgnoreCase(getString(R.string.purchase_already_url)) || url.equalsIgnoreCase(getString(R.string.purchase_already_url_http))){
                 completedPayment(2);
 
                 return true;

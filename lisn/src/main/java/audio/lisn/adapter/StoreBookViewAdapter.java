@@ -16,11 +16,9 @@
 
 package audio.lisn.adapter;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.media.AudioManager;
@@ -52,7 +50,6 @@ import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
-import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
@@ -71,6 +68,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
     View selectedView;
     AudioBook.SelectedAction selectedAction= AudioBook.SelectedAction.ACTION_MORE;
 
+    Thread timerUpdateThread;
 
     String leftTime;
 
@@ -147,6 +145,12 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             holder.title.setEllipsized("...");
             holder.author.setEllipsized("...");
 
+        }
+        if(book.isAwarded()){
+            holder.awardIcon.setVisibility(View.VISIBLE);
+
+        }else{
+            holder.awardIcon.setVisibility(View.GONE);
         }
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthor());
@@ -312,7 +316,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         public RelativeLayout previewLayout;
         public TextView previewLabel,timeLabel;
         public ProgressBar spinner;
-        public ImageView downloadedIcon;
+        public ImageView downloadedIcon,awardIcon;
 
 
 
@@ -332,6 +336,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             timeLabel=(TextView)itemView.findViewById(R.id.time_label);
             spinner = (ProgressBar)itemView.findViewById(R.id.progressBar);
             downloadedIcon = (ImageView)itemView.findViewById(R.id.downloaded_icon);
+            awardIcon = (ImageView)itemView.findViewById(R.id.award_icon);
             spinner.getIndeterminateDrawable().setColorFilter(
                     ContextCompat.getColor(itemView.getContext(), R.color.whiteColor),
                     android.graphics.PorterDuff.Mode.SRC_IN);
@@ -341,6 +346,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         }
     }
     private void playButtonPressed(AudioBook audioBook){
+        stopPreviewPlayer();
         if (audioBook.getPreview_audio() !=null && (audioBook.getPreview_audio().length()>0)) {
             boolean stopPlayer = false;
             if(selectedAudioBook != null){
@@ -352,7 +358,9 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             if(stopPlayer){
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.stop();
-                    new Thread(this).interrupt();
+                    if( timerUpdateThread != null ) {
+                        timerUpdateThread.interrupt();
+                    }
                 }
 
                 mediaPlayer.reset();
@@ -368,7 +376,9 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             if(selectedAudioBook != null && isPlayingPreview){
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.stop();
-                    new Thread(this).interrupt();
+                    if( timerUpdateThread != null ) {
+                        timerUpdateThread.interrupt();
+                    }
                 }
 
                 mediaPlayer.reset();
@@ -420,13 +430,17 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         isLoadingPreview=true;
         isPlayingPreview=false;
         pausePlayer();
+        notifyDataSetChanged();
+
         if (connectionDetector.isConnectingToInternet()) {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
             }
             if(mediaPlayer.isPlaying()){
                 mediaPlayer.stop();
-                new Thread(this).interrupt();
+                if( timerUpdateThread != null ) {
+                    timerUpdateThread.interrupt();
+                }
             }
 
             mediaPlayer.reset();
@@ -450,6 +464,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
             });
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 public boolean onError(MediaPlayer mp, int what, int extra) {
+                    notifyDataSetChanged();
 
                     String msg = "";
 
@@ -520,10 +535,19 @@ private void showErrorMessage(String msg){
     */
 }
     private void startTimer(){
-        new Thread(this).start();
+        if( timerUpdateThread != null ) {
+            timerUpdateThread.interrupt();
+        }
+        timerUpdateThread = new Thread( this );
+        timerUpdateThread.start();
+
+        //new Thread(this).start();
     }
     private void stopTimer(){
-        new Thread(this).interrupt();
+
+        if( timerUpdateThread != null ) {
+            timerUpdateThread.interrupt();
+        }
     }
 
     public void releaseMediaPlayer(){
@@ -531,7 +555,9 @@ private void showErrorMessage(String msg){
         isPlayingPreview=false;
         isLoadingPreview=false;
         if (mediaPlayer != null){
-
+            if( timerUpdateThread != null ) {
+                timerUpdateThread.interrupt();
+            }
             stopTimer();
             Log.v("mediaPlayer","releaseMediaPlayer");
             if(mediaPlayer.isPlaying()) {
@@ -546,6 +572,10 @@ private void showErrorMessage(String msg){
     private void pausePlayer() {
         Intent intent = new Intent(Constants.PLAYER_STATE_CHANGE);
         intent.putExtra("state", "pause");
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+    private void stopPreviewPlayer() {
+        Intent intent = new Intent(Constants.PLAYER_STATE_CHANGE);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
     public interface StoreBookSelectListener

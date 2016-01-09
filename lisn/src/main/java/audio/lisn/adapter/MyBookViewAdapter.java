@@ -116,6 +116,12 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
         }else{
             holder.downloadIcon.setVisibility(View.VISIBLE);
         }
+        if(book.isAwarded()){
+            holder.awardIcon.setVisibility(View.VISIBLE);
+
+        }else{
+            holder.awardIcon.setVisibility(View.GONE);
+        }
         holder.title.setText(book.getTitle());
         holder.author.setText(book.getAuthor());
 
@@ -244,6 +250,19 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
 
             }
         });
+        holder.downloadIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onMyBookSelect(holder.itemView, (AudioBook) holder.itemView.getTag(), AudioBook.SelectedAction.ACTION_DOWNLOAD);
+                        }
+                    }, 200);
+                }
+            }
+        });
 
 
         holder.itemView.setTag(book);
@@ -257,12 +276,11 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView thumbNail;
+        public ImageView thumbNail,awardIcon;
         public EllipsizingTextView title, author;
         public ImageButton optionButton;
         public String bookId;
-        public ImageView downloadIcon;
-
+        public ImageButton downloadIcon;
 
 
         public ViewHolder(View itemView) {
@@ -273,8 +291,8 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
             title= (EllipsizingTextView) itemView.findViewById(R.id.book_title);
             author= (EllipsizingTextView) itemView.findViewById(R.id.book_author);
             optionButton=(ImageButton)itemView.findViewById(R.id.btn_action);
-            downloadIcon=(ImageView)itemView.findViewById(R.id.downloaded_icon);
-
+            downloadIcon=(ImageButton)itemView.findViewById(R.id.downloaded_icon);
+            awardIcon = (ImageView)itemView.findViewById(R.id.award_icon);
 
 
         }

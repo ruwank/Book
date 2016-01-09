@@ -29,12 +29,15 @@ import audio.lisn.service.MediaNotificationManager;
 public class AudioPlayerService extends Service implements Runnable, OnCompletionListener,
         OnPreparedListener,OnBufferingUpdateListener,MediaPlayer.OnErrorListener,MusicFocusable {
 
-	public static MediaPlayer mediaPlayer;
+    public static final String TAG = AudioPlayerService.class.getSimpleName();
+
+    public static MediaPlayer mediaPlayer;
     public static boolean hasStartedPlayer;
     private final IBinder mBinder = new AudioPlayerServiceBinder();
     AudioFocusHelper mAudioFocusHelper = null;
     public static int seekPosition;
     public static int audioDuration;
+    Thread timerUpdateThread;
 
     private MediaNotificationManager mMediaNotificationManager;
 
@@ -218,8 +221,11 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
           giveUpAudioFocus();
           mState = State.Stopped;
           LocalBroadcastManager.getInstance(this).unregisterReceiver(mStateChangeReceiver);
-
+          if( timerUpdateThread != null ) {
+              timerUpdateThread.interrupt();
+          }
       }
+
 
 	  @Override  
 	    public void run() {  
@@ -228,9 +234,9 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 	        while (mediaPlayer != null && currentPosition < mediaPlayer.getDuration()) {  
 	            try {  
 	                Thread.sleep(1000);  
-	                if (mediaPlayer != null) {  
-	                	currentPosition = mediaPlayer.getCurrentPosition();
-	                }  
+//	                if (mediaPlayer != null) {
+//	                	currentPosition = mediaPlayer.getCurrentPosition();
+//	                }
 	            } catch (InterruptedException e) {  
 	                e.printStackTrace();  
 	            }
@@ -245,7 +251,9 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 	  public void onCompletion(MediaPlayer mp) {
           mState = State.Stopped;
 
-          new Thread(this).interrupt();
+          if( timerUpdateThread != null ) {
+              timerUpdateThread.interrupt();
+          }
 
           if(mp.getCurrentPosition()>1){
               AppController.getInstance().playNextFile();
@@ -267,11 +275,18 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
         if(player != null && player.getDuration()>0){
             Log.v("onPrepared","player duration "+player.getDuration());
             Log.v("onPrepared","seekPosition "+seekPosition);
+            hasStartedPlayer=true;
             audioDuration=player.getDuration();
             tryToGetAudioFocus();
             player.start();
             player.seekTo(seekPosition);
-            new Thread(this).start();
+
+            if( timerUpdateThread != null ) {
+                timerUpdateThread.interrupt();
+            }
+                timerUpdateThread = new Thread( this );
+                timerUpdateThread.start();
+
 
             mState = State.Playing;
 
@@ -311,6 +326,7 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
             mMediaNotificationManager.stopNotification();
             stopForeground(true);
         }
+        AppController.getInstance().bookmarkAudioBook();
     }
 
     @Override
@@ -347,7 +363,10 @@ public class AudioPlayerService extends Service implements Runnable, OnCompletio
 
     // Send an Intent with an action named "my-event".
     private void sendMessage() {
+        Log.v(TAG,"sendMessage start");
+
         if(mediaPlayer !=null && hasStartedPlayer) {
+            Log.v(TAG,"sendMessage");
             Intent intent = new Intent("audio-event");
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
         }else{
@@ -450,7 +469,6 @@ public State getPlaybackState(){
             }
             else if(state =="stop"){
                 if (mediaPlayer!=null  && mediaPlayer.isPlaying()) {
-                   // mediaPlayer.seekTo(0);
                     mediaPlayer.stop();
 
                 }

@@ -25,11 +25,13 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -136,6 +138,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private static final String KEY_TERMS_ACCEPTED_FOR_MOBITEL="KEY_TERMS_ACCEPTED_FOR_MOBITEL";
     private static final String KEY_TERMS_ACCEPTED_FOR_ETISALAT="KEY_TERMS_ACCEPTED_FOR_ETISALAT";
 
+    NestedScrollView scrollView;
+
     public enum ServiceProvider {
         PROVIDER_NONE, PROVIDER_MOBITEL,PROVIDER_DIALOG,PROVIDER_ETISALAT
     }
@@ -146,6 +150,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     ServiceProvider  serviceProvider;
     PaymentOption  paymentOption;
+    Thread timerUpdateThread;
 
     //  ListView reviewListView;
     //  BookReviewListAdapter bookReviewListAdapter;
@@ -204,6 +209,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             @Override
                             public void onAnimationStart(Animator animation) {
                                 super.onAnimationStart(animation);
+                                setLayoutMargin(false);
+
                                 playerControllerView.stopAudioPlayer();
                             }
                         });
@@ -216,6 +223,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
 
         });
+        scrollView= (NestedScrollView) findViewById(R.id.scroll);
         updateData();
         downloadManager = new ThinDownloadManager();
         // Do all heavy processing here, activity will not enter transition until you explicitly call startPostponedEnterTransition()
@@ -230,8 +238,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer){
             playerControllerView.setVisibility(View.VISIBLE);
+            setLayoutMargin(true);
+
         }else{
             playerControllerView.setVisibility(View.GONE);
+            setLayoutMargin(false);
+
 
         }
         playerControllerView.updateView();
@@ -258,6 +270,18 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if ( mProgressDialog!=null && mProgressDialog.isShowing() ){
             mProgressDialog.dismiss();
         }
+    }
+    private void setLayoutMargin(boolean setMargin){
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)scrollView.getLayoutParams();
+
+        if(setMargin){
+            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, (int) getResources().getDimension(R.dimen.snackbar_height));
+        }else{
+            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, 0);
+
+        }
+
+        scrollView.setLayoutParams(params);
     }
     private void findServiceProvider() {
         Log.v("deviceID", "findDeviceID");
@@ -707,6 +731,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     private void updatePreviewLayout(){
         if(isLoadingPreview || isPlayingPreview){
+            setLayoutMargin(true);
             previewLayout.setVisibility(View.VISIBLE);
             previewPlayButton.setImageResource(R.drawable.btn_play_preview_pause);
 
@@ -721,6 +746,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 timeLabel.setText("");
             }
         }else{
+            setLayoutMargin(false);
             previewLayout.setVisibility(View.GONE);
             previewPlayButton.setImageResource(R.drawable.btn_play_preview_start);
         }
@@ -761,7 +787,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
-                new Thread(this).interrupt();
+                if( timerUpdateThread != null ) {
+                    timerUpdateThread.interrupt();
+                }
             }
 
             mediaPlayer.reset();
@@ -1402,10 +1430,16 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 //
 //    }
     private void startTimer(){
-        new Thread(this).start();
+        if( timerUpdateThread != null) {
+            timerUpdateThread.interrupt();
+        }
+        timerUpdateThread = new Thread( this );
+        timerUpdateThread.start();
     }
     private void stopTimer(){
-        new Thread(this).interrupt();
+        if( timerUpdateThread != null ) {
+            timerUpdateThread.interrupt();
+        }
     }
 
     private void releaseMediaPlayer(){

@@ -81,7 +81,6 @@ public class AppController extends Application {
     private static final int NOTIFY_ID=158;
     AlarmManager alarmManager = null;
     private BookCategory[] bookCategories;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -357,15 +356,19 @@ if(currentAudioBook != null){
     }
 
     public void bookmarkAudioBook(){
-        //AudioBook audioBook=AppController.getInstance().getCurrentAudioBook();
         AudioBook audioBook=getCurrentAudioBook();
-        Log.v("bookmarkAudioBook", "LastPlayFileIndex:" + audioBook.getLastPlayFileIndex());
-        Log.v("bookmarkAudioBook","LastSeekPoint:"+audioBook.getLastSeekPoint());
+        //AudioBook audioBookClone= (AudioBook) audioBook.clone();
 
-        DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
-                getApplicationContext());
-        downloadedAudioBook.addBookToList(getApplicationContext(),
-                audioBook.getBook_id(), audioBook);
+        if(audioBook != null) {
+            Log.v(TAG, "Book Id:" + audioBook.getBook_id());
+            Log.v(TAG, "LastPlayFileIndex:" + audioBook.getLastPlayFileIndex());
+            Log.v(TAG, "LastSeekPoint:" + audioBook.getLastSeekPoint());
+
+            DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
+                    getApplicationContext());
+            downloadedAudioBook.addBookToList(getApplicationContext(),
+                    audioBook.getBook_id(), audioBook);
+        }
 
     }
 
@@ -447,7 +450,7 @@ if(currentAudioBook != null){
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             //  showNotification();
-            Log.v("mAppEnterForegroundReceiver","mAppEnterForegroundReceiver");
+            Log.v(TAG,"mAppEnterForegroundReceiver");
             appEnterForeground();
 
 
@@ -458,8 +461,7 @@ if(currentAudioBook != null){
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent
             //  showNotification();
-            Log.v("mAppEnterBackgroundReceiver","mAppEnterBackgroundReceiver");
-
+            Log.v(TAG,"mAppEnterBackgroundReceiver");
             appEnterBackground();
 
 

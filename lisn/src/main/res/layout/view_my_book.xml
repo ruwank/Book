@@ -28,14 +28,21 @@
                 android:layout_centerHorizontal="true"
                 android:transitionName="@string/transition_book"
                 />
-
             <ImageView
+                android:id="@+id/award_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_award"
+                android:layout_alignParentRight="true"/>
+
+            <ImageButton
                 android:id="@+id/downloaded_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:layout_below="@+id/book_cover_thumbnail"
-                android:layout_marginTop="-32dp"
+                android:layout_marginTop="-48dp"
                 android:layout_marginRight="@dimen/book_item_margin"
                 android:src="@drawable/ic_download"
                 android:layout_alignParentRight="true"/>

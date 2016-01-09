@@ -76,7 +76,9 @@ import audio.lisn.webservice.JsonUTF8StringRequest;
 
 public class PlayerControllerActivity extends AppCompatActivity implements FileDownloadTaskListener{
     private static final String TRANSITION_NAME = "audio.lisn.PlayerControllerActivity";
-   // AudioBook audioBook;
+    public static final String TAG = PlayerControllerActivity.class.getSimpleName();
+
+    // AudioBook audioBook;
     private FancyCoverFlow mCoverFlow;
     private CoverFlowAdapter mAdapter;
     private TextSwitcher mTitle;
@@ -225,8 +227,8 @@ Log.v("position","position:"+position);
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 audioBook = bookList.get(position);
-                downloadAudioFile();
                 stopAudioPlayer();
+                downloadAudioFile();
                 setBookTitle(position);
 
 
@@ -347,6 +349,7 @@ Log.v("position","position:"+position);
     private void stopAudioPlayer(){
 
         if(AudioPlayerService.mediaPlayer!=null){
+            AppController.getInstance().bookmarkAudioBook();
             playPauseButton.setImageResource(R.drawable.btn_play_start);
             sendStateChange("stop");
             AppController.getInstance().stopPlayer();
@@ -428,13 +431,14 @@ private void setBookTitle(int position){
         AppController.getInstance().setFileList(fileList);
         AppController.getInstance().setCurrentAudioBook(audioBook);
         int lastPlayFileIndex=audioBook.getLastPlayFileIndex();
-        if(lastPlayFileIndex<1){
-            lastPlayFileIndex=0;
-        }
+//        if(lastPlayFileIndex<1){
+//            lastPlayFileIndex=0;
+//        }
         AppController.getInstance().fileIndex=(audioBook.getLastPlayFileIndex()-1);
         stopService(playbackServiceIntent);
         startService(playbackServiceIntent);
         AppController.getInstance().playNextFile();
+
         Log.v("book.getLanguageCode()",""+audioBook.getLanguageCode());
 
 
@@ -674,8 +678,8 @@ private void setBookTitle(int position){
 */
     public void updateView(){
         audioTitle.setText(AppController.getInstance().getPlayerControllerTitle());
-
         if(AudioPlayerService.mediaPlayer!=null){
+            Log.v(TAG,"updateView getCurrentPosition: "+AudioPlayerService.mediaPlayer.getCurrentPosition());
 
             musicSeekBar.setMax(AudioPlayerService.audioDuration);
             musicSeekBar.setProgress(AudioPlayerService.mediaPlayer.getCurrentPosition());

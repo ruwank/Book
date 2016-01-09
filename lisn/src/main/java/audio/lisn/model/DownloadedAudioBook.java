@@ -28,10 +28,9 @@ public class DownloadedAudioBook implements Serializable {
 	}
 	
 	public HashMap<String, AudioBook> getBookList(Context context) {
-		if(bookList == null){
 			readFileFromDisk(context);
 
-		}
+
 		return bookList;
 	}
 
@@ -39,12 +38,15 @@ public class DownloadedAudioBook implements Serializable {
 		this.bookList = bookList;
 	}
 	public void addBookToList(Context context,String key, AudioBook audioBook) {
+		readFileFromDisk(context);
+
 		if(bookList !=null) {
 			bookList.put(key, audioBook);
 			writeFileToDisk(context);
 		}
 	}
 	public void removeBook(Context context){
+
 		if(bookList !=null) {
 			bookList.clear();
 			writeFileToDisk(context);

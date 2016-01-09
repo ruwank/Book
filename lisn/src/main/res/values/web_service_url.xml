@@ -13,8 +13,11 @@
     <string name="add_review_url">https://app.lisn.audio/api/1.1/reviewactivity.php</string>
     <string name="purchase_book_url">https://app.lisn.audio/spgw/1.5.6/payment/init.php</string>
     <string name="purchase_success_url">https://app.lisn.audio/spgw/1.5.6/payment/success.php</string>
+    <string name="purchase_success_url_http">http://app.lisn.audio/spgw/1.5.6/payment/success.php</string>
     <string name="purchase_failed_url">https://app.lisn.audio/spgw/1.5.6/payment/failed.php</string>
+    <string name="purchase_failed_url_http">http://app.lisn.audio/spgw/1.5.6/payment/failed.php</string>
     <string name="purchase_already_url">https://app.lisn.audio/spgw/1.5.6/payment/alreadypaid.php</string>
+    <string name="purchase_already_url_http">http://app.lisn.audio/spgw/1.5.6/payment/alreadypaid.php</string>
     <string name="play_store_url">https://play.google.com/store/apps/details?id=audio.lisn</string>
     <string name="mobitel_pay_url">http://app.lisn.audio/cbgw/1.1/mobitel.php</string>
     <string name="etisalat_pay_url">http://app.lisn.audio/cbgw/1.1/etisalat.php</string>

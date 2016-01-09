@@ -1,6 +1,7 @@
 package audio.lisn.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ public class AudioBook implements Serializable{
     private int downloadCount;
     private float previewDuration;
     private int discount;
+    private boolean isAwarded;
     private boolean isDownloaded;
     private int audioFileCount;
     private int fileSize;
@@ -145,6 +147,14 @@ public class AudioBook implements Serializable{
         this.discount = discount;
     }
 
+    public boolean isAwarded() {
+        return isAwarded;
+    }
+
+    public void setIsAwarded(boolean isAwarded) {
+        this.isAwarded = isAwarded;
+    }
+
 
     public enum LanguageCode {
 		LAN_EN, LAN_SI
@@ -207,6 +217,14 @@ public class AudioBook implements Serializable{
             if(obj.getString("size") !=null){
                 String size=obj.getString("size");
                 this.fileSize=Integer.parseInt(size);
+
+            }
+            if(obj.getString("award") !=null){
+                String award=obj.getString("award");
+                Log.v("award","award: "+award);
+                if(Integer.parseInt(award) == 1){
+                    this.isAwarded=true;
+                }
 
             }
             if(obj.getString("discount") !=null){
@@ -303,6 +321,7 @@ public class AudioBook implements Serializable{
             returnBook.setAudioFileCount(this.audioFileCount);
             returnBook.setPrice(this.price);
             returnBook.setReviews(this.reviews);
+            returnBook.setIsAwarded(this.isAwarded);
 
             this.setDownloadedChapter(returnBook.getDownloadedChapter());
 

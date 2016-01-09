@@ -317,12 +317,14 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
         loadMyBookData();
         updateMenu();
         registerBroadcastReceiver();
+        registerPreviewBroadcastReceiver();
     }
     @Override
     public void onPause() {
         super.onPause();
         removePlayer();
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mPlayerUpdateReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mPreviewUpdateReceiver);
 
         Log.v(TAG, "onPause");
 
@@ -1167,6 +1169,22 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     }
     // handler for received Intents for the "my-event" event
     private BroadcastReceiver mPlayerUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Extract data included in the Intent
+            if(AudioPlayerService.mediaPlayer!=null && AudioPlayerService.mediaPlayer.isPlaying()) {
+                removePlayerAndUpdateView();
+            }
+        }
+    };
+
+    private void registerPreviewBroadcastReceiver(){
+        // Register mMessageReceiver to receive messages.
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mPlayerUpdateReceiver,
+                new IntentFilter(Constants.PREVIEW_PLAYER_STATE_CHANGE));
+    }
+    // handler for received Intents for the "my-event" event
+    private BroadcastReceiver mPreviewUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Extract data included in the Intent

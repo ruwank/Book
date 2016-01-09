@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -63,7 +65,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private int mNavItemId;
     boolean isUserLogin;
     PlayerControllerView playerControllerView;
-
+    FrameLayout containerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //setActionBarIcon(R.drawable.ic_drawer);
 
         setContentView(R.layout.activity_home);
+        containerLayout= (FrameLayout) findViewById(R.id.container_body);
 
         initToolbar();
         drawer = (DrawerLayout) findViewById(R.id.drawer);
@@ -107,6 +110,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             public void onAnimationStart(Animator animation) {
                                 super.onAnimationStart(animation);
                                 playerControllerView.stopAudioPlayer();
+                                setLayoutMargin(false);
                             }
                         });
 
@@ -165,14 +169,29 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 //        return R.layout.activity_home;
 //    }
 
+private void setLayoutMargin(boolean setMargin){
+    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)containerLayout.getLayoutParams();
 
+    if(setMargin){
+        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, (int) getResources().getDimension(R.dimen.snackbar_height));
+    }else{
+        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin,0);
+
+    }
+
+    containerLayout.setLayoutParams(params);
+}
 
     @Override
     protected void onResume() {
         super.onResume();
         if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer){
+            setLayoutMargin(true);
+
             playerControllerView.setVisibility(View.VISIBLE);
         }else{
+            setLayoutMargin(false);
+
             playerControllerView.setVisibility(View.GONE);
 
         }

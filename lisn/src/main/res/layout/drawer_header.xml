@@ -22,7 +22,7 @@
              android:layout_height="wrap_content"
              android:orientation="vertical"
              android:paddingTop="@dimen/status_bar_height"
-    android:background="@color/colorPrimary"
+             android:background="@drawable/ui_bg_logo_side_menu"
              android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView

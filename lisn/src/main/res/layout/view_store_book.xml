@@ -28,6 +28,13 @@
                 android:layout_centerHorizontal="true"
                 android:transitionName="@string/transition_book"
                 />
+            <ImageView
+                android:id="@+id/award_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_award"
+                android:layout_alignParentRight="true"/>
             <RelativeLayout
                 android:id="@+id/preview_layout"
                 android:layout_margin="@dimen/book_item_margin"
