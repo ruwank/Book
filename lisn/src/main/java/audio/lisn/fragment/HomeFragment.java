@@ -803,7 +803,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.v("onActivityResult", "onActivityResult HomeFragment");
-
+//
 //        if (requestCode == 23) {
 //            if(resultCode ==  Constants.RESULT_SUCCESS){
 //                if (Float.parseFloat(selectedBook.getPrice()) > 0) {
