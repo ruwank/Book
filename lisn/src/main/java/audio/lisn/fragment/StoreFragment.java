@@ -311,6 +311,11 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
                 downloadData();
             }
 
+        }else{
+            JSONArray jsonArray = AppController.getInstance().getStoreBookForCategory(bookCategory);
+            if (jsonArray != null) {
+                setData(jsonArray);
+            }
         }
 
 

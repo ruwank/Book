@@ -137,6 +137,8 @@
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_menu_more_option"/>
+            <!--style="@style/bookSmallRatingBar"-->
+
             <RatingBar
                 android:id="@+id/rating_bar"
                 style="@style/bookSmallRatingBar"
@@ -147,7 +149,6 @@
                 android:isIndicator="true"
                 android:focusable="false"
                 android:numStars="5"
-                android:rating="2.0"
                 android:stepSize="0.5" />
             <ImageView
                 android:id="@+id/downloaded_icon"

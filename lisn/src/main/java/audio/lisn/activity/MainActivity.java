@@ -10,17 +10,12 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
@@ -110,12 +105,14 @@ public class MainActivity extends Activity {
                     public void onResponse(JSONArray jsonArray) {
 
                         AppController.getInstance().setNewReleaseBookList(jsonArray);
-
+                        completeCount++;
+                        loadHomeScreen();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                completeCount++;
+                loadHomeScreen();
             }
         });
         bookListReq.setShouldCache(true);
@@ -133,12 +130,14 @@ public class MainActivity extends Activity {
                     public void onResponse(JSONArray jsonArray) {
 
                         AppController.getInstance().setTopRatedBookList(jsonArray);
-
+                        completeCount++;
+                        loadHomeScreen();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                completeCount++;
+                loadHomeScreen();
             }
         });
         bookListReq.setShouldCache(true);
@@ -156,57 +155,61 @@ public class MainActivity extends Activity {
                     public void onResponse(JSONArray jsonArray) {
 
                         AppController.getInstance().setTopDownloadedBookList(jsonArray);
-
+                        completeCount++;
+                        loadHomeScreen();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                completeCount++;
+                loadHomeScreen();
             }
         });
         bookListReq.setShouldCache(true);
         // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(bookListReq,"tag_top_download_list");
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_top_download_list");
     }
     private void downloadHomeData(){
+        downloadCount=4;
+        completeCount=0;
         downloadNewReleaseBookList();
         downloadTopDownloadedBookList();
         downloadTopRatedBookList();
         downloadBookCategoryList();
     }
-    private void downloadBookCategoryData(){
-        downloadCount=4;
-        completeCount=0;
-        for (int i=0;i<4;i++) {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("cat", ""+i);
-
-            String url = getString(R.string.book_category_url);
-
-            final int finalI = i;
-
-            JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST,url, params,
-                    new Response.Listener<JSONArray>() {
-                        @Override
-                        public void onResponse(JSONArray jsonArray) {
-                            completeCount++;
-                            AppController.getInstance().setStoreBookForCategory(finalI,jsonArray);
-                            loadHomeScreen();
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    completeCount++;
-                    loadHomeScreen();
-
-                }
-            });
-
-            bookListReq.setShouldCache(true);
-            // Adding request to request queue
-            AppController.getInstance().addToRequestQueue(bookListReq, "tag_category_list"+i);
-        }
-    }
+//    private void downloadBookCategoryData(){
+//        downloadCount=4;
+//        completeCount=0;
+//        for (int i=0;i<4;i++) {
+//            Map<String, String> params = new HashMap<String, String>();
+//            params.put("cat", ""+i);
+//
+//            String url = getString(R.string.book_category_url);
+//
+//            final int finalI = i;
+//
+//            JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST,url, params,
+//                    new Response.Listener<JSONArray>() {
+//                        @Override
+//                        public void onResponse(JSONArray jsonArray) {
+//                            completeCount++;
+//                            AppController.getInstance().setStoreBookForCategory(finalI,jsonArray);
+//                            loadHomeScreen();
+//                        }
+//                    }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    completeCount++;
+//                    loadHomeScreen();
+//
+//                }
+//            });
+//
+//            bookListReq.setShouldCache(true);
+//            // Adding request to request queue
+//            AppController.getInstance().addToRequestQueue(bookListReq, "tag_category_list"+i);
+//        }
+//    }
     private void downloadBookCategoryList() {
         String url=getString(R.string.book_category_list_url);
 
@@ -216,12 +219,15 @@ public class MainActivity extends Activity {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
                         updateCategoryList(jsonArray);
+                        completeCount++;
+                        loadHomeScreen();
 
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                completeCount++;
+                loadHomeScreen();
             }
         });
         categoryListReq.setShouldCache(true);
@@ -249,7 +255,7 @@ public class MainActivity extends Activity {
     private void downloadData() {
         progressBar.setVisibility(View.VISIBLE);
         downloadHomeData();
-        downloadBookCategoryData();
+        //downloadBookCategoryData();
 
     }
 

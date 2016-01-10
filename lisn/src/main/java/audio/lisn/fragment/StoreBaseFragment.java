@@ -1,6 +1,5 @@
 package audio.lisn.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
@@ -60,6 +61,9 @@ public class StoreBaseFragment extends Fragment {
     private ProgressDialog pDialog;
     BookCategory[] bookCategories;
     private SectionsPagerAdapter sectionsPagerAdapter;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    int downloadCount=0,completeCount=0;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -145,9 +149,23 @@ public class StoreBaseFragment extends Fragment {
 
             }
         });
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
+
         // END_INCLUDE (setup_slidingtablayout)
     }
-private void updateCategoryList(JSONArray jsonArray){
+
+//    private void refreshContent() {
+//        mSwipeRefreshLayout.setRefreshing(false);
+//    }
+
+    private void updateCategoryList(JSONArray jsonArray){
     bookCategories= new BookCategory[jsonArray.length()];
 
     for (int i = 0; i < jsonArray.length(); i++) {
@@ -177,6 +195,7 @@ private void updateCategoryList(JSONArray jsonArray){
             }
         }
     }
+
     private void downloadCategoryList() {
         pDialog.show();
         String url=getString(R.string.book_category_list_url);
@@ -335,5 +354,184 @@ private void updateCategoryList(JSONArray jsonArray){
         Intent intent = new Intent(Constants.MENU_ITEM_SELECT);
         intent.putExtra("index", 1);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(intent);
+    }
+
+    //Refresh data
+    private void refreshContent(){
+        downloadCount=0;
+        completeCount=0;
+        downloadNewReleaseBookList();
+        downloadTopDownloadedBookList();
+        downloadTopRatedBookList();
+        downloadBookCategoryList();
+    }
+    private void refreshScreen(){
+        if(downloadCount ==completeCount){
+            mSlidingTabLayout.setViewPager(null);
+            mSlidingTabLayout.setViewPager(mViewPager);
+            sectionsPagerAdapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void downloadNewReleaseBookList(){
+        String url=getString(R.string.home_book_list_url);
+        downloadCount++;
+        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+
+                        AppController.getInstance().setNewReleaseBookList(jsonArray);
+                        completeCount++;
+                        refreshScreen();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                completeCount++;
+                refreshScreen();
+
+            }
+        });
+        bookListReq.setShouldCache(true);
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_new_realease_list");
+    }
+
+    private void downloadTopRatedBookList(){
+        downloadCount++;
+        String url=getString(R.string.top_rated_book_list_url);
+
+        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+
+                        AppController.getInstance().setTopRatedBookList(jsonArray);
+                        completeCount++;
+                        refreshScreen();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                completeCount++;
+                refreshScreen();
+
+            }
+        });
+        bookListReq.setShouldCache(true);
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_topRated_list");
+    }
+
+    private void downloadTopDownloadedBookList(){
+        downloadCount++;
+        String url=getString(R.string.top_download_book_list_url);
+
+        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        AppController.getInstance().setTopDownloadedBookList(jsonArray);
+                        completeCount++;
+                        refreshScreen();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                completeCount++;
+                refreshScreen();
+
+            }
+        });
+        bookListReq.setShouldCache(true);
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_top_download_list");
+    }
+
+
+    private void downloadBookCategoryList() {
+        downloadCount++;
+        String url=getString(R.string.book_category_list_url);
+
+        JsonUTF8ArrayRequest categoryListReq = new JsonUTF8ArrayRequest(url, null,
+
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        downloadCategoryContent(jsonArray);
+                        completeCount++;
+                        refreshScreen();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                completeCount++;
+                refreshScreen();
+
+            }
+        });
+        categoryListReq.setShouldCache(true);
+        AppController.getInstance().addToRequestQueue(categoryListReq, "tag_category_list");
+    }
+    private void downloadCategoryContent(JSONArray jsonArray){
+        BookCategory[] bookCategories= new BookCategory[jsonArray.length()];
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+
+                JSONObject obj = jsonArray.getJSONObject(i);
+                BookCategory bookCategory=new BookCategory(obj);
+                bookCategories[i]=bookCategory;
+                downloadCategoryData(bookCategory.getId());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+            }
+
+        }
+        AppController.getInstance().setBookCategories(bookCategories);
+
+
+    }
+    private void downloadCategoryData(final int bookCategory) {
+        downloadCount++;
+        Log.v("bookCategory","bookCategory"+bookCategory);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("cat", "" + bookCategory);
+
+        String url = getString(R.string.book_category_url);
+
+
+        JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(Request.Method.POST,url, params,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+
+                        AppController.getInstance().setStoreBookForCategory(bookCategory, jsonArray);
+                        completeCount++;
+                        refreshScreen();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                completeCount++;
+                refreshScreen();
+
+            }
+        });
+        bookListReq.setShouldCache(true);
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(bookListReq, "tag_boo_list"+bookCategory);
+        //   showOption();
     }
 }

@@ -202,7 +202,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
                                 playerControllerView.setX(0);
-                                playerControllerView.setVisibility(View.GONE);
+                                playerControllerView.setVisibility(View.INVISIBLE);
 
                             }
 
@@ -241,7 +241,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             setLayoutMargin(true);
 
         }else{
-            playerControllerView.setVisibility(View.GONE);
+            playerControllerView.setVisibility(View.INVISIBLE);
             setLayoutMargin(false);
 
 
@@ -484,7 +484,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         });
 
        // TextView paymentOptionOr = (TextView) findViewById(R.id.mobitelOption);
-        TextView buyFromCardDescription = (TextView) findViewById(R.id.buyFromCardButtonText);
+       // TextView buyFromCardDescription = (TextView) findViewById(R.id.buyFromCardButtonText);
 
         RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);
         LayerDrawable stars1 = (LayerDrawable) ratingBar.getProgressDrawable();
@@ -575,7 +575,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         duration.setText(durationText);
         description.setText(audioBook.getDescription());
         //buyFromCardDescription.setText("(and get a "+audioBook.getDiscount()+"% discount)");
-        btnPayFromCard.setText("Pay by Card ("+audioBook.getDiscount()+"% discount)");
+        btnPayFromCard.setText("Pay by Card (" + audioBook.getDiscount() + "% discount)");
 
         if(AppController.getInstance().isUserLogin() && audioBook.isPurchase()){
             btnDownload.setText("Download");
@@ -585,22 +585,19 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             rateLayout.setVisibility(View.VISIBLE);
 
-            addToBillButton.setVisibility(View.GONE);
-            btnPayFromCard.setVisibility(View.GONE);
-           // paymentOptionOr.setVisibility(View.GONE);
-            buyFromCardDescription.setVisibility(View.GONE);
+            addToBillButton.setVisibility(View.INVISIBLE);
+            btnPayFromCard.setVisibility(View.INVISIBLE);
             // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
         }else{
-            rateLayout.setVisibility(View.GONE);
+            rateLayout.setVisibility(View.INVISIBLE);
             if(Float.parseFloat(audioBook.getPrice())>0) {
-                btnDownload.setVisibility(View.GONE);
+                btnDownload.setVisibility(View.INVISIBLE);
                 // btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
 
                 if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
                     // btnAddMobitel.setText("Add to my bill - Rs "+audioBook.getPrice());
                     addToBillButton.setVisibility(View.VISIBLE);
                     //paymentOptionOr.setVisibility(View.VISIBLE);
-                    buyFromCardDescription.setVisibility(View.VISIBLE);
                     if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
                         addToBillButton.setText("Add to Mobitel bill");
                     }
@@ -610,23 +607,19 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     }
 
                 }else{
-                    addToBillButton.setVisibility(View.GONE);
-                   // paymentOptionOr.setVisibility(View.GONE);
+                    addToBillButton.setVisibility(View.INVISIBLE);
                 }
                 btnPayFromCard.setVisibility(View.VISIBLE);
 
 
             }else{
                 btnDownload.setText("Download");
-                addToBillButton.setVisibility(View.GONE);
-               // paymentOptionOr.setVisibility(View.GONE);
-                btnPayFromCard.setVisibility(View.GONE);
-                buyFromCardDescription.setVisibility(View.GONE);
+                addToBillButton.setVisibility(View.INVISIBLE);
+                btnPayFromCard.setVisibility(View.INVISIBLE);
 
             }
 
         }
-        buyFromCardDescription.setVisibility(View.GONE);
 
         btnShare=(ImageButton)findViewById(R.id.btnShare);
         btnShare.setOnClickListener(new View.OnClickListener() {
@@ -681,7 +674,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if(reviewsCount>3){
             reviews= (ArrayList<BookReview>) audioBook.getReviews().subList(0,3);
         }else{
-            allReviews.setVisibility(View.GONE);
+            allReviews.setVisibility(View.INVISIBLE);
             reviews=audioBook.getReviews();
         }
         WCLinearLayoutManager linearLayoutManagerVertical =
@@ -747,7 +740,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
         }else{
             setLayoutMargin(false);
-            previewLayout.setVisibility(View.GONE);
+            previewLayout.setVisibility(View.INVISIBLE);
             previewPlayButton.setImageResource(R.drawable.btn_play_preview_start);
         }
     }
@@ -1908,6 +1901,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
 
         reviews.add(bookReview);
+        audioBook.setReviews(reviews);
 
         updateData();
     }

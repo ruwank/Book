@@ -7,13 +7,14 @@
     android:background="@color/colorPrimary"
     tools:ignore="MergeRootFrame" >
 
-    <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--android:src="@drawable/ui_bg_logo_side_menu"-->
-        <!--android:scaleType="fitXY"-->
-       <!--/>-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ui_bg_logo_side_menu"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"       />
+
 
     <ImageView
         android:layout_width="wrap_content"
