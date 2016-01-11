@@ -126,7 +126,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     int previousDownloadedFileCount;
     PlayerControllerView playerControllerView;
     //TextView downloaded;
-    private ThinDownloadManager downloadManager;
     private static final int REQUEST_WRITE_STORAGE = 112;
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE=101;
 
@@ -138,7 +137,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private static final String KEY_TERMS_ACCEPTED_FOR_MOBITEL="KEY_TERMS_ACCEPTED_FOR_MOBITEL";
     private static final String KEY_TERMS_ACCEPTED_FOR_ETISALAT="KEY_TERMS_ACCEPTED_FOR_ETISALAT";
 
-    NestedScrollView scrollView;
+   // NestedScrollView scrollView;
 
     public enum ServiceProvider {
         PROVIDER_NONE, PROVIDER_MOBITEL,PROVIDER_DIALOG,PROVIDER_ETISALAT
@@ -174,6 +173,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         // initActivityTransitions();
         setContentView(R.layout.activity_audio_book_detail);
+       // supportPostponeEnterTransition();
         findServiceProvider();
 
        // ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
@@ -209,7 +209,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             @Override
                             public void onAnimationStart(Animator animation) {
                                 super.onAnimationStart(animation);
-                                setLayoutMargin(false);
+                               // setLayoutMargin(false);
 
                                 playerControllerView.stopAudioPlayer();
                             }
@@ -223,9 +223,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
 
         });
-        scrollView= (NestedScrollView) findViewById(R.id.scroll);
+       // scrollView= (NestedScrollView) findViewById(R.id.scroll);
         updateData();
-        downloadManager = new ThinDownloadManager();
         // Do all heavy processing here, activity will not enter transition until you explicitly call startPostponedEnterTransition()
 
         // all heavy init() done
@@ -238,12 +237,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer){
             playerControllerView.setVisibility(View.VISIBLE);
-            setLayoutMargin(true);
-
         }else{
             playerControllerView.setVisibility(View.INVISIBLE);
-            setLayoutMargin(false);
-
 
         }
         playerControllerView.updateView();
@@ -271,18 +266,19 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             mProgressDialog.dismiss();
         }
     }
-    private void setLayoutMargin(boolean setMargin){
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)scrollView.getLayoutParams();
+//    private void setLayoutMargin(boolean setMargin){
+//        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)scrollView.getLayoutParams();
+//
+//        if(setMargin){
+//            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, (int) getResources().getDimension(R.dimen.snackbar_height));
+//        }else {
+//            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, 0);
+//
+//        }
+//
+//        scrollView.setLayoutParams(params);
+//    }
 
-        if(setMargin){
-            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, (int) getResources().getDimension(R.dimen.snackbar_height));
-        }else{
-            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, 0);
-
-        }
-
-        scrollView.setLayoutParams(params);
-    }
     private void findServiceProvider() {
         Log.v("deviceID", "findDeviceID");
         serviceProvider = ServiceProvider.PROVIDER_NONE;
@@ -443,8 +439,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         String durationText="";
         TextView title = (TextView) findViewById(R.id.title);
 
-        ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
-        TextView descriptionTextView = (TextView) findViewById(R.id.expandable_text);
+//        ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
+//        TextView descriptionTextView = (TextView) findViewById(R.id.expandable_text);
+
+        TextView description = (TextView) findViewById(R.id.description);
+
         TextView fileSize = (TextView) findViewById(R.id.fileSize);
         TextView duration = (TextView) findViewById(R.id.duration);
 
@@ -532,7 +531,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         spinner = (ProgressBar)findViewById(R.id.progressBar);
 
         if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
-            descriptionTextView.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            description.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             title.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             author.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             category.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
@@ -541,7 +540,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             narratorText=getString(R.string.narrator_si);
             durationText=getString(R.string.duration_si);
         }else{
-            descriptionTextView.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            description.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             title.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             author.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             category.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
@@ -573,7 +572,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         price.setText(priceText);
         title.setText(audioBook.getTitle());
         duration.setText(durationText);
-        description.setText(audioBook.getDescription());
+        if(audioBook.getDescription() !=null && audioBook.getDescription().length()>1){
+            description.setText(audioBook.getDescription());
+        }else{
+            description.setVisibility(View.INVISIBLE);
+        }
+
         //buyFromCardDescription.setText("(and get a "+audioBook.getDiscount()+"% discount)");
         btnPayFromCard.setText("Pay by Card (" + audioBook.getDiscount() + "% discount)");
 
@@ -684,11 +688,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         bookReviewViewAdapter=new BookReviewViewAdapter(getApplicationContext(),reviews);
         reviewContainer.setAdapter(bookReviewViewAdapter);
-/*
-        reviewListView=(ListView)findViewById(R.id.review_list);
-        bookReviewListAdapter = new BookReviewListAdapter(this, reviews);
-        reviewListView.setAdapter(bookReviewListAdapter);
-*/
+
         mProgressDialog = new ProgressDialog(AudioBookDetailActivity.this);
         mProgressDialog.setMessage("Downloading file..");
         mProgressDialog.setTitle("Download in progress ...");
@@ -724,7 +724,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     private void updatePreviewLayout(){
         if(isLoadingPreview || isPlayingPreview){
-            setLayoutMargin(true);
+           // setLayoutMargin(true);
             previewLayout.setVisibility(View.VISIBLE);
             previewPlayButton.setImageResource(R.drawable.btn_play_preview_pause);
 
@@ -739,7 +739,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 timeLabel.setText("");
             }
         }else{
-            setLayoutMargin(false);
+           // setLayoutMargin(false);
             previewLayout.setVisibility(View.INVISIBLE);
             previewPlayButton.setImageResource(R.drawable.btn_play_preview_start);
         }
