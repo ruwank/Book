@@ -289,10 +289,18 @@ private void setLayoutMargin(boolean setMargin){
         }
 
         if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
+
+            final Fragment finalFragment = fragment;
+            new Handler().post(new Runnable() {
+                public void run() {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container_body, finalFragment);
+                    fragmentTransaction.commit();
+                }
+            });
+
+
 
             // set the toolbar title
             getSupportActionBar().setTitle(title);

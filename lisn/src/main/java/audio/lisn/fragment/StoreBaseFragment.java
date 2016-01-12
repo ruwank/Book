@@ -358,6 +358,8 @@ public class StoreBaseFragment extends Fragment {
 
     //Refresh data
     private void refreshContent(){
+       // getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
         downloadCount=0;
         completeCount=0;
         downloadNewReleaseBookList();
@@ -367,6 +369,8 @@ public class StoreBaseFragment extends Fragment {
     }
     private void refreshScreen(){
         if(downloadCount ==completeCount){
+           // getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_o);
+
             mSlidingTabLayout.setViewPager(null);
             mSlidingTabLayout.setViewPager(mViewPager);
             sectionsPagerAdapter.notifyDataSetChanged();

@@ -25,13 +25,11 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.os.ResultReceiver;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -66,7 +64,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
-import com.thin.downloadmanager.ThinDownloadManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -439,10 +436,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         String durationText="";
         TextView title = (TextView) findViewById(R.id.title);
 
-//        ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
-//        TextView descriptionTextView = (TextView) findViewById(R.id.expandable_text);
+        ExpandableTextView description = (ExpandableTextView) findViewById(R.id.description);
+        TextView descriptionTextView = (TextView) findViewById(R.id.expandable_text);
 
-        TextView description = (TextView) findViewById(R.id.description);
+       // TextView description = (TextView) findViewById(R.id.description);
 
         TextView fileSize = (TextView) findViewById(R.id.fileSize);
         TextView duration = (TextView) findViewById(R.id.duration);
@@ -454,6 +451,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         TextView ratingValue = (TextView) findViewById(R.id.rating_value);
         LinearLayout rateLayout=(LinearLayout)findViewById(R.id.app_rate_layout);
 
+        View separator_top_description=(View)findViewById(R.id.separator_top_description);
+        View separator_top_rateLayout=(View)findViewById(R.id.separator_top_rateLayout);
+        View separator_top_reviewContainer=(View)findViewById(R.id.separator_top_reviewContainer);
 
         Button btnDownload=(Button)findViewById(R.id.btnDownload);
         btnDownload.setOnClickListener(new View.OnClickListener() {
@@ -531,7 +531,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         spinner = (ProgressBar)findViewById(R.id.progressBar);
 
         if(audioBook.getLanguageCode()== AudioBook.LanguageCode.LAN_SI){
-            description.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
+            descriptionTextView.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             title.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             author.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
             category.setTypeface(CustomTypeFace.getSinhalaTypeFace(getApplicationContext()));
@@ -540,7 +540,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             narratorText=getString(R.string.narrator_si);
             durationText=getString(R.string.duration_si);
         }else{
-            description.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
+            descriptionTextView.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             title.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             author.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
             category.setTypeface(CustomTypeFace.getEnglishTypeFace(getApplicationContext()));
@@ -575,6 +575,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if(audioBook.getDescription() !=null && audioBook.getDescription().length()>1){
             description.setText(audioBook.getDescription());
             description.setVisibility(View.VISIBLE);
+            separator_top_description.setVisibility(View.VISIBLE);
         }else{
            // description.setVisibility(View.GONE);
         }
@@ -589,6 +590,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             if(audioBook.getAudioFileCount() == audioBook.getDownloadedChapter().size()){
                 btnDownload.setText("Play");
             }
+            separator_top_rateLayout.setVisibility(View.VISIBLE);
             rateLayout.setVisibility(View.VISIBLE);
 
            // addToBillButton.setVisibility(View.GONE);
@@ -642,6 +644,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             reviewsCount=audioBook.getReviews().size();
         final int finalReviewsCount = reviewsCount;
 
+        if(finalReviewsCount>0){
+            separator_top_reviewContainer.setVisibility(View.VISIBLE);
+
+        }
         btnReview=(Button)findViewById(R.id.btnReview);
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
