@@ -552,6 +552,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
         title.setText(audioBook.getTitle());
         String priceText="Free";
+        audioBook.setPrice("0");
         if( Float.parseFloat(audioBook.getPrice())>0 ){
             priceText="Rs: "+audioBook.getPrice();
         }
@@ -592,7 +593,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             separator_top_rateLayout.setVisibility(View.VISIBLE);
             rateLayout.setVisibility(View.VISIBLE);
-
+            userRatingBar.setRating(0);
            // addToBillButton.setVisibility(View.GONE);
            // btnPayFromCard.setVisibility(View.GONE);
             // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
@@ -682,10 +683,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         reviewContainer=(RecyclerView)findViewById(R.id.reviewContainer);
 
-        ArrayList<BookReview> reviews;
+        ArrayList<BookReview> reviews = new ArrayList<BookReview>();
 
         if(reviewsCount>3){
-            reviews= (ArrayList<BookReview>) audioBook.getReviews().subList(0,3);
+            for (int i=0;i<3;i++){
+                reviews.add(audioBook.getReviews().get(i));
+            }
+
             allReviews.setVisibility(View.VISIBLE);
         }else{
            // allReviews.setVisibility(View.INVISIBLE);
@@ -1909,9 +1913,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         bookReview.setTimeString(dateFormat.format(date));
 
 
-
-        reviews.add(bookReview);
+        reviews.add(0,bookReview);
         audioBook.setReviews(reviews);
+        DownloadedAudioBook downloadedAudioBook = new DownloadedAudioBook(
+                getApplicationContext());
+        downloadedAudioBook.addBookToList(getApplicationContext(),
+                audioBook.getBook_id(), audioBook);
 
         updateData();
     }

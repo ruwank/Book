@@ -395,11 +395,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
             Log.v("addPlayPauseAction", "updatePlayPauseAction isPlaying");
 
             //   LogHelper.d(TAG, "updateNotificationPlaybackState. updating playback position to ",
-            //        (System.currentTimeMillis() - mPlaybackState.getPosition()) / 1000, " seconds");
+           // SystemClock.elapsedRealtime()
+            //System.currentTimeMillis()
             builder
                     .setWhen(System.currentTimeMillis() - AudioPlayerService.mediaPlayer.getCurrentPosition())
-                //    .setWhen(System.currentTimeMillis() - AppController.getInstance().getCurrentAudioPosition())
-                .setShowWhen(true)
+                    .setShowWhen(true)
                 .setUsesChronometer(true);
         } else {
             Log.v("addPlayPauseAction", "updatePlayPauseAction not isPlaying");

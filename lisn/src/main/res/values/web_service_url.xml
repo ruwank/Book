@@ -4,6 +4,7 @@
     <string name="top_rated_book_list_url">https://app.lisn.audio/api/1.1/topratedbooklist.php</string>
     <string name="top_download_book_list_url">https://app.lisn.audio/api/1.1/topdownloadedbooklist.php</string>
     <string name="user_book_list_url">https://app.lisn.audio/api/1.1/userbooklist.php</string>
+    <string name="book_info_url">https://app.lisn.audio/api/1.1/bookinfo.php</string>
     <string name="add_user_url">https://app.lisn.audio/api/1.1/adduser.php</string>
     <string name="user_action_url">https://app.lisn.audio/api/1.1/useract.php</string>
     <string name="search_book_url">https://app.lisn.audio/api/1.1/searchedbooklist.php</string>

@@ -251,9 +251,7 @@ public class AudioBook implements Serializable{
             } else {
                 this.lanCode = LanguageCode.LAN_EN;
             }
-            if(context !=null) {
-                this.isPurchase = isBookDownloaded(book_id, context);
-            }
+
 
             if(obj.get("reviews") !=null && (obj.get("reviews") instanceof JSONArray)){
                 JSONArray arr = obj.getJSONArray("reviews");
@@ -290,6 +288,9 @@ public class AudioBook implements Serializable{
                 this.reviews=reviewArray;
 
             }
+            if(context !=null) {
+                this.isPurchase = isBookDownloaded(book_id, context);
+            }
 
 
 
@@ -320,7 +321,11 @@ public class AudioBook implements Serializable{
             returnBook.setPreview_audio(this.preview_audio);
             returnBook.setAudioFileCount(this.audioFileCount);
             returnBook.setPrice(this.price);
-            returnBook.setReviews(this.reviews);
+            if(this.reviews.size()>returnBook.reviews.size()){
+                returnBook.setReviews(this.reviews);
+            }else{
+                this.reviews=returnBook.getReviews();
+            }
             returnBook.setIsAwarded(this.isAwarded);
 
             this.setDownloadedChapter(returnBook.getDownloadedChapter());
