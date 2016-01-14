@@ -552,7 +552,6 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         }
         title.setText(audioBook.getTitle());
         String priceText="Free";
-        audioBook.setPrice("0");
         if( Float.parseFloat(audioBook.getPrice())>0 ){
             priceText="Rs: "+audioBook.getPrice();
         }
