@@ -41,6 +41,7 @@
     <string name="REVIEW_PUBLISH_SUCCESS">Review Published Successfully</string>
 
     <string name="DELETE_BOOK_SUCCESS">Successfully delete </string>
+    <string name="INFO_START_PLAYER">Tap To start play </string>
 
     <string name="BUTTON_OK">OK</string>
     <string name="BUTTON_NOW">NOW</string>

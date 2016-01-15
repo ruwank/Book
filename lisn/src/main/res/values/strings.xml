@@ -53,6 +53,8 @@
     <string name="user_login_status">user_login_status</string>
     <string name="user_login_id">user_login_id</string>
     <string name="user_login_name">user_login_name</string>
+    <string name="service_provider">service_provider</string>
+
 
     <string name="narrator_en">Narrator</string>
     <string name="narrator_si">lshùu</string>

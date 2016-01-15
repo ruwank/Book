@@ -156,7 +156,7 @@ public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdap
         holder.author.setText(book.getAuthor());
         String priceText="Free";
         if( Float.parseFloat(book.getPrice())>0 ){
-            priceText="LKR "+book.getPrice();
+            priceText="Rs. "+book.getPrice();
         }
         if(AppController.getInstance().isUserLogin() && book.isPurchase()){
             holder.downloadedIcon.setVisibility(View.VISIBLE);

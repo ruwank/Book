@@ -99,7 +99,7 @@ public class PlayerControllerActivity extends AppCompatActivity implements FileD
     ImageButton commentButton;
 View topOverLayView;
     TextView bookTitleView;
-
+    Toast infoToast;
 
 
     public static void navigate(AppCompatActivity activity, View transitionView, AudioBook audioBook) {
@@ -226,6 +226,9 @@ Log.v("position","position:"+position);
         mCoverFlow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(infoToast !=null){
+                    infoToast.cancel();
+                }
                 audioBook = bookList.get(position);
                 stopAudioPlayer();
                 downloadAudioFile();
@@ -237,6 +240,16 @@ Log.v("position","position:"+position);
 //                        Toast.LENGTH_SHORT).show();
             }
         });
+        mCoverFlow.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                Log.i("Scrolling", "X from ["+i+"] to ["+i1+"] to ["+i2+"] to ["+i3+"]" );
+              //  super.onScrollChanged(l, t, oldl, oldt);
+                showInfoToast();
+            }
+
+        });
+
 
 //        mCoverFlow.setOnScrollPositionListener(new FeatureCoverFlow.OnScrollPositionListener() {
 //            @Override
@@ -324,6 +337,16 @@ Log.v("position","position:"+position);
                 stopDownload();
             }
         });
+
+
+    }
+    private void showInfoToast(){
+//if(infoToast !=null){
+//    infoToast.cancel();
+//}
+//
+//            infoToast = Toast.makeText(getApplicationContext(), R.string.INFO_START_PLAYER, Toast.LENGTH_SHORT);
+//            infoToast.show();
 
 
     }
