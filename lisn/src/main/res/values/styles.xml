@@ -9,6 +9,16 @@
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/whiteColor</item>
+        <item name="colorControlActivated">@color/whiteColor</item>
+        <item name="colorControlHighlight">@color/whiteColor</item>
+        <item name="colorButtonNormal">@color/colorPrimaryDark</item>
+        <item name="android:colorButtonNormal">@color/colorPrimaryDark</item>
+        <item name="android:textColorHint">@color/iron</item>
+        <item name="colorControlNormal">@color/iron</item>
+
+        <!--<item name="android:windowBackground">@color/colorPrimary</item>-->
+
 
     </style>
 
@@ -64,7 +74,11 @@
         parent="@android:style/Widget.Holo.ActionBar.TabText">
         <item name="android:textColor">@color/textColorPrimary</item>
     </style>
-
+    <style name="CustomActionBar2" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
     <!--<style name="PopupMenu" parent="@android:style/Widget.PopupMenu">-->
         <!--<item name="android:popupBackground">@android:color/white</item>-->
     <!--</style>-->

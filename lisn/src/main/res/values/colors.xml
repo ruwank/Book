@@ -23,6 +23,7 @@
     <color name="windowBackground">#eeeeee</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#8C9EFF</color>
+    <color name="iron">#CCCCCC</color>
 
     <color name="textColorCommon">#26537C</color>
 
@@ -39,5 +40,7 @@
     <color name="text_black_87">#de000000</color>
     <color name="text_white_87">#deFFFFFF</color>
     <color name="color_transparent_alpha_0.5">#80000000</color>
+    <color name="color_login_normal_bg">#FFA000</color>
+
 
 </resources>

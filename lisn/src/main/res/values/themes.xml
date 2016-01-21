@@ -20,4 +20,5 @@
         <!-- Support library compatibility -->
         <item name="background">@color/windowBackground</item>
     </style>
+
 </resources>

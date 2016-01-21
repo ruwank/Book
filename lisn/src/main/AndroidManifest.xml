@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
@@ -124,6 +125,11 @@
         <activity
             android:name=".activity.ContactusActivity"
             android:label="@string/title_activity_contactus"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.SignupActivity"
+            android:label="@string/title_activity_signup"
             android:screenOrientation="portrait" >
         </activity>
     </application>

@@ -23,7 +23,10 @@ import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -62,7 +65,10 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     private String userLoginId;
     private static final int REQUEST_WRITE_STORAGE = 115;
-
+    EditText _emailText;
+    EditText _passwordText;
+    Button _loginButton;
+    TextView _signupLink,_forgetPasswordLink;
     // CallbackManager callbackManager;
 
 
@@ -79,6 +85,11 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(R.string.app_name);
         loginButton = (LoginButton) findViewById(R.id.authButton);
+        _emailText = (EditText) findViewById(R.id.input_email);
+        _passwordText = (EditText) findViewById(R.id.input_password);
+        _loginButton = (Button) findViewById(R.id.btn_login);
+        _signupLink = (TextView) findViewById(R.id.link_signup);
+        _forgetPasswordLink = (TextView) findViewById(R.id.link_forget);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -90,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.v("response","addUser onCompleted :"+response.getJSONObject());
+                                Log.v("response", "addUser onCompleted :" + response.getJSONObject());
                                 addUser(object);
 
                             }
@@ -99,9 +110,6 @@ public class LoginActivity extends AppCompatActivity {
                 parameters.putString("fields", "id,email,first_name,middle_name,last_name,name,link");
                 request.setParameters(parameters);
                 request.executeAsync();
-
-
-
 
 
             }
@@ -117,12 +125,75 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Signup activity
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        _forgetPasswordLink.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Signup activity
+                // Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                // startActivityForResult(intent, REQUEST_SIGNUP);
+            }
+        });
+
         //printKeyHash(this);
         progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Synchronizing Profile...");
 
 
+    }
+    public void login() {
+
+        if (!validate()) {
+            onLoginFailed();
+            return;
+        }
+        //
+    }
+    public void onLoginFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        _loginButton.setEnabled(true);
+    }
+    public boolean validate() {
+        boolean valid = true;
+
+        String email = _emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            _emailText.setError("enter a valid email address");
+            valid = false;
+        } else {
+            _emailText.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+        }
+
+        return valid;
     }
     public  String printKeyHash(Context context) {
         PackageInfo packageInfo;
