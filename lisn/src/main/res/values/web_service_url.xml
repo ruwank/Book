@@ -6,6 +6,7 @@
     <string name="user_book_list_url">https://app.lisn.audio/api/1.1/userbooklist.php</string>
     <string name="book_info_url">https://app.lisn.audio/api/1.1/bookinfo.php</string>
     <string name="add_user_url">https://app.lisn.audio/api/1.1/adduser.php</string>
+    <string name="user_login_url">https://app.lisn.audio/api/1.1/loginuser.php</string>
     <string name="user_action_url">https://app.lisn.audio/api/1.1/useract.php</string>
     <string name="search_book_url">https://app.lisn.audio/api/1.1/searchedbooklist.php</string>
     <string name="book_category_list_url">https://app.lisn.audio/api/1.1/categorylist.php</string>

@@ -775,6 +775,9 @@ if(currentAudioBook != null){
                 String provider = sharedPref.getString(getString(R.string.service_provider), "");
                 if (subscriberId != null && !provider.equalsIgnoreCase(subscriberId)) {
 
+                    if(subscriberId.startsWith("41302")) {
+
+                    }else{
 
                     String url = "";
 
@@ -793,11 +796,11 @@ if(currentAudioBook != null){
                                 public void onResponse(String response) {
 
                                     if (response.toUpperCase().contains("SUCCESS")) {
-                                        SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
+                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
                                                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
                                         SharedPreferences.Editor editor = sharedPref.edit();
 
-                                        editor.putString(getString(R.string.service_provider),subscriberId);
+                                        editor.putString(getString(R.string.service_provider), subscriberId);
                                         editor.commit();
                                     }
 
@@ -810,6 +813,8 @@ if(currentAudioBook != null){
                     });
                     AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_number");
                 }
+            }
+
             }
         }
 

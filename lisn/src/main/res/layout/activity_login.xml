@@ -69,6 +69,12 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/spacing_xlarge">
+            <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+            <LinearLayout
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_width="0px"
+                android:layout_height="0px"/>
 
             <ImageView android:src="@drawable/ui_bg_logo"
                 android:layout_width="wrap_content"
@@ -164,6 +170,7 @@
             <TextView android:id="@+id/link_forget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="Forgot Password?"
                 android:textColor="@color/whiteColor"

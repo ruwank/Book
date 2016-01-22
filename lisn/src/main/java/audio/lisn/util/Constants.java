@@ -15,5 +15,7 @@ public class Constants {
     public static final int RESULT_ERROR = 61;
     public static final int RESULT_SUCCESS = 62;
     public static final int RESULT_SUCCESS_ALREADY = 63;
+    public static final String user_type_email = "email";
+    public static final String user_type_fb = "fb";
 
 }

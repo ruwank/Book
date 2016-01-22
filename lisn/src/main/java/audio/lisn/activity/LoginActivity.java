@@ -54,6 +54,7 @@ import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
+import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 import audio.lisn.webservice.JsonUTF8StringRequest;
@@ -69,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
     EditText _passwordText;
     Button _loginButton;
     TextView _signupLink,_forgetPasswordLink;
+    ConnectionDetector connectionDetector;
+
     // CallbackManager callbackManager;
 
 
@@ -79,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
+        connectionDetector = new ConnectionDetector(getApplicationContext());
 
         setContentView(R.layout.activity_login);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -148,7 +152,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
-                // Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                 Intent intent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+                startActivity(intent);
+
                 // startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
@@ -163,11 +169,104 @@ public class LoginActivity extends AppCompatActivity {
     public void login() {
 
         if (!validate()) {
-            onLoginFailed();
+           // onLoginFailed();
             return;
+        }else{
+            if (connectionDetector.isConnectingToInternet()) {
+                progressDialog.show();
+                String url = getString(R.string.user_login_url);
+
+                String email = _emailText.getText().toString();
+                String password = _passwordText.getText().toString();
+                Map<String, String> postParam = new HashMap<String, String>();
+
+                try {
+                    String android_id = getUniqueID();
+
+                    postParam.put("username", email);
+                    postParam.put("password", password);
+                    postParam.put("usertype", "email");
+                    postParam.put("device", android_id);
+                    postParam.put("os", "android");
+
+
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                // Map<String,String> postParam = new HashMap<String, String>();
+
+                JsonUTF8StringRequest userAddReq = new JsonUTF8StringRequest(Request.Method.POST, url, postParam,
+                        new Response.Listener<String>() {
+
+                            @Override
+                            public void onResponse(String response) {
+                                Log.v("response", "response :" + response);
+
+                                //SUCCESS: UID=5
+                                Log.v("response", "respondString :" + response);
+
+                                String[] separated = response.split(":");
+                                if (separated[0].trim().equalsIgnoreCase("SUCCESS")) {
+
+                                    if (separated[1] != null) {
+                                        String uid = "0";
+                                        String[] separated2 = separated[1].split("=");
+                                        if (separated2[1] != null) {
+                                            uid = separated2[1].trim();
+                                        }
+                                       // loginSuccess(uid, finalUserName);
+                                        userLoginId = uid;
+
+                                        downloadUserBook();
+
+                                        Log.v("response", "uid :" + uid);
+                                    } else {
+                                        userAddedSuccess(false);
+
+                                    }
+
+                                } else {
+                                    userAddedSuccess(false);
+                                }
+                                Log.v("response", "response :" + response);
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("response", "error :" + error.getMessage());
+                        NetworkResponse response = error.networkResponse;
+                        if (response != null) {
+                            Log.v("response", response.statusCode + " data: " + response.data.toString());
+                        }
+
+                        // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());
+
+                        userAddedSuccess(false);
+                    }
+                });
+                userAddReq.setShouldCache(false);
+                AppController.getInstance().addToRequestQueue(userAddReq, "tag_user_add");
+
+            }else{
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(
+                        this);
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                        R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                android.support.v7.app.AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         }
+
+
         //
     }
+
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
@@ -180,14 +279,14 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+            _emailText.setError("Enter a valid email address");
             valid = false;
         } else {
             _emailText.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() ) {
+            _passwordText.setError("Enter a valid password");
             valid = false;
         } else {
             _passwordText.setError(null);
@@ -283,132 +382,146 @@ public class LoginActivity extends AppCompatActivity {
         }
         return myAndroidDeviceId;
     }
-    private void addUser( JSONObject object){
-        progressDialog.show();
+    private void addUser( JSONObject object) {
+        if (connectionDetector.isConnectingToInternet()) {
+            progressDialog.show();
 
-        Log.v("object","addUser : "+object.toString());
-        String url=getString(R.string.add_user_url);
+            Log.v("object", "addUser : " + object.toString());
+            String url = getString(R.string.add_user_url);
 
-        String username="NULL";
-        String fbname="NULL";
-        String loc="NULL";
-        String bday="NULL";
-        String email="NULL";
-        String mobile="NULL";
-        String age="NULL";
-        String pref="NULL";
-        String fbid="NULL";
-        String fname="NULL";
-        String mname="NULL";
-        String lname="NULL";
-        String fburl="NULL";
-        String userName="";
-
-
-        if(object.optString("email") !=null && object.optString("email").length()>0){
-            email=object.optString("email");
-        }
-
-        if(object.optString("id") !=null && object.optString("id").length()>0){
-            fbid=object.optString("id");
-        }
-        if(object.optString("first_name") !=null && object.optString("first_name").length()>0){
-            fname=object.optString("first_name");
-            userName =fname;
-        }
-        if(object.optString("middle_name") !=null && object.optString("middle_name").length()>0){
-            mname=object.optString("middle_name");
-        }
-        if(object.optString("last_name") !=null && object.optString("last_name").length()>0){
-            lname=object.optString("last_name");
-            userName =userName+ " " +lname;
-        }
-        if(object.optString("link") !=null && object.optString("link").length()>0){
-            fburl=object.optString("link");
-        }
-        Map<String, String> postParam = new HashMap<String, String>();
-
-        try {
-            String android_id = getUniqueID();
-
-            postParam.put("username",username);
-            postParam.put("fbname",fbname);
-            postParam.put("loc", loc);
-            postParam.put("bday",bday);
-            postParam.put("email",email);
-            postParam.put("mobile",mobile);
-            postParam.put("age",age);
-            postParam.put("pref",pref);
-            postParam.put("fbid",fbid);
-            postParam.put("fname",fname);
-            postParam.put("mname",mname);
-            postParam.put("lname",lname);
-            postParam.put("fburl", fburl);
-            postParam.put("device", android_id);
-            postParam.put("os", "android");
+            String username = "NULL";
+            String fbname = "NULL";
+            String loc = "NULL";
+            String bday = "NULL";
+            String email = "NULL";
+            String mobile = "NULL";
+            String age = "NULL";
+            String pref = "NULL";
+            String fbid = "NULL";
+            String fname = "NULL";
+            String mname = "NULL";
+            String lname = "NULL";
+            String fburl = "NULL";
+            String userName = "";
 
 
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // Map<String,String> postParam = new HashMap<String, String>();
-
-        final String finalUserName = userName;
-        JsonUTF8StringRequest userAddReq = new JsonUTF8StringRequest(Request.Method.POST,url, postParam,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.v("response", "response :" + response);
-
-                        //SUCCESS: UID=5
-                        Log.v("response", "respondString :" + response);
-
-                        String[] separated = response.split(":");
-                        if((separated[0].trim().equalsIgnoreCase("SUCCESS")) ||(separated[0].trim().equalsIgnoreCase("EXIST")) ){
-
-                            if(separated[1] !=null) {
-                                String uid="0";
-                                String[] separated2 = separated[1].split("=");
-                                if(separated2[1] !=null) {
-                                    uid = separated2[1].trim();
-                                }
-                                loginSuccess(uid, finalUserName);
-                                userLoginId=uid;
-
-                                downloadUserBook();
-
-                                Log.v("response", "uid :" + uid);
-                            }else{
-                                userAddedSuccess(false);
-
-                            }
-
-                        }else{
-                            userAddedSuccess(false);
-                        }
-                        Log.v("response","response :"+response);
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("response","error :"+error.getMessage());
-                NetworkResponse response = error.networkResponse;
-                if(response !=null) {
-                    Log.v("response", response.statusCode + " data: " + response.data.toString());
-                }
-
-                // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());
-
-                userAddedSuccess(false);
+            if (object.optString("email") != null && object.optString("email").length() > 0) {
+                email = object.optString("email");
             }
-        });
-        userAddReq.setShouldCache(false);
-        AppController.getInstance().addToRequestQueue(userAddReq, "tag_user_add");
+
+            if (object.optString("id") != null && object.optString("id").length() > 0) {
+                fbid = object.optString("id");
+            }
+            if (object.optString("first_name") != null && object.optString("first_name").length() > 0) {
+                fname = object.optString("first_name");
+                userName = fname;
+            }
+            if (object.optString("middle_name") != null && object.optString("middle_name").length() > 0) {
+                mname = object.optString("middle_name");
+            }
+            if (object.optString("last_name") != null && object.optString("last_name").length() > 0) {
+                lname = object.optString("last_name");
+                userName = userName + " " + lname;
+            }
+            if (object.optString("link") != null && object.optString("link").length() > 0) {
+                fburl = object.optString("link");
+            }
+            Map<String, String> postParam = new HashMap<String, String>();
+
+            try {
+                String android_id = getUniqueID();
+
+                postParam.put("username", username);
+                postParam.put("fbname", fbname);
+                postParam.put("loc", loc);
+                postParam.put("bday", bday);
+                postParam.put("email", email);
+                postParam.put("mobile", mobile);
+                postParam.put("age", age);
+                postParam.put("pref", pref);
+                postParam.put("fbid", fbid);
+                postParam.put("fname", fname);
+                postParam.put("mname", mname);
+                postParam.put("lname", lname);
+                postParam.put("fburl", fburl);
+                postParam.put("usertype", "fb");
+                postParam.put("device", android_id);
+                postParam.put("os", "android");
 
 
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            // Map<String,String> postParam = new HashMap<String, String>();
+
+            final String finalUserName = userName;
+            JsonUTF8StringRequest userAddReq = new JsonUTF8StringRequest(Request.Method.POST, url, postParam,
+                    new Response.Listener<String>() {
+
+                        @Override
+                        public void onResponse(String response) {
+                            Log.v("response", "response :" + response);
+
+                            //SUCCESS: UID=5
+                            Log.v("response", "respondString :" + response);
+
+                            String[] separated = response.split(":");
+                            if ((separated[0].trim().equalsIgnoreCase("SUCCESS")) || (separated[0].trim().equalsIgnoreCase("EXIST"))) {
+
+                                if (separated[1] != null) {
+                                    String uid = "0";
+                                    String[] separated2 = separated[1].split("=");
+                                    if (separated2[1] != null) {
+                                        uid = separated2[1].trim();
+                                    }
+                                    loginSuccess(uid, finalUserName,Constants.user_type_fb);
+                                    userLoginId = uid;
+
+                                    downloadUserBook();
+
+                                    Log.v("response", "uid :" + uid);
+                                } else {
+                                    userAddedSuccess(false);
+
+                                }
+
+                            } else {
+                                userAddedSuccess(false);
+                            }
+                            Log.v("response", "response :" + response);
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("response", "error :" + error.getMessage());
+                    NetworkResponse response = error.networkResponse;
+                    if (response != null) {
+                        Log.v("response", response.statusCode + " data: " + response.data.toString());
+                    }
+
+                    // sendMail("Error Message: statusCode: "+response.statusCode+" data: "+ response.data.toString());
+
+                    userAddedSuccess(false);
+                }
+            });
+            userAddReq.setShouldCache(false);
+            AppController.getInstance().addToRequestQueue(userAddReq, "tag_user_add");
+
+
+        }else{
+            android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(
+                    this);
+            builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(R.string.NO_INTERNET_MESSAGE).setPositiveButton(
+                    R.string.BUTTON_OK, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            android.support.v7.app.AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 
     /*
@@ -551,12 +664,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void loginSuccess(String user_id,String userName) {
+    private void loginSuccess(String user_id,String userName,String type) {
         SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.user_login_id),user_id);
         editor.putString(getString(R.string.user_login_name),userName);
+        editor.putString(getString(R.string.user_type),type);
         editor.putBoolean(getString(R.string.user_login_status), true);
         editor.commit();
         AppController.getInstance().setUserId(user_id);

@@ -53,6 +53,7 @@
     <string name="user_login_status">user_login_status</string>
     <string name="user_login_id">user_login_id</string>
     <string name="user_login_name">user_login_name</string>
+    <string name="user_type">user_type</string>
     <string name="service_provider">service_provider</string>
 
 
@@ -276,5 +277,6 @@
 
     </string-array>
     <string name="title_activity_signup">SignupActivity</string>
+    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
 
 </resources>

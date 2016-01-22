@@ -132,6 +132,11 @@
             android:label="@string/title_activity_signup"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".activity.ForgotPasswordActivity"
+            android:label="@string/title_activity_forgot_password"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>
