@@ -17,5 +17,14 @@ public class Constants {
     public static final int RESULT_SUCCESS_ALREADY = 63;
     public static final String user_type_email = "email";
     public static final String user_type_fb = "fb";
+    public static final String USER_SUCCESS = "SUCCESS";
+    public static final String USER_EXIST = "EXIST";
+    public static final String USER_PENDING = "PENDING";
+    public static final String USER_INVALID_USER = "INVALID_USER";
+    public static final String USER_NOT_EMAIL_USER = "NOT_EMAIL_USER";
+    public static final String USER_FAILED = "FAILED";
+    public static final String USER_SERVER_ERROR = "SERVER_ERROR";
+    public static final String USER_WRONG_PASSWORD = "WRONGPASSWORD";
+
 
 }

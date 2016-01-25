@@ -207,15 +207,21 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.v("response", "respondString :" + response);
 
                                 String[] separated = response.split(":");
-                                if (separated[0].trim().equalsIgnoreCase("SUCCESS")) {
+                                String status=separated[0].trim();
+                                if (status.equalsIgnoreCase(Constants.USER_SUCCESS)) {
 
                                     if (separated[1] != null) {
                                         String uid = "0";
+                                        String userName = "";
                                         String[] separated2 = separated[1].split("=");
                                         if (separated2[1] != null) {
                                             uid = separated2[1].trim();
                                         }
-                                       // loginSuccess(uid, finalUserName);
+                                        String[] separated3 = separated[2].split("=");
+                                        if (separated3[1] != null) {
+                                            userName = separated3[1].trim();
+                                        }
+                                        loginSuccess(uid, userName,Constants.user_type_email);
                                         userLoginId = uid;
 
                                         downloadUserBook();
@@ -227,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
 
                                 } else {
-                                    userAddedSuccess(false);
+                                    userLoginError(status);
                                 }
                                 Log.v("response", "response :" + response);
 
@@ -265,6 +271,52 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //
+    }
+    private  void userLoginError(String status){
+        progressDialog.dismiss();
+        String error_title=getString(R.string.SERVER_ERROR_TITLE);
+        String error_message=getString(R.string.SERVER_ERROR_MESSAGE);
+
+        switch (status){
+            case Constants.USER_INVALID_USER:{
+                String email = _emailText.getText().toString();
+                error_title=getString(R.string.USER_INVALID_TITLE);
+                error_message=String.format(getString(R.string.USER_INVALID_MESSAGE), email);
+            }
+            break;
+            case Constants.USER_PENDING:{
+                error_title=getString(R.string.USER_PENDING_TITLE);
+                error_message=getString(R.string.USER_PENDING_MESSAGE);
+            }
+            break;
+            case Constants.USER_WRONG_PASSWORD:{
+                _passwordText.setError("Password wrong");
+
+                error_title=getString(R.string.USER_WRONG_PASSWORD_TITLE);
+                error_message=getString(R.string.USER_WRONG_PASSWORD_MESSAGE);
+            }
+            break;
+            case Constants.USER_NOT_EMAIL_USER:{
+                error_title=getString(R.string.USER_NOT_EMAIL_TITLE);
+                error_message=getString(R.string.USER_NOT_EMAIL_MESSAGE);
+            }
+            break;
+
+            default:
+                break;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                this);
+        builder.setTitle(error_title).setMessage(error_message).setPositiveButton(
+                getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // FIRE ZE MISSILES!
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     public void onLoginFailed() {

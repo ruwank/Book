@@ -141,7 +141,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
 
     public enum PaymentOption {
-        OPTION_NONE, OPTION_MOBITEL,OPTION_CARD,OPTION_ETISALAT
+        OPTION_NONE, OPTION_CARD,OPTION_MOBITEL,OPTION_DIALOG,OPTION_ETISALAT
     }
 
     ServiceProvider  serviceProvider;
@@ -298,11 +298,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         if (subscriberId != null) {
             if (subscriberId.startsWith("41301")) {
                 serviceProvider = ServiceProvider.PROVIDER_MOBITEL;
-//            } else if (subscriberId.startsWith("41302")) {
-//                serviceProvider = ServiceProvider.PROVIDER_DIALOG;
-            } else if (subscriberId.startsWith("41303")) {
-                serviceProvider = ServiceProvider.PROVIDER_ETISALAT;
+            } else if (subscriberId.startsWith("41302")) {
+                serviceProvider = ServiceProvider.PROVIDER_DIALOG;
             }
+//            else if (subscriberId.startsWith("41303")) {
+//                serviceProvider = ServiceProvider.PROVIDER_ETISALAT;
+//            }
 
         }
     }
@@ -338,7 +339,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private void termsAndConditionAccepted(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if(paymentOption == PaymentOption.OPTION_MOBITEL){
+        if(paymentOption == PaymentOption.OPTION_CARD){
+            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_CARD, true).commit();
+
+            buyFromCardButtonPressed();
+
+        }else if(paymentOption == PaymentOption.OPTION_MOBITEL){
             prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_MOBITEL, true).commit();
 
             addToMobitelBill();
@@ -348,10 +354,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
             addToEtisalatBill();
 
-        }else if(paymentOption == PaymentOption.OPTION_CARD){
-            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_CARD, true).commit();
+        }
+        else if(paymentOption == PaymentOption.OPTION_DIALOG){
+            prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_DIALOG, true).commit();
 
-            buyFromCardButtonPressed();
+            //buyFromCardButtonPressed();
 
         }
 
@@ -609,6 +616,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     //paymentOptionOr.setVisibility(View.VISIBLE);
                     if(serviceProvider ==ServiceProvider.PROVIDER_MOBITEL){
                         addToBillButton.setText("Add to Mobitel bill");
+                    }
+                    else if(serviceProvider ==ServiceProvider.PROVIDER_DIALOG){
+                        addToBillButton.setText("Add to Dialog bill");
+
                     }
                     else if(serviceProvider ==ServiceProvider.PROVIDER_ETISALAT){
                         addToBillButton.setText("Add to Etisalat bill");
@@ -1175,6 +1186,11 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 addToEtisalatBill();
 
             }
+            else if (serviceProvider == ServiceProvider.PROVIDER_DIALOG) {
+                paymentOption = PaymentOption.OPTION_DIALOG;
+                addToDialogBill();
+
+            }
         }else{
             SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
                     getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -1186,6 +1202,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 } else if (serviceProvider == ServiceProvider.PROVIDER_ETISALAT ) {
                     paymentOption = PaymentOption.OPTION_ETISALAT;
                     addToEtisalatBill();
+
+                }else if (serviceProvider == ServiceProvider.PROVIDER_DIALOG ) {
+                    paymentOption = PaymentOption.OPTION_DIALOG;
+                    addToDialogBill();
 
                 }
             }else {
@@ -1465,11 +1485,58 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             startActivityForResult(intent, 1);
         }
     }
+    private void addToDialogBillServerConnect(){
+      // String url = getResources().getString(R.string.dialog_pay_url);
 
-//    private void addToDialogBill(){
-//
-//
-//    }
+    }
+
+
+    private void addToDialogBill(){
+        if(AppController.getInstance().isUserLogin()){
+
+            if (connectionDetector.isConnectingToInternet()) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                if(prefs.getBoolean(KEY_TERMS_ACCEPTED_FOR_DIALOG, false)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+                    //Confirm Payment
+
+                    builder.setTitle("Confirm Payment").setMessage("Rs." + audioBook.getPrice() + " will be added to your Dialog bill. Continue?").setPositiveButton(
+                            getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    addToDialogBillServerConnect();
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.BUTTON_CANCEL), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // FIRE ZE MISSILES!
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }else{
+                    showTermsAndCondition();
+                }
+
+            }else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.NO_INTERNET_TITLE).setMessage(getString(R.string.NO_INTERNET_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+
+        }else{
+            Intent intent = new Intent(getApplicationContext(),
+                    LoginActivity.class);
+            startActivityForResult(intent, 1);
+        }
+
+    }
     private void startTimer(){
         if( timerUpdateThread != null) {
             timerUpdateThread.interrupt();
@@ -2031,6 +2098,9 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
                 }else if(paymentOption == PaymentOption.OPTION_ETISALAT){
                     addToEtisalatBill();
+
+                }else if(paymentOption == PaymentOption.OPTION_DIALOG){
+                    addToDialogBill();
 
                 }else if(paymentOption == PaymentOption.OPTION_CARD){
                     buyFromCardButtonPressed();

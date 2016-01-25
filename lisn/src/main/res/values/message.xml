@@ -50,5 +50,31 @@
     <string name="BUTTON_YES">YES</string>
     <string name="BUTTON_NO">NO</string>
 
+    <string name="USER_INVALID_TITLE">Invalid User</string>
+    <string name="USER_INVALID_MESSAGE">There is no account under \'%1$s\'. Signup with Lisn with your email address to enjoy audiobooks anywhere! </string>
+
+    <string name="USER_PENDING_TITLE">Inactive Account</string>
+    <string name="USER_PENDING_MESSAGE">Your account is not activated. An email has been sent to your email address. Please open it and click on the link to activate your Lisn account.</string>
+
+    <string name="USER_NOT_EMAIL_TITLE">Use Facebook Log in</string>
+    <string name="USER_NOT_EMAIL_MESSAGE">Please log in with your facebook account to access your library.</string>
+
+    <string name="USER_FAILED_TITLE">User Failed</string>
+    <string name="USER_FAILED_MESSAGE">User Failed.</string>
+
+    <string name="FORGET_PASSWORD_SUCCESS">Please check email</string>
+
+    <string name="USER_WRONG_PASSWORD_TITLE">Wrong Password</string>
+    <string name="USER_WRONG_PASSWORD_MESSAGE">Password you entered is wrong. Enter the correct password or use \'forgot password\' link to reset the password. </string>
+
+    <string name="USER_EMAIL_SIGNUP_SUCCESS_TITLE">Almost there...</string>
+    <string name="USER_EMAIL_SIGNUP_SUCCESS_MESSAGE">An email has been sent to your email address. Please open it and click on the link to activate your Lisn account.</string>
+
+    <string name="USER_DUPLICATE_TITLE">Duplicate Account</string>
+    <string name="USER_DUPLICATE_MESSAGE">There is an active account under \'%1$s\'. Please log in with your password or use another email address. </string>
+
+    <string name="USER_EXIST_TITLE">Almost there...</string>
+    <string name="USER_EXIST_MESSAGE">An email has been sent to your email address. Please open it and click on the link to activate your Lisn account. </string>
+
 
 </resources>

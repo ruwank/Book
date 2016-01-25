@@ -45,6 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textCapWords"
+                    android:textColor="@color/whiteColor"
                     android:hint="First Name" />
             </android.support.design.widget.TextInputLayout>
 
@@ -52,11 +53,11 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
                >
                 <EditText android:id="@+id/input_last_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/whiteColor"
                     android:inputType="textCapWords"
                     android:hint="Last Name" />
             </android.support.design.widget.TextInputLayout>
@@ -65,11 +66,11 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_medium"
                     >
                     <EditText android:id="@+id/input_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/whiteColor"
                         android:inputType="textEmailAddress"
                         android:textColorHint="@color/whiteColor"
                         android:hint="Email" />
@@ -79,14 +80,13 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_medium"
                     >
                     <EditText android:id="@+id/input_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/whiteColor"
                         android:inputType="textPassword"
                         android:textColorHint="@color/whiteColor"
-
                         android:hint="Password"/>
                 </android.support.design.widget.TextInputLayout>
 
@@ -94,14 +94,13 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
                 >
                 <EditText android:id="@+id/input_conf_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:textColorHint="@color/whiteColor"
-
+                    android:textColor="@color/whiteColor"
                     android:hint="Conf Password"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -116,6 +115,7 @@
             <TextView android:id="@+id/link_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:text="Already a member? Login"
                 android:textColor="@color/whiteColor"
