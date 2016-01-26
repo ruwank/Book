@@ -28,7 +28,7 @@
     <string name="verify_user_url">https://app.lisn.audio/api/1.1/verifyuser.php</string>
     <string name="user_feedback_url">https://app.lisn.audio/api/1.1/feedbackactivity.php</string>
     <string name="support_url">info@lisn.audio</string>
-
+    <string name="update_mobile_no_url">https://app.lisn.audio/api/1.1/updatemobile.php</string>
 </resources>
 
 <!--<string name="book_list_url">http://buddika-001-site1.mywindowshosting.com/booklist.php</string>-->
