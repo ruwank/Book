@@ -101,7 +101,7 @@
                     android:inputType="textPassword"
                     android:textColorHint="@color/whiteColor"
                     android:textColor="@color/whiteColor"
-                    android:hint="Conf Password"/>
+                    android:hint="Confirm Password"/>
             </android.support.design.widget.TextInputLayout>
 
                 <android.support.v7.widget.AppCompatButton

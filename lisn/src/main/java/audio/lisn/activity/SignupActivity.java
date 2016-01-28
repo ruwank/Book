@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -83,12 +82,11 @@ public class SignupActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(SignupActivity.this);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Updating...");
+        progressDialog.setMessage("Signing up...");
     }
 
     private void signup() {
         if (!validate()) {
-            onSignupFailed();
             return;
         }
         if(connectionDetector.isConnectingToInternet()){
@@ -331,11 +329,7 @@ public class SignupActivity extends AppCompatActivity {
         }
         return myAndroidDeviceId;
     }
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
-        _signupButton.setEnabled(true);
-    }
     public boolean validate() {
         boolean valid = true;
 

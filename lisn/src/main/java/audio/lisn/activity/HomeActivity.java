@@ -1,5 +1,6 @@
 package audio.lisn.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.SearchManager;
@@ -8,13 +9,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,6 +28,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +37,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -38,8 +45,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import audio.lisn.R;
 import audio.lisn.app.AppController;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.Authorization;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationListener;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationOptions;
+import audio.lisn.appsupport.gsma.android.mobileconnect.values.Prompt;
+import audio.lisn.appsupport.gsma.android.mobileconnect.values.ResponseType;
 import audio.lisn.fragment.HomeFragment;
 import audio.lisn.fragment.MyBookFragment;
 import audio.lisn.fragment.StoreBaseFragment;
@@ -50,12 +66,15 @@ import audio.lisn.util.Constants;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.view.PlayerControllerView;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
+import audio.lisn.webservice.JsonUTF8StringRequest;
 
 //import android.support.v7.widget.SearchView;
 
 //import android.support.v7.widget.SearchView;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,HomeFragment.OnHomeItemSelectedListener,StoreFragment.OnStoreBookSelectedListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        HomeFragment.OnHomeItemSelectedListener,StoreFragment.OnStoreBookSelectedListener,
+        AuthorizationListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
@@ -66,6 +85,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     boolean isUserLogin;
     PlayerControllerView playerControllerView;
     FrameLayout containerLayout;
+    String subscriberId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,6 +217,10 @@ private void setLayoutMargin(boolean setMargin){
         }
         playerControllerView.updateView();
         registerPlayerUpdateBroadcastReceiver();
+        if(AppController.getInstance().isUserLogin()){
+            updateServiceProvider();
+        }
+
     }
 
     @Override
@@ -493,4 +517,151 @@ private void setLayoutMargin(boolean setMargin){
             navigationView.getMenu().getItem(index).setChecked(true);
         }
     };
+
+    //Update mobile data
+
+    private void updateServiceProvider(){
+        if(isMobileDataEnable()) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_PHONE_STATE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+                subscriberId = m_telephonyManager.getSubscriberId();
+
+                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                        getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                String provider = sharedPref.getString(getString(R.string.service_provider), "");
+                if (subscriberId != null && !provider.equalsIgnoreCase(subscriberId)) {
+
+                    if(subscriberId.startsWith("41302")) {
+                        getDialogMobileNumber();
+                    }else{
+
+                        String url = "";
+
+                        if (subscriberId.startsWith("41301")) {
+                            url = getResources().getString(R.string.mobitel_pay_url);
+                        } else if (subscriberId.startsWith("41303")) {
+                            url = getResources().getString(R.string.etisalat_pay_url);
+                        }
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("userid", AppController.getInstance().getUserId());
+                        params.put("action", "number");
+
+                        JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+
+                                        if (response.toUpperCase().contains("SUCCESS")) {
+                                            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                                                    getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = sharedPref.edit();
+
+                                            editor.putString(getString(R.string.service_provider), subscriberId);
+                                            editor.commit();
+                                        }
+
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        });
+                        AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_number");
+                    }
+                }
+
+            }
+        }
+
+    }
+    private void getDialogMobileNumber(){
+        String openIDConnectScopes = "openid phone";
+        String returnUri = getString(R.string.dialog_pay_url);
+
+        String authUri=getString(R.string.mconnect_url);//"https://mconnect.dialog.lk/openidconnect/authorize";
+        String clientId="y0erf48J8J_JFKuCrNM4TKfLxnAa";
+        String clientSecret="Y1FMDA3wtPT6dfMebci9lWUudnMa";
+        Log.d(TAG, "clientId="+clientId);
+        Log.d(TAG, "clientSecret="+clientSecret);
+
+        String state= UUID.randomUUID().toString();
+        String nonce=UUID.randomUUID().toString();
+        int maxAge=0;
+        String acrValues="2";
+
+        Authorization authorization=new Authorization();
+
+        AuthorizationOptions authorizationOptions=new AuthorizationOptions();
+        authorizationOptions.setClaimsLocales("en");
+        authorizationOptions.setUILocales("en");
+        authorizationOptions.setLoginHint("+44");
+
+        Prompt prompt= Prompt.LOGIN;
+
+        //prompt=Prompt.NONE;
+        authorizationOptions.setUILocales("");
+
+        Log.d(TAG, "Starting OpenIDConnect authorization");
+        authorization.authorize(authUri, ResponseType.CODE, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce, prompt,
+                maxAge, acrValues, authorizationOptions, this /* listener */, this /* activity */);
+    }
+    private boolean isMobileDataEnable(){
+
+        boolean mobileYN = false;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
+        {
+            mobileYN = Settings.Global.getInt(getContentResolver(), "mobile_data", 1) == 1;
+        }
+        else{
+            mobileYN = Settings.Secure.getInt(getContentResolver(), "mobile_data", 1) == 1;
+        }
+        return mobileYN;
+
+    }
+
+    @Override
+    public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String redirectUri) {
+
+        if(authorizationCode.equalsIgnoreCase("0")){
+
+            String url = getResources().getString(R.string.update_mobile_no_url);
+
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("userid", AppController.getInstance().getUserId());
+            params.put("mobile", authorizationCode);
+
+            JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            if (response.toUpperCase().contains("SUCCESS")) {
+                                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                                        getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+
+                                editor.putString(getString(R.string.service_provider), subscriberId);
+                                editor.commit();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            AppController.getInstance().addToRequestQueue(stringRequest, "tag_update_number");
+        }
+    }
+
+    @Override
+    public void authorizationError(String reason) {
+
+    }
 }

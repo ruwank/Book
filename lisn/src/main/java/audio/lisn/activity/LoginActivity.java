@@ -173,6 +173,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }else{
             if (connectionDetector.isConnectingToInternet()) {
+
                 progressDialog.show();
                 String url = getString(R.string.user_login_url);
 
@@ -183,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     String android_id = getUniqueID();
 
-                    postParam.put("username", email);
+                    postParam.put("email", email);
                     postParam.put("password", password);
                     postParam.put("usertype", "email");
                     postParam.put("device", android_id);
@@ -319,11 +320,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
-        _loginButton.setEnabled(true);
-    }
     public boolean validate() {
         boolean valid = true;
 

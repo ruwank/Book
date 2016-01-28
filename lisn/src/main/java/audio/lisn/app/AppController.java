@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import audio.lisn.R;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationListener;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.BookCategory;
 import audio.lisn.model.DownloadedAudioBook;
@@ -56,7 +56,7 @@ import audio.lisn.util.PreviewAudioPlayerService;
 import audio.lisn.util.ReminderReceiver;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 import io.fabric.sdk.android.Fabric;
-public class AppController extends Application {
+public class AppController extends Application  {
 
     public static final String TAG = AppController.class.getSimpleName();
 
@@ -475,7 +475,7 @@ if(currentAudioBook != null){
                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
                 if (accessToken != null && !accessToken.isExpired()) {
                     verifyUser();
-                    updateServiceProvider();
+
                 } else {
                     Log.v(TAG, "AccessToken isExpired");
                     LoginManager.getInstance().logOut();
@@ -761,75 +761,7 @@ if(currentAudioBook != null){
         this.storeBook.clear();
     }
 
-    private void updateServiceProvider(){
-        if(isMobileDataEnable()) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_PHONE_STATE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
-                final String subscriberId = m_telephonyManager.getSubscriberId();
 
-                SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
-                        getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                String provider = sharedPref.getString(getString(R.string.service_provider), "");
-                if (subscriberId != null && !provider.equalsIgnoreCase(subscriberId)) {
 
-                    if(subscriberId.startsWith("41302")) {
-
-                    }else{
-
-                    String url = "";
-
-                    if (subscriberId.startsWith("41301")) {
-                        url = getResources().getString(R.string.mobitel_pay_url);
-                    } else if (subscriberId.startsWith("41303")) {
-                        url = getResources().getString(R.string.etisalat_pay_url);
-                    }
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("userid", AppController.getInstance().getUserId());
-                    params.put("action", "number");
-
-                    JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-
-                                    if (response.toUpperCase().contains("SUCCESS")) {
-                                        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
-                                                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPref.edit();
-
-                                        editor.putString(getString(R.string.service_provider), subscriberId);
-                                        editor.commit();
-                                    }
-
-                                }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-                    });
-                    AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_number");
-                }
-            }
-
-            }
-        }
-
-    }
-    private boolean isMobileDataEnable(){
-
-        boolean mobileYN = false;
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1)
-        {
-            mobileYN = Settings.Global.getInt(getContentResolver(), "mobile_data", 1) == 1;
-        }
-        else{
-            mobileYN = Settings.Secure.getInt(getContentResolver(), "mobile_data", 1) == 1;
-        }
-        return mobileYN;
-
-    }
 }

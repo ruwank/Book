@@ -23,6 +23,8 @@
     <string name="EMPTY_NUMBER_TITLE">Number Error</string>
     <string name="EMPTY_NUMBER_MESSAGE_MOBITEL">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy
         settings. Please contact Mobitel.</string>
+    <string name="EMPTY_NUMBER_MESSAGE_DIALOG">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy settings.
+        Please contact Dialog.</string>
     <string name="EMPTY_NUMBER_MESSAGE_ETISALAT">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy settings.
         Please contact Etisalat.</string>
 

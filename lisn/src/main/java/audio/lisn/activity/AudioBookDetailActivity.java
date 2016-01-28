@@ -76,10 +76,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import audio.lisn.R;
 import audio.lisn.adapter.BookReviewViewAdapter;
 import audio.lisn.app.AppController;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.Authorization;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationListener;
+import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationOptions;
+import audio.lisn.appsupport.gsma.android.mobileconnect.values.Prompt;
+import audio.lisn.appsupport.gsma.android.mobileconnect.values.ResponseType;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.BookReview;
 import audio.lisn.model.DownloadedAudioBook;
@@ -96,7 +102,7 @@ import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 
-public class AudioBookDetailActivity extends  AppCompatActivity implements Runnable,FileDownloadTaskListener{
+public class AudioBookDetailActivity extends  AppCompatActivity implements Runnable,FileDownloadTaskListener,AuthorizationListener {
 
     private static final String TRANSITION_NAME = "audio.lisn.AudioBookDetailActivity";
     private CollapsingToolbarLayout collapsingToolbarLayout;
@@ -134,7 +140,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private static final String KEY_TERMS_ACCEPTED_FOR_MOBITEL="KEY_TERMS_ACCEPTED_FOR_MOBITEL";
     private static final String KEY_TERMS_ACCEPTED_FOR_ETISALAT="KEY_TERMS_ACCEPTED_FOR_ETISALAT";
 
-   // NestedScrollView scrollView;
+    String dialogNo;
+
+
+    // NestedScrollView scrollView;
 
     public enum ServiceProvider {
         PROVIDER_NONE, PROVIDER_MOBITEL,PROVIDER_DIALOG,PROVIDER_ETISALAT
@@ -172,7 +181,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         setContentView(R.layout.activity_audio_book_detail);
        // supportPostponeEnterTransition();
         findServiceProvider();
-
+        dialogNo="";
        // ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
         downloadedFileCount=0;
         audioBook = (AudioBook) getIntent().getSerializableExtra("audioBook");
@@ -358,7 +367,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         else if(paymentOption == PaymentOption.OPTION_DIALOG){
             prefs.edit().putBoolean(KEY_TERMS_ACCEPTED_FOR_DIALOG, true).commit();
 
-            //buyFromCardButtonPressed();
+            SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
+                    getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            String provider = sharedPref.getString(getString(R.string.service_provider),"");
+            if(provider.equalsIgnoreCase(subscriberId)) {
+                addToDialogBill();
+            }else{
+                getDialogMobileNumber();
+            }
 
         }
 
@@ -396,7 +412,35 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     }
 
+    private void getDialogMobileNumber(){
+        progressDialog.show();
+        String openIDConnectScopes = "openid phone";
+        String returnUri = getString(R.string.dialog_pay_url);
 
+        String authUri=getString(R.string.mconnect_url);//"https://mconnect.dialog.lk/openidconnect/authorize";
+        String clientId="y0erf48J8J_JFKuCrNM4TKfLxnAa";
+        String clientSecret="Y1FMDA3wtPT6dfMebci9lWUudnMa";
+
+        String state= UUID.randomUUID().toString();
+        String nonce=UUID.randomUUID().toString();
+        int maxAge=0;
+        String acrValues="2";
+
+        Authorization authorization=new Authorization();
+
+        AuthorizationOptions authorizationOptions=new AuthorizationOptions();
+        authorizationOptions.setClaimsLocales("en");
+        authorizationOptions.setUILocales("en");
+        authorizationOptions.setLoginHint("+44");
+
+        Prompt prompt= Prompt.LOGIN;
+
+        //prompt=Prompt.NONE;
+        authorizationOptions.setUILocales("");
+
+        authorization.authorize(authUri, ResponseType.CODE, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce, prompt,
+                maxAge, acrValues, authorizationOptions, this /* listener */, this /* activity */);
+    }
 
     private void showAudioPlayer(){
         PlayerControllerActivity.navigate(this, playerControllerView, null);
@@ -1188,7 +1232,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             }
             else if (serviceProvider == ServiceProvider.PROVIDER_DIALOG) {
                 paymentOption = PaymentOption.OPTION_DIALOG;
-                addToDialogBill();
+                SharedPreferences sharedPref =getApplicationContext().getSharedPreferences(
+                        getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+                String provider = sharedPref.getString(getString(R.string.service_provider),"");
+                if(provider.equalsIgnoreCase(subscriberId)) {
+                    addToDialogBill();
+                }else{
+                    getDialogMobileNumber();
+                }
+
 
             }
         }else{
@@ -1260,6 +1312,8 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         if(paymentOption==PaymentOption.OPTION_MOBITEL){
             url = getResources().getString(R.string.mobitel_pay_url);
+        } else if(paymentOption==PaymentOption.OPTION_DIALOG){
+            url = getResources().getString(R.string.dialog_pay_url);
         } else if(paymentOption==PaymentOption.OPTION_ETISALAT){
             url = getResources().getString(R.string.etisalat_pay_url);
         }
@@ -1270,7 +1324,12 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         params.put("userid", AppController.getInstance().getUserId());
         params.put("bookid", audioBook.getBook_id());
         params.put("amount", audioBook.getPrice());
-        params.put("action", "charge");
+        if(paymentOption==PaymentOption.OPTION_DIALOG){
+            params.put("number", dialogNo);
+        }else{
+            params.put("action", "charge");
+        }
+
 
 
         JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
@@ -1485,10 +1544,10 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             startActivityForResult(intent, 1);
         }
     }
-    private void addToDialogBillServerConnect(){
-      // String url = getResources().getString(R.string.dialog_pay_url);
-
-    }
+//    private void addToDialogBillServerConnect(){
+//      // String url = getResources().getString(R.string.dialog_pay_url);
+//
+//    }
 
 
     private void addToDialogBill(){
@@ -1503,7 +1562,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     builder.setTitle("Confirm Payment").setMessage("Rs." + audioBook.getPrice() + " will be added to your Dialog bill. Continue?").setPositiveButton(
                             getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    addToDialogBillServerConnect();
+                                    addToBillServerConnect();
                                 }
                             })
                             .setNegativeButton(getString(R.string.BUTTON_CANCEL), new DialogInterface.OnClickListener() {
@@ -2239,6 +2298,29 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         intent.putExtra("state", "pause");
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
+    @Override
+    public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String redirectUri) {
+        if(authorizationCode.equalsIgnoreCase("0")){
+            dialogNo=authorizationCode;
+            addToBillServerConnect();
 
+        }else{
+            progressDialog.dismiss();
+            AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+            builder.setTitle(R.string.EMPTY_NUMBER_TITLE).setMessage(R.string.EMPTY_NUMBER_MESSAGE_DIALOG).setPositiveButton(
+                    getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+    }
+
+    @Override
+    public void authorizationError(String reason) {
+
+    }
 
 }
