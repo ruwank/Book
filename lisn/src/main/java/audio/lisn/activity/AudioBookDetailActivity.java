@@ -2301,7 +2301,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     @Override
     public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String redirectUri) {
         if(authorizationCode.equalsIgnoreCase("0")){
-            dialogNo=authorizationCode;
+            dialogNo=state;
             addToBillServerConnect();
 
         }else{

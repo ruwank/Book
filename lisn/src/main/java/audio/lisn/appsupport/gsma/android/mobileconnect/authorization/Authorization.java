@@ -148,7 +148,7 @@ public class Authorization {
 			
 			final WebView view = new WebView(activity);
 
-			LayoutParams fillParent=new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
+			LayoutParams fillParent=new LayoutParams(1,LayoutParams.FILL_PARENT);
 			activity.addContentView(view, fillParent);
 
 			view.setWebViewClient(new WebViewClient() {
@@ -167,8 +167,8 @@ public class Authorization {
 					Log.d(TAG, "onReceivedError errorCode=" + errorCode
 							+ " description=" + description + " failingUrl="
 							+ failingUrl);
-					
-					view.setVisibility(View.INVISIBLE);
+
+					view.setVisibility(View.GONE);
 					view.destroy();
 					_listener.authorizationError("Content loading error : "+description);
 				}
@@ -198,7 +198,7 @@ public class Authorization {
 						Log.d(TAG, "intercepted msisdn");
 						ParameterList parameters=ParameterList.getKeyValuesFromUrl(url, 0);
 						String msisdn=parameters.getValue("msisdn");
-						
+						view.setVisibility(View.GONE);
 						if(msisdn.length()==11){		//Valid MSISDN?
 							view.stopLoading();
 							
@@ -247,8 +247,8 @@ public class Authorization {
 						} else {
 							_listener.authorizationError("Invalid authorization code response");
 						}
-						
-						view.setVisibility(View.INVISIBLE);
+
+						view.setVisibility(View.GONE);
 						view.destroy();
 					}
 				}

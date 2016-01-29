@@ -633,7 +633,7 @@ private void setLayoutMargin(boolean setMargin){
 
             Map<String, String> params = new HashMap<String, String>();
             params.put("userid", AppController.getInstance().getUserId());
-            params.put("mobile", authorizationCode);
+            params.put("mobile", state);
 
             JsonUTF8StringRequest stringRequest = new JsonUTF8StringRequest(Request.Method.POST, url, params,
                     new Response.Listener<String>() {
