@@ -21,11 +21,10 @@
     <string name="NO_ENOUGH_SPACE_MESSAGE">Not enough space to download this file. Please free up some space and try again.</string>
 
     <string name="EMPTY_NUMBER_TITLE">Number Error</string>
-    <string name="EMPTY_NUMBER_MESSAGE_MOBITEL">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy
-        settings. Please contact Mobitel.</string>
-    <string name="EMPTY_NUMBER_MESSAGE_DIALOG">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy settings.
+    <string name="EMPTY_NUMBER_MESSAGE_MOBITEL">Sorry! We are unable to detect your phone number. Please contact Mobitel.</string>
+    <string name="EMPTY_NUMBER_MESSAGE_DIALOG">Sorry! We are unable to detect your phone number.
         Please contact Dialog.</string>
-    <string name="EMPTY_NUMBER_MESSAGE_ETISALAT">Sorry! We are unable to detect your phone number. This could be due to incorrect proxy settings.
+    <string name="EMPTY_NUMBER_MESSAGE_ETISALAT">Sorry! We are unable to detect your phone number.
         Please contact Etisalat.</string>
 
     <string name="PAYMENT_FAILED_TITLE">Payment Failed</string>
@@ -77,6 +76,15 @@
 
     <string name="USER_EXIST_TITLE">Almost there...</string>
     <string name="USER_EXIST_MESSAGE">An email has been sent to your email address. Please open it and click on the link to activate your Lisn account. </string>
+
+
+    <string name="SHARE_SUCCESS_TITLE">Post was published.</string>
+    <string name="SHARE_SUCCESS_MESSAGE">Post was published. </string>
+
+    <string name="SHARE_ERROR_TITLE">Post was not published.</string>
+    <string name="SHARE_ERROR_MESSAGE">Post was not published. </string>
+
+
 
 
 </resources>

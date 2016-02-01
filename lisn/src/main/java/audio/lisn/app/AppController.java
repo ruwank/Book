@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import audio.lisn.R;
-import audio.lisn.appsupport.gsma.android.mobileconnect.authorization.AuthorizationListener;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.BookCategory;
 import audio.lisn.model.DownloadedAudioBook;
@@ -50,6 +48,7 @@ import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.AudioPlayerService.AudioPlayerServiceBinder;
 import audio.lisn.util.Constants;
 import audio.lisn.util.Foreground;
+import audio.lisn.util.Log;
 import audio.lisn.util.LruBitmapCache;
 import audio.lisn.util.NukeSSLCerts;
 import audio.lisn.util.PreviewAudioPlayerService;

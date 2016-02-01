@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import audio.lisn.R;
 import audio.lisn.activity.PlayerControllerActivity;
@@ -37,6 +36,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 
 //import android.media.session.PlaybackState;
 
@@ -192,7 +192,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 mService.stopForeground(true);
                 sendStateChange("stop");
 
-                Log.v("onReceive","delete");
+                Log.v("onReceive", "delete");
                 break;
             default:
         }

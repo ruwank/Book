@@ -3,7 +3,6 @@ package audio.lisn.adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 
 import audio.lisn.R;
 import audio.lisn.model.BookReview;
+import audio.lisn.util.Log;
 
 /**
  * Created by Rasika on 10/19/15.
@@ -48,7 +48,7 @@ public class BookReviewViewAdapter extends RecyclerView.Adapter<BookReviewViewAd
         if(Float.parseFloat(bookReview.getRateValue())>-1){
             holder.ratingBar.setRating(Float.parseFloat(bookReview.getRateValue()));
         }
-        Log.v("bookReview.getTitle()","bookReview.getTitle() :"+bookReview.getTitle());
+        Log.v("bookReview.getTitle()", "bookReview.getTitle() :" + bookReview.getTitle());
 
 
     }

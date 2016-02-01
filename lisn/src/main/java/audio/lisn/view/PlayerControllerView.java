@@ -1,30 +1,29 @@
     package audio.lisn.view;
 
     import android.content.Context;
-    import android.content.Intent;
-    import android.support.v4.content.LocalBroadcastManager;
-    import android.util.AttributeSet;
-    import android.util.Log;
-    import android.view.LayoutInflater;
-    import android.view.View;
-    import android.widget.ImageButton;
-    import android.widget.ImageView;
-    import android.widget.LinearLayout;
-    import android.widget.SeekBar;
-    import android.widget.TextView;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-    import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso;
 
-    import java.io.File;
+import java.io.File;
 
-    import audio.lisn.R;
-
-    import audio.lisn.app.AppController;
-    import audio.lisn.model.AudioBook;
-    import audio.lisn.model.DownloadedAudioBook;
-    import audio.lisn.util.AppUtils;
-    import audio.lisn.util.AudioPlayerService;
-    import audio.lisn.util.Constants;
+import audio.lisn.R;
+import audio.lisn.app.AppController;
+import audio.lisn.model.AudioBook;
+import audio.lisn.model.DownloadedAudioBook;
+import audio.lisn.util.AppUtils;
+import audio.lisn.util.AudioPlayerService;
+import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 
     /**
      * Created by Rasika on 4/12/15.

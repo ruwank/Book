@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.SslErrorHandler;
@@ -20,6 +19,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 
 public class PurchaseActivity extends AppCompatActivity {
     private static final String TRANSITION_NAME = "audio.lisn.PurchaseActivity";
@@ -86,7 +86,7 @@ public class PurchaseActivity extends AppCompatActivity {
     private class LisnWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.v("should","url:"+url);
+            Log.v("should", "url:" + url);
 
             if(url.equalsIgnoreCase(getString(R.string.purchase_success_url)) || url.equalsIgnoreCase(getString(R.string.purchase_success_url_http))){
                 completedPayment(0);

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
@@ -151,7 +150,6 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
         // check if we're becoming foreground and notify listeners
         if (!foreground && (activity != null && !activity.isChangingConfigurations())){
             foreground = true;
-            Log.w(TAG, "became foreground");
             Intent intent = new Intent(Constants.APP_STATE_FOREGROUND);
             LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
             listeners.each(becameForeground);
@@ -182,7 +180,6 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
         if (foreground) {
             if ((activity == current) && (activity != null && !activity.isChangingConfigurations())){
                 foreground = false;
-                Log.w(TAG, "went background");
                     Intent intent = new Intent(Constants.APP_STATE_BACKGROUND);
                     LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
 

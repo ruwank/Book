@@ -1,12 +1,13 @@
 package audio.lisn.appsupport.gsma.android.mobileconnect.token;
 
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+
+import audio.lisn.util.Log;
 
 /**
  * Main class with library methods. Implements OpenIDConnectCallbackTokenReciever
@@ -184,7 +185,7 @@ public class Token implements OpenIDConnectCallbackTokenReceiver {
 					Log.d(TAG, "acr: "+acr);
 					Log.d(TAG, "amr: "+amr);
 					Log.d(TAG, "azp: "+azp);
-					Log.d(TAG, "dts: "+dts);
+					Log.d(TAG, "dts: " + dts);
 					Log.d(TAG, "upk: "+upk);
 					Log.d(TAG, "dts_time: "+dts_time);
 					Log.d(TAG, "email: "+email);

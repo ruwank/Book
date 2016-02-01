@@ -23,7 +23,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.session.PlaybackState;
 import android.os.PowerManager;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;

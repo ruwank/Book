@@ -15,7 +15,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,6 +49,7 @@ import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
@@ -130,7 +130,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
         // BEGIN_INCLUDE (setup_viewpager)
         storeBookView=(RecyclerView)view.findViewById(R.id.storeBookContainer);
         storeBookView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
-        loadData();
+
     }
 
     @Override
@@ -169,7 +169,7 @@ public class StoreFragment extends Fragment implements  StoreBookViewAdapter.Sto
     @Override
     public void onResume() {
         super.onResume();
-
+        loadData();
         registerBroadcastReceiver();
         Log.v(TAG, "onResume");
 

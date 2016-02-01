@@ -29,7 +29,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +52,7 @@ import audio.lisn.util.AppUtils;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
+import audio.lisn.util.Log;
 import audio.lisn.view.EllipsizingTextView;
 
 public class StoreBookViewAdapter extends RecyclerView.Adapter<StoreBookViewAdapter.ViewHolder> implements Runnable {

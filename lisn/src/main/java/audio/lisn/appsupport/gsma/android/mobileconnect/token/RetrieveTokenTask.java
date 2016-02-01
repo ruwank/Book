@@ -1,7 +1,6 @@
 package audio.lisn.appsupport.gsma.android.mobileconnect.token;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +22,7 @@ import java.util.List;
 
 import audio.lisn.appsupport.gsma.android.mobileconnect.utils.HttpUtils;
 import audio.lisn.appsupport.gsma.android.mobileconnect.utils.JsonUtils;
+import audio.lisn.util.Log;
 
 //import com.gsma.android.mobileconnect.utils.HttpUtils;
 //import com.gsma.android.mobileconnect.utils.JsonUtils;

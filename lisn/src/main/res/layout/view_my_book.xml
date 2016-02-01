@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:layout_below="@+id/book_cover_thumbnail"
-                android:layout_marginTop="-48dp"
+                android:layout_marginTop="-49dp"
                 android:layout_marginRight="@dimen/book_item_margin"
                 android:src="@drawable/ic_download"
                 android:layout_alignParentRight="true"/>

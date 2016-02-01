@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +33,7 @@ import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 

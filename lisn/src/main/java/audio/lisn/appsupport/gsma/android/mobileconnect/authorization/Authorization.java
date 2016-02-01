@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebSettings;
@@ -17,6 +16,7 @@ import audio.lisn.appsupport.gsma.android.mobileconnect.utils.HttpUtils;
 import audio.lisn.appsupport.gsma.android.mobileconnect.utils.ParameterList;
 import audio.lisn.appsupport.gsma.android.mobileconnect.values.Prompt;
 import audio.lisn.appsupport.gsma.android.mobileconnect.values.ResponseType;
+import audio.lisn.util.Log;
 
 //import com.gsma.android.mobileconnect.utils.HttpUtils;
 //import com.gsma.android.mobileconnect.utils.ParameterList;

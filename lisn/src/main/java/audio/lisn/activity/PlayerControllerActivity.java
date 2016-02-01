@@ -22,7 +22,6 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.transition.Slide;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -65,6 +64,7 @@ import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8StringRequest;
@@ -177,7 +177,7 @@ View topOverLayView;
                 }
             }
         }
-Log.v("position","position:"+position);
+Log.v("position", "position:" + position);
         mCoverFlow.setSelection(position);
         setBookTitle(position);
 

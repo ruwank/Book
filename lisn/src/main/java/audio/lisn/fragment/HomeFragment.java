@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +53,7 @@ import audio.lisn.util.AppUtils;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.FileDownloadTask;
 import audio.lisn.webservice.FileDownloadTaskListener;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
@@ -614,7 +614,7 @@ public class HomeFragment extends Fragment implements StoreBookViewAdapter.Store
 
     }
     private void updateMyBookContainer(){
-        Log.v("myBookContainer","myBookContainer"+myBookContainer.getChildCount());
+        Log.v("myBookContainer", "myBookContainer" + myBookContainer.getChildCount());
         if(myBookContainer.getChildCount()>0){
             View view=myBookContainer.getChildAt(0);
             Log.v("height","myBookContainer height"+view.getHeight());

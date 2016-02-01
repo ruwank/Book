@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +24,7 @@ import audio.lisn.R;
 import audio.lisn.app.AppController;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 
 public class ForgotPasswordActivity extends AppCompatActivity {

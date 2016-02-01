@@ -3,7 +3,6 @@ package audio.lisn.webservice;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
-import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -16,6 +15,7 @@ import java.net.URL;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
+import audio.lisn.util.Log;
 
 //import java.nio.charset.StandardCharsets;
 

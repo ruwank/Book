@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +33,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.BookCategory;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.view.SlidingTabLayout;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
@@ -139,7 +139,7 @@ public class StoreBaseFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.v("onPageSelected","onPageSelected");
+                Log.v("onPageSelected", "onPageSelected");
                 removePlayer();
 
             }

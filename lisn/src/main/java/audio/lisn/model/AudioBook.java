@@ -1,7 +1,6 @@
 package audio.lisn.model;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import audio.lisn.util.AppUtils;
+import audio.lisn.util.Log;
 
 public class AudioBook implements Serializable{
 
@@ -221,7 +221,7 @@ public class AudioBook implements Serializable{
             }
             if(obj.getString("award") !=null){
                 String award=obj.getString("award");
-                Log.v("award","award: "+award);
+                Log.v("award", "award: " + award);
                 if(Integer.parseInt(award) == 1){
                     this.isAwarded=true;
                 }

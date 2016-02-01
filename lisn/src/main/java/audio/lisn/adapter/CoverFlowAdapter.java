@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import at.technikum.mti.fancycoverflow.FancyCoverFlow;
 import at.technikum.mti.fancycoverflow.FancyCoverFlowAdapter;
 import audio.lisn.model.AudioBook;
 import audio.lisn.util.AppUtils;
+import audio.lisn.util.Log;
 
 public class CoverFlowAdapter extends FancyCoverFlowAdapter {
 	
@@ -39,7 +39,7 @@ public class CoverFlowAdapter extends FancyCoverFlowAdapter {
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         coverFlowWidth= (int)(metrics.density * 160);
         coverFlowHeight= (int)(metrics.density * 240);
-        Log.v("coverFlowWidth","coverFlowWidth"+coverFlowWidth);
+        Log.v("coverFlowWidth", "coverFlowWidth" + coverFlowWidth);
         //coverFlowWidth=(int) ((160*2));
        // coverFlowHeight=(int)((240*2));
         //coverFlowWidth=320;

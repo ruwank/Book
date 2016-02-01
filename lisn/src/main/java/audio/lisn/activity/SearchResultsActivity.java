@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -33,6 +32,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.ConnectionDetector;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
 public class SearchResultsActivity extends AppCompatActivity implements
@@ -100,7 +100,7 @@ public class SearchResultsActivity extends AppCompatActivity implements
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.v("query","query:"+query);
+            Log.v("query", "query:" + query);
             downloadSearchResultData(query);
             //use the query to search your data somehow
         }

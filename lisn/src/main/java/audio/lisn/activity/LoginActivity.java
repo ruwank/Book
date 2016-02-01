@@ -21,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Base64;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -56,6 +55,7 @@ import audio.lisn.model.AudioBook;
 import audio.lisn.model.DownloadedAudioBook;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 import audio.lisn.webservice.JsonUTF8StringRequest;
 

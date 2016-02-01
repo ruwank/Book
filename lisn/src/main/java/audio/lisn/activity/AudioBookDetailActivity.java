@@ -38,7 +38,6 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.transition.Slide;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -57,11 +56,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.widget.ShareButton;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
 
@@ -95,6 +100,7 @@ import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
 import audio.lisn.util.CustomTypeFace;
+import audio.lisn.util.Log;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.util.WCLinearLayoutManager;
 import audio.lisn.view.PlayerControllerView;
@@ -108,7 +114,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     private CollapsingToolbarLayout collapsingToolbarLayout;
     AudioBook audioBook;
     ImageButton previewPlayButton;
-    ImageButton btnShare;
+    ShareButton btnShare;
     Button btnReview;
     //private boolean isPlayingPreview,isLoadingPreview;
     MediaPlayer mediaPlayer = null;
@@ -142,7 +148,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     String dialogNo;
 
-
+    CallbackManager callbackManager;
     // NestedScrollView scrollView;
 
     public enum ServiceProvider {
@@ -181,6 +187,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         setContentView(R.layout.activity_audio_book_detail);
        // supportPostponeEnterTransition();
         findServiceProvider();
+        callbackManager = CallbackManager.Factory.create();
         dialogNo="";
        // ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), TRANSITION_NAME);
         downloadedFileCount=0;
@@ -215,7 +222,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             @Override
                             public void onAnimationStart(Animator animation) {
                                 super.onAnimationStart(animation);
-                               // setLayoutMargin(false);
+                                // setLayoutMargin(false);
 
                                 playerControllerView.stopAudioPlayer();
                             }
@@ -230,7 +237,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         });
        // scrollView= (NestedScrollView) findViewById(R.id.scroll);
-        updateData();
+
         // Do all heavy processing here, activity will not enter transition until you explicitly call startPostponedEnterTransition()
 
         // all heavy init() done
@@ -240,6 +247,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     @Override
     protected void onResume() {
         super.onResume();
+        updateData();
 
         if((AudioPlayerService.mediaPlayer!=null) && AudioPlayerService.hasStartedPlayer){
             playerControllerView.setVisibility(View.VISIBLE);
@@ -413,6 +421,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
     }
 
     private void getDialogMobileNumber(){
+        progressDialog.setMessage("Payment Processing...");
         progressDialog.show();
         String openIDConnectScopes = "openid phone";
         String returnUri = getString(R.string.dialog_pay_url);
@@ -645,13 +654,13 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
             separator_top_rateLayout.setVisibility(View.VISIBLE);
             rateLayout.setVisibility(View.VISIBLE);
             userRatingBar.setRating(0);
-           // addToBillButton.setVisibility(View.GONE);
-           // btnPayFromCard.setVisibility(View.GONE);
+            addToBillButton.setVisibility(View.GONE);
+            btnPayFromCard.setVisibility(View.GONE);
             // btnDownload.setImageResource(R.drawable.btn_lisn_book_large);
         }else{
             //rateLayout.setVisibility(View.GONE);
             if(Float.parseFloat(audioBook.getPrice())>0) {
-               // btnDownload.setVisibility(View.GONE);
+                btnDownload.setVisibility(View.GONE);
                 // btnPayFromCard.setText("Get the book at Rs. "+(Float.parseFloat(audioBook.getPrice()) * 0.9)+"(10% discount) by paying through your card ");
 
                 if (serviceProvider !=ServiceProvider.PROVIDER_NONE){
@@ -686,13 +695,15 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
         }
 
-        btnShare=(ImageButton)findViewById(R.id.btnShare);
-        btnShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareBook();
-            }
-        });
+       // btnShare=(ShareButton)findViewById(R.id.btnShare);
+        shareBook();
+
+//        btnShare.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                shareBook();
+//            }
+//        });
 
         int reviewsCount=0;
 
@@ -1133,6 +1144,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                     .setNegativeButton(R.string.BUTTON_NO, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
+                            updateData();
                         }
                     });
             AlertDialog dialog = builder.create();
@@ -1141,6 +1153,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     }
     private void shareBook() {
+        /*
         Intent share = new Intent(android.content.Intent.ACTION_SEND);
         share.setType("text/plain");
         share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -1149,6 +1162,91 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
         share.putExtra(Intent.EXTRA_TEXT, getString(R.string.play_store_url));
 
         startActivity(Intent.createChooser(share, "Share app through..."));
+        */
+        //Bitmap bitmap=bookCoverImage.getDrawingCache();
+
+        String imageUrl=audioBook.getCover_image();
+        // Create an object
+        ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                .putString("og:type", "lisn_audiobook:audiobook")
+                .putString("og:title", audioBook.getEnglish_title())
+                .putString("og:image", imageUrl)
+                .putString("og:description", audioBook.getEnglish_title())
+                .build();
+
+// Create an action
+        ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                .setActionType("lisn_audiobook:book_listen")
+                .putObject("audiobook", object)
+                .build();
+
+        // Create the content
+        ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                .setPreviewPropertyName("audiobook")
+                .setAction(action)
+                .build();
+       // ShareDialog.show(this, content);
+
+        ShareButton shareButton = (ShareButton)findViewById(R.id.btnShare);
+        shareButton.setShareContent(content);
+        shareButton.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+
+            @Override
+            public void onSuccess(Sharer.Result result) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+
+                builder.setTitle(R.string.SHARE_SUCCESS_TITLE).setMessage(getString(R.string.SHARE_SUCCESS_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
+
+                builder.setTitle(R.string.SHARE_ERROR_TITLE).setMessage(getString(R.string.SHARE_ERROR_MESSAGE)).setPositiveButton(
+                        getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // FIRE ZE MISSILES!
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+
+        /*
+        // Create an object
+        ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                .putString("og:type", "books.book")
+                .putString("og:title", "A Game of Thrones")
+                .putString("books:isbn", "0-553-57340-3")
+                .build();
+        // Create an action
+        ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                .setActionType("books.reads")
+                .putObject("book", object)
+                .build();
+
+        // Create the content
+        ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                .setPreviewPropertyName("book")
+                .setAction(action)
+                .build();
+        ShareDialog.show(this, content);
+        */
     }
 
     //    private void playGetButtonPressed(){
@@ -1358,6 +1456,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                                     .setNegativeButton(getString(R.string.BUTTON_LATER), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
+                                            updateData();
                                         }
                                     });
                             AlertDialog dialog = builder.create();
@@ -1386,14 +1485,27 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                         else if (response.toUpperCase().contains("EMPTY_NUMBER")) {
                             String title="";
                             String message="";
-                            title=getString(R.string.EMPTY_NUMBER_TITLE);
+                            subscriberId="0";
+                            updateServiceProviderData();
+                            if(isMobileDataEnable()){
+                                title=getString(R.string.EMPTY_NUMBER_TITLE);
 
-                            if(paymentOption==PaymentOption.OPTION_MOBITEL){
-                                message=getString(R.string.EMPTY_NUMBER_MESSAGE_MOBITEL);
-                            } else if(paymentOption==PaymentOption.OPTION_ETISALAT){
-                                message=getString(R.string.EMPTY_NUMBER_MESSAGE_ETISALAT);
+                                if(paymentOption==PaymentOption.OPTION_MOBITEL){
+                                    message=getString(R.string.EMPTY_NUMBER_MESSAGE_MOBITEL);
+                                } else if(paymentOption==PaymentOption.OPTION_DIALOG){
+                                    message=getString(R.string.EMPTY_NUMBER_MESSAGE_DIALOG);
+                                }
+                                else if(paymentOption==PaymentOption.OPTION_ETISALAT){
+                                    message=getString(R.string.EMPTY_NUMBER_MESSAGE_ETISALAT);
+                                }
+                            }else{
+                                title=getString(R.string.NO_MOBILE_DATA_TITLE);
+                                message=getString(R.string.NO_MOBILE_DATA_MESSAGE);
 
                             }
+
+
+
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
                             builder.setTitle(title).setMessage(message).setPositiveButton(
                                     getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
@@ -1407,7 +1519,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                             Log.v("addToBillServerConnect","addToBillServerConnect 4");
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                            builder.setTitle(getString(R.string.SERVER_ERROR_TITLE)).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                            builder.setTitle(getString(R.string.SERVER_ERROR_TITLE)).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)+"response :"+response).setPositiveButton(
                                     getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             // FIRE ZE MISSILES!
@@ -1427,7 +1539,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 Log.v("addToBillServerConnect", "addToBillServerConnect 6");
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(AudioBookDetailActivity.this);
-                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)).setPositiveButton(
+                builder.setTitle(R.string.SERVER_ERROR_TITLE).setMessage(getString(R.string.SERVER_ERROR_MESSAGE)+"error :"+error.getMessage()).setPositiveButton(
                         getString(R.string.BUTTON_OK), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // FIRE ZE MISSILES!
@@ -1437,12 +1549,14 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
                 dialog.show();
             }
         });
-        RetryPolicy mRetryPolicy = new DefaultRetryPolicy(
 
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-       // stringRequest.setRetryPolicy(mRetryPolicy);
+
+//        RetryPolicy mRetryPolicy = new DefaultRetryPolicy(
+//
+//                0,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+      //  stringRequest.setRetryPolicy(mRetryPolicy);
         Log.v("addToBillServerConnect", "addToBillServerConnect 7");
 
         AppController.getInstance().addToRequestQueue(stringRequest, "tag_mobitel_payment");
@@ -2147,6 +2261,7 @@ public class AudioBookDetailActivity extends  AppCompatActivity implements Runna
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.v("onActivityResult","onActivityResult");
+        callbackManager.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1) {
             if(resultCode == Constants.RESULT_SUCCESS){

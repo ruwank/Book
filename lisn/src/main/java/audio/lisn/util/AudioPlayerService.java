@@ -13,7 +13,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.File;

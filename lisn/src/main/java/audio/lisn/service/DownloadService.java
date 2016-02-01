@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.os.ResultReceiver;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
@@ -18,6 +17,7 @@ import java.net.URL;
 
 import audio.lisn.R;
 import audio.lisn.app.AppController;
+import audio.lisn.util.Log;
 
 /**
  * Created by Admin on 12/31/15.
@@ -79,7 +79,7 @@ public class DownloadService extends IntentService {
             output.close();
             input.close();
         } catch (IOException e) {
-            Log.v("DownloadService","DownloadService: "+e.getMessage());
+            Log.v("DownloadService", "DownloadService: " + e.getMessage());
             e.printStackTrace();
         }
         Log.v("DownloadService","DownloadService: "+book_id);

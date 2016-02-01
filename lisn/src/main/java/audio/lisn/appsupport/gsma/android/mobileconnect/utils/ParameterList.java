@@ -1,11 +1,12 @@
 package audio.lisn.appsupport.gsma.android.mobileconnect.utils;
 
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import audio.lisn.util.Log;
 
 /**
  * Helper function developed to extract code, state and error values.
@@ -46,7 +47,7 @@ public class ParameterList {
 			}
 		}
 		
-		Log.d(TAG, "Namespace key = "+key);
+		Log.d(TAG, "Namespace key = " + key);
 		// Check that the namespace is known
 		if (key!=null && key.startsWith("openid.ns")) {
 			String[] parts=key.split("\\.");

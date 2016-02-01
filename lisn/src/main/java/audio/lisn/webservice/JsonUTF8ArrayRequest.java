@@ -1,7 +1,5 @@
 package audio.lisn.webservice;
 
-import android.util.Log;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -15,6 +13,8 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import audio.lisn.util.Log;
 
 /**
  * Created by Rasika on 7/3/15.

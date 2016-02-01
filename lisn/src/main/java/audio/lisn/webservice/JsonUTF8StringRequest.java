@@ -1,6 +1,5 @@
 package audio.lisn.webservice;
 
-import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -11,6 +10,8 @@ import com.android.volley.toolbox.HttpHeaderParser;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+
+import audio.lisn.util.Log;
 
 /**
  * Created by Rasika on 7/4/15.
@@ -43,8 +44,8 @@ public class JsonUTF8StringRequest extends Request<String> {
 
 
         this.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_TIMEOUT_MS*10,
+                0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 

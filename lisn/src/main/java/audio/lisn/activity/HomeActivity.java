@@ -29,7 +29,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,6 +62,7 @@ import audio.lisn.fragment.StoreFragment;
 import audio.lisn.model.BookCategory;
 import audio.lisn.util.AudioPlayerService;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.util.OnSwipeTouchListener;
 import audio.lisn.view.PlayerControllerView;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
@@ -114,7 +114,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         playerControllerView.setOnTouchListener(new OnSwipeTouchListener(this) {
             @Override
             public void onSwipeRight() {
-                Log.v(TAG,"onSwipeRight");
+                Log.v(TAG, "onSwipeRight");
                 playerControllerView.animate()
                         .translationX(playerControllerView.getWidth())
                         .setListener(new AnimatorListenerAdapter() {
