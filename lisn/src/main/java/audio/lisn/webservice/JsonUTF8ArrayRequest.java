@@ -1,5 +1,8 @@
 package audio.lisn.webservice;
 
+import android.util.Base64;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -12,8 +15,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
+import audio.lisn.util.AppUtils;
 import audio.lisn.util.Log;
 
 /**
@@ -35,6 +40,16 @@ public class JsonUTF8ArrayRequest extends Request<JSONArray> {
         super(method, url, errorListener);
         this.listener = reponseListener;
         this.params = params;
+    }
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        Map<String, String> headers = new HashMap<String, String>();
+        String credentials = AppUtils.getCredentialsData();
+        String auth = "Basic "
+                + Base64.encodeToString(credentials.getBytes(),
+                Base64.NO_WRAP);
+        headers.put("Authorization", auth);
+        return headers;
     }
 
     protected Map<String, String> getParams()

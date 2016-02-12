@@ -32,6 +32,7 @@ android {
     buildToolsVersion '23.0.1'
     useLibrary 'org.apache.http.legacy'
 
+
     defaultConfig {
         applicationId 'audio.lisn'
         minSdkVersion 15

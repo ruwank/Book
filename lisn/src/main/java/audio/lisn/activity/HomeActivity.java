@@ -579,14 +579,13 @@ private void setLayoutMargin(boolean setMargin){
 
     }
     private void getDialogMobileNumber(){
+
         String openIDConnectScopes = "openid phone";
         String returnUri = getString(R.string.dialog_pay_url);
 
         String authUri=getString(R.string.mconnect_url);//"https://mconnect.dialog.lk/openidconnect/authorize";
         String clientId="y0erf48J8J_JFKuCrNM4TKfLxnAa";
         String clientSecret="Y1FMDA3wtPT6dfMebci9lWUudnMa";
-        Log.d(TAG, "clientId="+clientId);
-        Log.d(TAG, "clientSecret="+clientSecret);
 
         String state= UUID.randomUUID().toString();
         String nonce=UUID.randomUUID().toString();
@@ -605,9 +604,10 @@ private void setLayoutMargin(boolean setMargin){
         //prompt=Prompt.NONE;
         authorizationOptions.setUILocales("");
 
-        Log.d(TAG, "Starting OpenIDConnect authorization");
         authorization.authorize(authUri, ResponseType.CODE, clientId, clientSecret, openIDConnectScopes, returnUri, state, nonce, prompt,
                 maxAge, acrValues, authorizationOptions, this /* listener */, this /* activity */);
+
+
     }
     private boolean isMobileDataEnable(){
 
@@ -625,7 +625,7 @@ private void setLayoutMargin(boolean setMargin){
 
     @Override
     public void authorizationCodeResponse(String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String redirectUri) {
-
+Log.v(TAG,"state :"+state);
         if(authorizationCode.equalsIgnoreCase("0")){
 
             String url = getResources().getString(R.string.update_mobile_no_url);

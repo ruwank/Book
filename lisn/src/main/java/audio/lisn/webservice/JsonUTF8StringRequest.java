@@ -1,6 +1,9 @@
 package audio.lisn.webservice;
 
 
+import android.util.Base64;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -8,9 +11,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import org.apache.http.auth.UsernamePasswordCredentials;
+
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
+import audio.lisn.util.AppUtils;
 import audio.lisn.util.Log;
 
 /**
@@ -35,6 +42,8 @@ public class JsonUTF8StringRequest extends Request<String> {
         super(method, url, errorListener);
         this.listener = reponseListener;
         this.params = params;
+
+        UsernamePasswordCredentials creds = new UsernamePasswordCredentials("admin", "admin");
 //        RetryPolicy mRetryPolicy = new DefaultRetryPolicy(
 //
 //                0,
@@ -54,6 +63,17 @@ public class JsonUTF8StringRequest extends Request<String> {
         Log.v("params", "params:" + params);
         return params;
     };
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        Map<String, String> headers = new HashMap<String, String>();
+        String credentials = AppUtils.getCredentialsData();
+        String auth = "Basic "
+                + Base64.encodeToString(credentials.getBytes(),
+                Base64.NO_WRAP);
+        headers.put("Authorization", auth);
+        return headers;
+    }
 
     @Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {

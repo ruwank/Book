@@ -22,6 +22,7 @@ import audio.lisn.app.AppController;
 import audio.lisn.model.BookCategory;
 import audio.lisn.util.ConnectionDetector;
 import audio.lisn.util.Constants;
+import audio.lisn.util.Log;
 import audio.lisn.webservice.JsonUTF8ArrayRequest;
 
 public class MainActivity extends Activity {
@@ -122,12 +123,34 @@ public class MainActivity extends Activity {
 
     private void downloadTopRatedBookList(){
         String url=getString(R.string.top_rated_book_list_url);
+//        JsonUTF8ObjectRequest testRequest =new JsonUTF8ObjectRequest(url, null,
+//                new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject jsonObject) {
+//                completeCount++;
+//                loadHomeScreen();
+//                Log.v("downloadTopRatedBookList", "jsonArray Header " +jsonObject);
+//
+//            }
+//        }, new Response.ErrorListener()
+//
+//        {
+//            public void onErrorResponse (VolleyError error){
+//                Log.v("downloadTopRatedBookList", "jsonArray " + error.toString());
+//
+//                completeCount++;
+//                loadHomeScreen();
+//            }
+//        }
+//        );
+//        AppController.getInstance().addToRequestQueue(testRequest,"tag_topRated_list");
 
         JsonUTF8ArrayRequest bookListReq = new JsonUTF8ArrayRequest(url, null,
 
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
+                        Log.v("downloadTopRatedBookList","jsonArray "+jsonArray);
 
                         AppController.getInstance().setTopRatedBookList(jsonArray);
                         completeCount++;
@@ -136,13 +159,22 @@ public class MainActivity extends Activity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.v("downloadTopRatedBookList","jsonArray "+error.toString());
+
                 completeCount++;
                 loadHomeScreen();
             }
         });
         bookListReq.setShouldCache(true);
+//        try {
+//            Log.v("downloadTopRatedBookList", "jsonArray Header " + bookListReq.getHeaders().toString());
+//        } catch (AuthFailureError authFailureError) {
+//            authFailureError.printStackTrace();
+//        }
+
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(bookListReq,"tag_topRated_list");
+
     }
 
     private void downloadTopDownloadedBookList(){

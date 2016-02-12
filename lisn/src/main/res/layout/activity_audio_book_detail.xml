@@ -405,39 +405,40 @@
 
                                 />
                         </LinearLayout>
-                        <com.facebook.share.widget.ShareButton
-                            android:id="@+id/btnShare"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/layout_margin_large"
-                            android:paddingLeft="@dimen/layout_margin_large"
-                            android:paddingRight="@dimen/layout_margin_large"
-                            android:paddingTop="@dimen/layout_margin"
-                            android:paddingBottom="@dimen/layout_margin"
-                            />
-                        <!--<LinearLayout-->
+                        <!--<com.facebook.share.widget.ShareButton-->
+                            <!--android:id="@+id/btnShare"-->
                             <!--android:layout_width="wrap_content"-->
                             <!--android:layout_height="wrap_content"-->
-                            <!--android:orientation="vertical"-->
-                            <!--android:layout_margin="10dp"-->
-                            <!-->-->
-                            <!--<ImageButton-->
-                                <!--android:id="@+id/btnShare"-->
-                                <!--android:layout_width="40dp"-->
-                                <!--android:layout_height="40dp"-->
-                                <!--android:background="@drawable/ic_share"-->
-                                <!--/>-->
+                            <!--android:layout_margin="@dimen/layout_margin_large"-->
+                            <!--android:paddingLeft="@dimen/layout_margin_large"-->
+                            <!--android:paddingRight="@dimen/layout_margin_large"-->
+                            <!--android:paddingTop="@dimen/layout_margin"-->
+                            <!--android:paddingBottom="@dimen/layout_margin"-->
+                            <!--/>-->
+                        <LinearLayout
+                            android:id="@+id/shareLayout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_margin="10dp"
+                            >
+                            <ImageButton
+                                android:id="@+id/btnShare"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/ic_share_facebook"
+                                />
 
-                            <!--<TextView-->
-                                <!--android:layout_width="wrap_content"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:textColor="@color/textColor"-->
-                                <!--android:text="Share"-->
-                                <!--android:textSize="@dimen/grid_view_textSize"-->
-                                <!--android:layout_gravity="center_horizontal"-->
-                                <!--android:layout_marginTop="@dimen/spacing_xsmall"-->
-                                <!--/>-->
-                        <!--</LinearLayout>-->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/textColor"
+                                android:text="Share"
+                                android:textSize="@dimen/grid_view_textSize"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="@dimen/spacing_xsmall"
+                                />
+                        </LinearLayout>
 
 
                     </LinearLayout>

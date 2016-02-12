@@ -1,34 +1,27 @@
 package audio.lisn.appsupport.gsma.android.mobileconnect.authorization;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 
 import audio.lisn.appsupport.gsma.android.mobileconnect.utils.HttpUtils;
 import audio.lisn.appsupport.gsma.android.mobileconnect.utils.ParameterList;
 import audio.lisn.appsupport.gsma.android.mobileconnect.values.Prompt;
 import audio.lisn.appsupport.gsma.android.mobileconnect.values.ResponseType;
-import audio.lisn.util.Log;
-
-//import com.gsma.android.mobileconnect.utils.HttpUtils;
-//import com.gsma.android.mobileconnect.utils.ParameterList;
-//import com.gsma.android.mobileconnect.values.Prompt;
-//import com.gsma.android.mobileconnect.values.ResponseType;
 
 /**
  * Main class with library methods.
  */
 public class Authorization {
 	private static final String TAG = "Authorization";
-	
+	String clientId, clientSecret, scopes, redirectUri;
+	AuthorizationListener listener;
+
 	/**
 	 * Constructor
 	 */
@@ -40,7 +33,7 @@ public class Authorization {
 	 * sign in/ authorize the application. The application hands over to the
 	 * browser during the authorization step. On completion the MNO redirects to
 	 * the application sending the completion information as URL parameters.
-	 * 
+	 *
 	 * @param authUri
 	 *            authorization endpoint.
 	 * @param responseType
@@ -74,17 +67,23 @@ public class Authorization {
 	 * @param activity
 	 * @throws NullPointerException
 	 */
-	@SuppressWarnings("deprecation")
-	@SuppressLint("SetJavaScriptEnabled")
+
 	public void authorize(String authUri, ResponseType responseType, String clientId, String clientSecret, String scopes,
-			String redirectUri, String state, String nonce, Prompt prompt,
-			int maxAge, String acrValues,
-			AuthorizationOptions authorizationOptions, AuthorizationListener listener, Activity activity) {
+						  String redirectUri, String state, String nonce, Prompt prompt,
+						  int maxAge, String acrValues,
+						  AuthorizationOptions authorizationOptions, AuthorizationListener listener, Activity activity) {
+
+		this.clientId=clientId;
+		this.clientSecret=clientSecret;
+		this.scopes=scopes;
+		this.redirectUri=redirectUri;
+		this.listener=listener;
+
 		try{
 			HashMap<String, Object> hmapExtraOptions = null;
 			if(authorizationOptions!=null)
 				hmapExtraOptions = authorizationOptions.getAuthorizationOptions();
-	
+
 			Log.d(TAG, "authUri = " + authUri);
 			Log.d(TAG, "responseType = " + responseType.value());
 			Log.d(TAG, "clientId = " + clientId);
@@ -102,7 +101,7 @@ public class Authorization {
 						+ authorizationOptions.getAuthorizationOptions().values());
 			} else
 				Log.d(TAG, "authorizationOptions empty");
-	
+
 			if(authUri==null)
 				authUri = "";
 			String requestUri = authUri;
@@ -111,7 +110,7 @@ public class Authorization {
 			} else if (authUri.indexOf("&") == -1) {
 				requestUri += "&";
 			}
-	
+
 			requestUri += "response_type=" + HttpUtils.encodeUriParameter(responseType.value());
 			requestUri += "&client_id=" + HttpUtils.encodeUriParameter(clientId);
 			requestUri += "&scope=" + HttpUtils.encodeUriParameter(scopes);
@@ -129,17 +128,64 @@ public class Authorization {
 							+ key
 							+ "="
 							+ HttpUtils.encodeUriParameter(hmapExtraOptions
-									.get(key).toString());
+							.get(key).toString());
 				}
 			}
-			
+
+			new GetPhoneNumberTask().execute(requestUri);
+
+
 //			Intent intent = new Intent(Intent.ACTION_VIEW);
 //			intent.setData(Uri.parse(requestUri));
 //			String title = "Choose a browser";
 //			Intent chooser = Intent.createChooser(intent, title);
 //			context.startActivity(chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+/*
+			try {
+				URLConnection con = new URL(requestUri).openConnection();
+				Log.d(TAG, "orignal url: " + con.getURL());
+				con.connect();
+				//Log.d(TAG, "connected url: " + con.getURL() );
+				InputStream is = con.getInputStream();
+				URL redirectedUrl = con.getURL();
+				Log.d(TAG, "redirected url: " + redirectedUrl);
+				is.close();
+
+				URLConnection con2 = new URL(redirectedUrl.toString()).openConnection();
+				Log.d(TAG, "orignal url2: " + con2.getURL());
+				con2.connect();
+				//Log.d(TAG, "connected url2: " + con2.getURL() );
+				InputStream is2 = con2.getInputStream();
+				URL redirectedUrl2 = con2.getURL();
+				Log.d(TAG, "redirected url2: " + redirectedUrl2);
+				is2.close();
+
+				String finalRedirectedUrl = redirectedUrl2.toString();
+				if (finalRedirectedUrl != null && finalRedirectedUrl.startsWith("https://mconnect.dialog.lk/openidconnect/msisdn_response")) {
+					Log.d(TAG, "intercepted msisdn");
+					ParameterList parameters=ParameterList.getKeyValuesFromUrl(finalRedirectedUrl, 0);
+					String msisdn=parameters.getValue("msisdn");
+
+					if(msisdn.length()==11){		//Valid MSISDN?
+						listener.authorizationCodeResponse(msisdn, "0", "", clientId, clientSecret, scopes, redirectUri);
+					}else{
+						listener.authorizationCodeResponse(msisdn, "-1", "", clientId, clientSecret, scopes, redirectUri);
+					}
+				}
+
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				listener.authorizationCodeResponse("", "-1", "", clientId, clientSecret, scopes, redirectUri);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				listener.authorizationCodeResponse("", "-1", "", clientId, clientSecret, scopes, redirectUri);
+			}
 			
-			final AuthorizationListener _listener=listener;
+			*/
+			
+			/*final AuthorizationListener _listener=listener;
 			final String _redirectUri=redirectUri;
 			final String _state=state;
 			final String _clientId=clientId;
@@ -148,32 +194,32 @@ public class Authorization {
 			
 			final WebView view = new WebView(activity);
 
-			LayoutParams fillParent=new LayoutParams(1,LayoutParams.FILL_PARENT);
+			LayoutParams fillParent=new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
 			activity.addContentView(view, fillParent);
 
 			view.setWebViewClient(new WebViewClient() {
 
-				/*
+				
 				 * This is a stub - could be extended to handle error situations
 				 * by returning to a relevant application screen
 				 * 
 				 * @see
 				 * android.webkit.WebViewClient#onReceivedError(android.webkit
 				 * .WebView, int, java.lang.String, java.lang.String)
-				 */
+				 
 				@Override
 				public void onReceivedError(WebView view, int errorCode,
 						String description, String failingUrl) {
 					Log.d(TAG, "onReceivedError errorCode=" + errorCode
 							+ " description=" + description + " failingUrl="
 							+ failingUrl);
-
-					view.setVisibility(View.GONE);
+					
+					view.setVisibility(View.INVISIBLE);
 					view.destroy();
 					_listener.authorizationError("Content loading error : "+description);
 				}
 
-				/*
+				
 				 * The onPageStarted method is called whenever the WebView
 				 * starts to load a new page - by examining the url for a
 				 * discovery token we can extract this and move to the next
@@ -182,27 +228,27 @@ public class Authorization {
 				 * @see
 				 * android.webkit.WebViewClient#onPageStarted(android.webkit
 				 * .WebView, java.lang.String, android.graphics.Bitmap)
-				 */
+				 
 				@Override
 				public void onPageStarted(WebView view, String url,
 						Bitmap favicon) {
 					Log.d(TAG, "onPageStarted url=" + url);
-					/*
+					
 					 * Check to see if the url contains the discovery token
 					 * identifier - it could be a url parameter or a page
 					 * fragment. The following checks and string manipulations
 					 * retrieve the actual discovery token
-					 */
+					 
 					
 					if (url != null && url.startsWith("https://mconnect.dialog.lk/openidconnect/msisdn_response")) {
 						Log.d(TAG, "intercepted msisdn");
 						ParameterList parameters=ParameterList.getKeyValuesFromUrl(url, 0);
 						String msisdn=parameters.getValue("msisdn");
-						view.setVisibility(View.GONE);
+						
 						if(msisdn.length()==11){		//Valid MSISDN?
 							view.stopLoading();
 							
-							/*String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri*/
+							String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri
 							_listener.authorizationCodeResponse(msisdn, "0", "", _clientId, _clientSecret, _scopes, _redirectUri);
 						}else{
 							_listener.authorizationCodeResponse(msisdn, "-1", "", _clientId, _clientSecret, _scopes, _redirectUri);
@@ -226,7 +272,7 @@ public class Authorization {
 
 							view.stopLoading();
 							
-							/*String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri*/
+							String state, String authorizationCode, String error, String clientId, String clientSecret, String scopes, String returnUri
 							_listener.authorizationCodeResponse(state, code, error, _clientId, _clientSecret, _scopes, _redirectUri);
 
 //							Intent intent = new Intent(
@@ -247,18 +293,18 @@ public class Authorization {
 						} else {
 							_listener.authorizationError("Invalid authorization code response");
 						}
-
-						view.setVisibility(View.GONE);
+						
+						view.setVisibility(View.INVISIBLE);
 						view.destroy();
 					}
 				}
 
 			});
 			
-			/*
+			
 			 * enable JavaScript - the discovery web pages are enhanced with
 			 * JavaScript
-			 */
+			 
 			WebSettings settings = view.getSettings();
 			settings.setJavaScriptEnabled(true);
 			settings.setSupportMultipleWindows(false);
@@ -267,22 +313,24 @@ public class Authorization {
 			String databasePath = activity.getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath(); 
 		    settings.setDatabasePath(databasePath);
 
-			/*
+			
 			 * load the specified URI along with the authorization header
-			 */
+			 
 			HashMap<String, String> extraheaders = new HashMap<String, String>();
 			view.loadUrl(requestUri, extraheaders);
-			view.requestFocus(View.FOCUS_DOWN);
-			
-		} catch (NullPointerException e){
+			view.requestFocus(View.FOCUS_DOWN);*/
+
+		} catch (Exception e){
+			listener.authorizationCodeResponse("", "-1", "", clientId, clientSecret, scopes, redirectUri);
+
 			Log.d(TAG, "NullPointerException=" + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Helper function developed to parse the redirect sent by the authorization
 	 * server to the application and extract code, state and error values.
-	 * 
+	 *
 	 * @param returnUri
 	 *            which is the return point after the user has
 	 *            authenticated/consented.
@@ -290,14 +338,78 @@ public class Authorization {
 	 */
 	public ParameterList extractRedirectParameter(String returnUri) {
 		ParameterList parameters = null;
-		
+
 		if (returnUri != null && returnUri.trim().length() > 0) {
 			Log.d(TAG, "intercepted return");
-			
+
 			parameters=ParameterList.getKeyValuesFromUrl(returnUri, 0);
 		}
-		
+
 		return parameters;
 	}
+	private class GetPhoneNumberTask extends  AsyncTask<String, Void, String>{
+
+
+		@Override
+		protected String doInBackground(String... urls) {
+			try {
+				return getMSD(urls[0]);
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		// onPostExecute displays the results of the AsyncTask.
+		@Override
+		protected void onPostExecute(String msisdn) {
+
+			if(msisdn !=null){
+
+
+				//textView.setText(result);
+				if (msisdn.length() == 11) {        //Valid MSISDN?
+					listener.authorizationCodeResponse(msisdn, "0", "", clientId, clientSecret, scopes, redirectUri);
+				} else {
+					listener.authorizationCodeResponse(msisdn, "-1", "", clientId, clientSecret, scopes, redirectUri);
+				}
+			}else {
+				listener.authorizationCodeResponse("", "-1", "", clientId, clientSecret, scopes, redirectUri);
+
+			}
+
+		}
+	}
+	private String getMSD(String requestUri) throws Exception {
+		URLConnection con = new URL(requestUri).openConnection();
+		Log.d(TAG, "orignal url: " + con.getURL());
+		con.connect();
+		//Log.d(TAG, "connected url: " + con.getURL() );
+		InputStream is = con.getInputStream();
+		URL redirectedUrl = con.getURL();
+		Log.d(TAG, "redirected url: " + redirectedUrl);
+		is.close();
+
+		URLConnection con2 = new URL(redirectedUrl.toString()).openConnection();
+		Log.d(TAG, "orignal url2: " + con2.getURL());
+		con2.connect();
+		//Log.d(TAG, "connected url2: " + con2.getURL() );
+		InputStream is2 = con2.getInputStream();
+		URL redirectedUrl2 = con2.getURL();
+		Log.d(TAG, "redirected url2: " + redirectedUrl2);
+		is2.close();
+
+		String finalRedirectedUrl = redirectedUrl2.toString();
+		if (finalRedirectedUrl != null && finalRedirectedUrl.startsWith("https://mconnect.dialog.lk/openidconnect/msisdn_response")) {
+			Log.d(TAG, "intercepted msisdn");
+			ParameterList parameters=ParameterList.getKeyValuesFromUrl(finalRedirectedUrl, 0);
+			String msisdn=parameters.getValue("msisdn");
+return msisdn;
+
+
+		}
+		return null;
+
+	}
+
+
 
 }

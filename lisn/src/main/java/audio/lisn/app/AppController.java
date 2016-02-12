@@ -113,6 +113,7 @@ public class AppController extends Application  {
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+            //mRequestQueue= Volley.newRequestQueue(getApplicationContext(), new HttpDigestStack());
         }
 
         return mRequestQueue;

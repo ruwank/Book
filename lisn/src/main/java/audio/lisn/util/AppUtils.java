@@ -156,5 +156,12 @@ public class AppUtils {
 		long megAvailable = bytesAvailable / (1024 * 1024);
 		return megAvailable;
 	}
+public static String getCredentialsData() {
+	String USERNAME="";
+	String PASSWORD="";
+	String credentials = USERNAME+":"+PASSWORD;
+	return credentials;
 
+
+}
 }

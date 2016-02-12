@@ -146,7 +146,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
         else {
             Picasso.with(context)
                     .load(book.getCover_image())
-                    .placeholder(R.drawable.audiobook_placeholder)
+                    .placeholder(R.drawable.ic_launcher)
                     .into(new Target() {
 
                         @Override
@@ -159,7 +159,7 @@ public class MyBookViewAdapter extends RecyclerView.Adapter<MyBookViewAdapter.Vi
 
                         @Override
                         public void onBitmapFailed(Drawable errorDrawable) {
-                            holder.thumbNail.setImageResource(R.drawable.audiobook_placeholder);
+                            holder.thumbNail.setImageResource(R.drawable.ic_launcher);
 
                         }
 

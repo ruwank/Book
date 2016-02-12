@@ -91,7 +91,7 @@ import audio.lisn.util.Log;
                 else {
                     Picasso.with(context)
                             .load(audioBook.getCover_image())
-                            .placeholder(R.drawable.audiobook_placeholder)
+                            .placeholder(R.drawable.ic_launcher)
                             .into(bookCoverImage);
                 }
 
@@ -158,7 +158,7 @@ import audio.lisn.util.Log;
                 else {
                     Picasso.with(context)
                             .load(audioBook.getCover_image())
-                            .placeholder(R.drawable.audiobook_placeholder)
+                            .placeholder(R.drawable.ic_launcher)
                             .into(bookCoverImage);
                 }
 
